@@ -29,24 +29,18 @@ class _QuranPageState extends State<QuranPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Row(
+              ExpansionTile(
+                title: Text(
+                  "Title",
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 90.sp,
+                      fontWeight: FontWeight.bold),
+                ),
                 children: [
-                  Flexible(
-                    fit: FlexFit.tight,
-                    child: Text(
-                      "Title",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 90.sp,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.keyboard_arrow_down),
-                    color: Colors.green,
-                    iconSize: 90.sp,
+                  Container(
+                    height: 300.h,
                   )
                 ],
               ),

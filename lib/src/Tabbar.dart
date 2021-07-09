@@ -1,5 +1,6 @@
 import 'package:application_1/screens/Homepage.dart';
 import 'package:application_1/screens/Quranpage.dart';
+import 'package:application_1/src/Drawer.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _TabbarStructureState extends State<TabbarStructure>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Container(),
+      drawer: DrawerContent(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         brightness: Brightness.dark,
@@ -65,10 +66,10 @@ class _TabbarStructureState extends State<TabbarStructure>
                 size: 90.sp,
               ))
         ],
-        title: Image.asset(
-          'assets/images/title.png',
-          scale: 2.5,
-        ),
+        // title: Image.asset(
+        //   'assets/images/title.png',
+        //   scale: 2.5,
+        // ),
       ),
       body: TabBarView(
         physics: NeverScrollableScrollPhysics(),

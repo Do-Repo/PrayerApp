@@ -18,6 +18,7 @@ class CardDone extends StatefulWidget {
 }
 
 bool _whotohighlight(
+  bool isIsha,
   String timenow,
   String currenttime,
   String upcomingtime,
@@ -27,11 +28,14 @@ bool _whotohighlight(
   var corruptedUpcomingtime = DateFormat('HH:mm').parse(upcomingtime);
 
   if (corruptedTimenow.isBefore(corruptedCurrenttime)) {
-    return false;
+    if (isIsha)
+      return true;
+    else
+      return false;
   } else if (corruptedTimenow.isAtSameMomentAs(corruptedCurrenttime)) {
     return true;
   } else if (corruptedTimenow.isAfter(corruptedCurrenttime)) {
-    if (corruptedTimenow.isBefore(corruptedUpcomingtime)) {
+    if ((corruptedTimenow.isBefore(corruptedUpcomingtime) || (isIsha))) {
       return true;
     } else
       return false;
@@ -98,6 +102,7 @@ class _CardDoneState extends State<CardDone> {
                     Text('Fajr',
                         style: TextStyle(
                             color: _whotohighlight(
+                                    false,
                                     widget._timeString,
                                     widget.snapshot.data.fajr,
                                     widget.snapshot.data.dhuhr)
@@ -110,6 +115,7 @@ class _CardDoneState extends State<CardDone> {
                       widget.snapshot.data.fajr,
                       style: TextStyle(
                           color: _whotohighlight(
+                            false,
                             widget._timeString,
                             widget.snapshot.data.fajr,
                             widget.snapshot.data.dhuhr,
@@ -130,6 +136,7 @@ class _CardDoneState extends State<CardDone> {
                     Text('Dhuhr',
                         style: TextStyle(
                             color: _whotohighlight(
+                                    false,
                                     widget._timeString,
                                     widget.snapshot.data.dhuhr,
                                     widget.snapshot.data.aasr)
@@ -144,6 +151,7 @@ class _CardDoneState extends State<CardDone> {
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
                         color: _whotohighlight(
+                                false,
                                 widget._timeString,
                                 widget.snapshot.data.dhuhr,
                                 widget.snapshot.data.aasr)
@@ -162,6 +170,7 @@ class _CardDoneState extends State<CardDone> {
                     Text('Aasr',
                         style: TextStyle(
                           color: _whotohighlight(
+                                  false,
                                   widget._timeString,
                                   widget.snapshot.data.aasr,
                                   widget.snapshot.data.maghrib)
@@ -175,6 +184,7 @@ class _CardDoneState extends State<CardDone> {
                       widget.snapshot.data.aasr,
                       style: TextStyle(
                         color: _whotohighlight(
+                                false,
                                 widget._timeString,
                                 widget.snapshot.data.aasr,
                                 widget.snapshot.data.maghrib)
@@ -195,6 +205,7 @@ class _CardDoneState extends State<CardDone> {
                     Text('Maghrib',
                         style: TextStyle(
                             color: _whotohighlight(
+                                    false,
                                     widget._timeString,
                                     widget.snapshot.data.maghrib,
                                     widget.snapshot.data.isha)
@@ -209,6 +220,7 @@ class _CardDoneState extends State<CardDone> {
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
                         color: _whotohighlight(
+                                false,
                                 widget._timeString,
                                 widget.snapshot.data.maghrib,
                                 widget.snapshot.data.isha)
@@ -229,6 +241,7 @@ class _CardDoneState extends State<CardDone> {
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800,
                           color: _whotohighlight(
+                                  true,
                                   widget._timeString,
                                   widget.snapshot.data.isha,
                                   widget.snapshot.data.fajr)
@@ -242,6 +255,7 @@ class _CardDoneState extends State<CardDone> {
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
                         color: _whotohighlight(
+                                true,
                                 widget._timeString,
                                 widget.snapshot.data.isha,
                                 widget.snapshot.data.fajr)

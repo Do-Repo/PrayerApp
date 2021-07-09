@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:application_1/models/RandomVerse.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:just_audio/just_audio.dart';
 
 class QuranCard extends StatefulWidget {
