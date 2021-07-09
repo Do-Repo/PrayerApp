@@ -6,12 +6,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
 class CustomTile extends StatefulWidget {
-  const CustomTile({Key key, @required String title, @required String apiLink})
+  const CustomTile(
+      {Key key,
+      @required String title,
+      @required String subtitle,
+      @required IconData icon,
+      @required List<Widget> children})
       : t = title,
-        api = apiLink,
+        s = subtitle,
+        i = icon,
+        l = children,
         super(key: key);
   final String t;
-  final String api;
+  final String s;
+  final IconData i;
+  final List<Widget> l;
   @override
   _CustomTileState createState() => _CustomTileState();
 }
@@ -21,56 +30,25 @@ class _CustomTileState extends State<CustomTile> {
   @override
   void initState() {
     super.initState();
-    _future = getTile(widget.api);
   }
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-        textColor: Colors.green,
-        iconColor: Colors.green,
-        title: Text(
-          widget.t,
-          style: TextStyle(fontSize: 70.sp),
-        ),
-        initiallyExpanded: false,
-        children: <Widget>[
-          new FutureBuilder(
-              future: _future,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: const Text('Loading...'),
-                  );
-                } else if (snapshot.hasError) {
-                  return const Center(
-                    child: const Text('Error loading data'),
-                  );
-                } else {
-                  List<QuranPicker> data = snapshot.data;
-                  List<Widget> reasonList = [];
-                  data.forEach((element) {
-                    reasonList.add(ListTile(
-                      onTap: () {
-                        print(element.number);
-                      },
-                      dense: true,
-                      contentPadding: EdgeInsets.all(20.sp),
-                      selectedTileColor: Colors.green,
-                      leading: Text(element.number.toString()),
-                      trailing: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: Text(
-                          element.name,
-                          style: TextStyle(fontSize: 60.sp),
-                        ),
-                      ),
-                    ));
-                  });
-                  return Column(children: reasonList);
-                }
-              })
-        ]);
+      textColor: Colors.green,
+      iconColor: Colors.green,
+      leading: Icon(
+        widget.i,
+        size: 120.sp,
+      ),
+      title: Text(
+        widget.t,
+        style: TextStyle(fontSize: 70.sp),
+      ),
+      subtitle: Text(widget.s),
+      initiallyExpanded: false,
+      children: widget.l,
+    );
   }
 }
 
@@ -83,3 +61,11 @@ Future<List<QuranPicker>> getTile(String x) async {
     print("error");
   }
 }
+
+// List<QuranPicker> data = snapshot.data;
+// List<Widget> reasonList = [];
+// data.forEach((element) {
+//   reasonList.add(ListTile(
+//     onTap: () {
+//       print(element.number);
+//     },

@@ -28,9 +28,9 @@ bool _whotohighlight(
   var corruptedUpcomingtime = DateFormat('HH:mm').parse(upcomingtime);
 
   if (corruptedTimenow.isBefore(corruptedCurrenttime)) {
-    if (isIsha)
+    if (corruptedUpcomingtime.isAfter(corruptedTimenow) && (isIsha)) {
       return true;
-    else
+    } else
       return false;
   } else if (corruptedTimenow.isAtSameMomentAs(corruptedCurrenttime)) {
     return true;

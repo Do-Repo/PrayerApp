@@ -1,3 +1,4 @@
+import 'package:application_1/screens/Quranpage/QuranpageAR.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -165,7 +166,11 @@ class _CardDoneState extends State<CardDone> {
                       )),
                   child: IconButton(
                       onPressed: () {
-                        widget.tabcontroller.animateTo(3);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => QuranPageAR()),
+                        );
                       },
                       iconSize: 90.sp,
                       icon: Icon(
