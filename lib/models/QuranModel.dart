@@ -1,7 +1,6 @@
 class QuranPicker {
   int number;
   String name;
-
   int numberOfAyahs;
   QuranPicker({
     this.number,
@@ -14,6 +13,17 @@ class QuranPicker {
       number: json['number'],
       name: json['name'],
       numberOfAyahs: json['numberOfAyahs'],
+    );
+  }
+}
+
+class Quran {
+  String ayah;
+  Quran({this.ayah});
+
+  factory Quran.fromJson(Map<String, dynamic> json) {
+    return Quran(
+      ayah: json['text'],
     );
   }
 }

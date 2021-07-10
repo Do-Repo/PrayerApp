@@ -30,7 +30,7 @@ class _QuranListARState extends State<QuranListAR> {
         widget.tab.animateTo(0);
       },
       child: ListView(children: <Widget>[
-        new FutureBuilder(
+        FutureBuilder(
             future: _future,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -52,9 +52,8 @@ class _QuranListARState extends State<QuranListAR> {
                           style: TextStyle(color: Colors.red, fontSize: 60.sp)),
                     ));
               } else {
-                List<QuranPicker> data = snapshot.data;
                 List<Widget> reasonList = [];
-                data.forEach((element) {
+                snapshot.data.forEach((element) {
                   reasonList.add(ListTile(
                     onTap: () {
                       print(element.number);

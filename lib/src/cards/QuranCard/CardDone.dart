@@ -9,12 +9,15 @@ class CardDone extends StatefulWidget {
     @required TabController tabController,
     @required AsyncSnapshot snap,
     @required bool playn,
+    @required AudioPlayer audioPlayer,
   })  : tabcontroller = tabController,
+        audioplayer = audioPlayer,
         snapshot = snap,
         playing = playn,
         super(key: key);
   final TabController tabcontroller;
   final AsyncSnapshot snapshot;
+  final AudioPlayer audioplayer;
   final bool playing;
   @override
   _CardDoneState createState() => _CardDoneState();
@@ -23,7 +26,6 @@ class CardDone extends StatefulWidget {
 class _CardDoneState extends State<CardDone> {
   PlayerState playerState;
 
-  AudioPlayer _audioPlayer = AudioPlayer();
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -107,7 +109,7 @@ class _CardDoneState extends State<CardDone> {
                     child: Center(
                       child: TextButton(
                           onPressed: () {
-                            playSound();
+                            playSound(widget.audioplayer);
                           },
                           child: widget.playing
                               ? Icon(
@@ -169,7 +171,10 @@ class _CardDoneState extends State<CardDone> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => QuranPageAR()),
+                              builder: (context) => QuranPageAR(
+                                  // title: widget.snapshot.data.surahNameAR,
+                                  // number: widget.snapshot.data.numberOfSurah,
+                                  )),
                         );
                       },
                       iconSize: 90.sp,
@@ -186,7 +191,7 @@ class _CardDoneState extends State<CardDone> {
     );
   }
 
-  void playSound() {
+  void playSound(AudioPlayer _audioPlayer) {
     setState(() {
       if (!widget.playing) {
         _audioPlayer.play();

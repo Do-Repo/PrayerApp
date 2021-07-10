@@ -4,12 +4,11 @@ import 'package:application_1/src/cards/PrayerTimes/CardDone.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardError.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardLoading.dart';
 import 'package:flutter/material.dart';
-
-import 'package:geocoder/geocoder.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:location/location.dart';
 import 'package:application_1/models/CardModel.dart';
+import 'package:location/location.dart' as Location;
 
 typedef Future<CardModel> FutureGenerator();
 
@@ -78,22 +77,24 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
   }
 
   Future<CardModel> getCardReady() async {
-    Location location = new Location();
-    LocationData _locationData;
+    Location.Location location = new Location.Location();
+    Location.LocationData _locationData;
 // GETTING LOCATION
     _locationData = await location.getLocation();
-    final coordinates =
-        new Coordinates(_locationData.latitude, _locationData.longitude);
-// TRANSLATING LATITUDE AND LONGITUDE INTO ADRESS
-    var adress = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    List<Placemark> placemark = await placemarkFromCoordinates(
+        _locationData.latitude, _locationData.longitude);
+
 // GETTING CURRENT DAY FOR PRAYERTIMES
     String timestamp = _locationData.time.toInt().toString();
 // cALLING API
     final result = await http.get(Uri.parse(
         "http://api.aladhan.com/v1/timings/${timestamp.substring(0, 10)}?latitude=${_locationData.latitude}&longitude=${_locationData.longitude}&method=2"));
     if (result.statusCode == 200) {
-      return CardModel.fromJson(jsonDecode(result.body), adress.first.locality,
-          adress.first.adminArea, adress.first.countryName);
+      return CardModel.fromJson(
+          jsonDecode(result.body),
+          placemark.first.locality,
+          placemark.first.administrativeArea,
+          placemark.first.country);
     } else {
       return null;
     }

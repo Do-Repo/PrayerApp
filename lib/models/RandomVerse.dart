@@ -7,6 +7,7 @@ class RandomVerse {
   int numberOfAyah;
   int ayahsInSurah;
   String ayahText;
+  int numberOfSurah;
   RandomVerse({
     this.number,
     this.audioUrl,
@@ -16,6 +17,7 @@ class RandomVerse {
     this.numberOfAyah,
     this.ayahsInSurah,
     this.ayahText,
+    this.numberOfSurah,
   });
 
   factory RandomVerse.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class RandomVerse {
       numberOfAyah: json['data']['numberInSurah'],
       ayahsInSurah: json['data']['surah']['numberOfAyahs'],
       ayahText: json['data']['text'],
+      numberOfSurah: json['data']['surah']['number'],
     );
   }
 }

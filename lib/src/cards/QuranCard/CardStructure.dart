@@ -28,7 +28,7 @@ class _QuranCardState extends State<QuranCard> {
 
   PlayerState playerState;
 
-  AudioPlayer _audioPlayer = AudioPlayer();
+  final _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -65,11 +65,13 @@ class _QuranCardState extends State<QuranCard> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return CardDone(
+                  audioPlayer: _audioPlayer,
                   tabController: widget.tabcontroller,
                   snap: snapshot,
                   playn: playing,
                 );
               } else if (snapshot.hasError) {
+                print('snapshot error ${snapshot.error}');
                 return CardFailed();
               } else {
                 return CardLoading();
@@ -90,6 +92,7 @@ class _QuranCardState extends State<QuranCard> {
       return RandomVerse.fromJson(jsonDecode(result.body));
     } else {
       print("error");
+      return null;
     }
   }
 }

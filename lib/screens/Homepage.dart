@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class HomePage extends StatefulWidget {
   const HomePage({
     Key key,
-    @required TabController tabcontroller,
+    TabController tabcontroller,
   })  : tabs = tabcontroller,
         super(key: key);
   final TabController tabs;
