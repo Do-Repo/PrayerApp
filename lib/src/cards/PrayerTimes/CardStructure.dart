@@ -7,23 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:application_1/models/CardModel.dart';
+import 'package:application_1/models/PrayerTimeCard.dart';
 import 'package:location/location.dart' as Location;
 
 typedef Future<CardModel> FutureGenerator();
 
 class PrayertimesCard extends StatefulWidget {
-  const PrayertimesCard({Key key}) : super(key: key);
+  const PrayertimesCard({Key? key}) : super(key: key);
 
   @override
   _PrayertimesCardState createState() => _PrayertimesCardState();
 }
 
 class _PrayertimesCardState extends State<PrayertimesCard> {
-  String _timeString;
-  Timer t;
+  String? _timeString;
+  late Timer t;
 
-  Future<CardModel> cardmodel;
+  Future<CardModel?>? cardmodel;
   @override
   void initState() {
     super.initState();
@@ -54,7 +54,7 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: FutureBuilder<CardModel>(
+        child: FutureBuilder<CardModel?>(
             future: cardmodel,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
@@ -76,16 +76,16 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
             }));
   }
 
-  Future<CardModel> getCardReady() async {
+  Future<CardModel?> getCardReady() async {
     Location.Location location = new Location.Location();
     Location.LocationData _locationData;
 // GETTING LOCATION
     _locationData = await location.getLocation();
     List<Placemark> placemark = await placemarkFromCoordinates(
-        _locationData.latitude, _locationData.longitude);
+        _locationData.latitude!, _locationData.longitude!);
 
 // GETTING CURRENT DAY FOR PRAYERTIMES
-    String timestamp = _locationData.time.toInt().toString();
+    String timestamp = _locationData.time!.toInt().toString();
 // cALLING API
     final result = await http.get(Uri.parse(
         "http://api.aladhan.com/v1/timings/${timestamp.substring(0, 10)}?latitude=${_locationData.latitude}&longitude=${_locationData.longitude}&method=2"));

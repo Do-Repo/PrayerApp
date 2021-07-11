@@ -1,20 +1,24 @@
 import 'dart:convert';
+import 'package:application_1/screens/Quranpage/Quranpage.dart';
 import 'package:http/http.dart' as http;
 import 'package:application_1/models/QuranModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class QuranListAR extends StatefulWidget {
-  const QuranListAR({Key key, @required TabController tabController})
+class QuranList extends StatefulWidget {
+  const QuranList(
+      {Key? key, required bool isArabic, required TabController? tabController})
       : tab = tabController,
+        iA = isArabic,
         super(key: key);
-  final TabController tab;
+  final TabController? tab;
+  final bool iA;
   @override
-  _QuranListARState createState() => _QuranListARState();
+  _QuranListState createState() => _QuranListState();
 }
 
-class _QuranListARState extends State<QuranListAR> {
-  Future<List<QuranPicker>> _future;
+class _QuranListState extends State<QuranList> {
+  Future<List<QuranPicker>>? _future;
 
   @override
   void initState() {
@@ -26,13 +30,11 @@ class _QuranListARState extends State<QuranListAR> {
   Widget build(BuildContext context) {
     return WillPopScope(
       // ignore: missing_return
-      onWillPop: () {
-        widget.tab.animateTo(0);
-      },
+      onWillPop: () => widget.tab!.animateTo(0) as Future<bool>,
       child: ListView(children: <Widget>[
         FutureBuilder(
             future: _future,
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<List> snapshot) {
               if (!snapshot.hasData) {
                 return Container(
                   height: 500.h,
@@ -53,19 +55,32 @@ class _QuranListARState extends State<QuranListAR> {
                     ));
               } else {
                 List<Widget> reasonList = [];
-                snapshot.data.forEach((element) {
+                snapshot.data!.forEach((element) {
                   reasonList.add(ListTile(
                     onTap: () {
-                      print(element.number);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => QuranPage(
+                                  title: widget.iA
+                                      ? element.name
+                                      : element.englishNameTranslation,
+                                  isArabic: widget.iA,
+                                  verseNumber: element.number,
+                                )),
+                      );
                     },
                     dense: true,
                     contentPadding: EdgeInsets.all(20.sp),
                     selectedTileColor: Colors.green,
                     leading: Text(element.number.toString()),
-                    trailing: Directionality(
-                      textDirection: TextDirection.rtl,
+                    title: Directionality(
+                      textDirection:
+                          widget.iA ? TextDirection.rtl : TextDirection.ltr,
                       child: Text(
-                        element.name,
+                        widget.iA
+                            ? element.name
+                            : element.englishNameTranslation,
                         style: TextStyle(fontSize: 60.sp),
                       ),
                     ),
@@ -87,4 +102,5 @@ Future<List<QuranPicker>> getSurahTitles() async {
   } else {
     print("error");
   }
+  return <QuranPicker>[];
 }

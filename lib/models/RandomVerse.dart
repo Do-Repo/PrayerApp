@@ -1,13 +1,13 @@
 class RandomVerse {
-  int number;
-  String audioUrl;
-  String audioName;
-  String surahNameAR;
-  String surahNameEN;
-  int numberOfAyah;
-  int ayahsInSurah;
-  String ayahText;
-  int numberOfSurah;
+  int? number;
+  String? audioUrl;
+  String? audioName;
+  String? surahNameAR;
+  String? surahNameEN;
+  int? numberOfAyah;
+  int? ayahsInSurah;
+  String? ayahText;
+  int? numberOfSurah;
   RandomVerse({
     this.number,
     this.audioUrl,

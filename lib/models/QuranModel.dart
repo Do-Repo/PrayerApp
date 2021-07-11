@@ -2,10 +2,12 @@ class QuranPicker {
   int number;
   String name;
   int numberOfAyahs;
+  String englishNameTranslation;
   QuranPicker({
-    this.number,
-    this.name,
-    this.numberOfAyahs,
+    required this.number,
+    required this.name,
+    required this.numberOfAyahs,
+    required this.englishNameTranslation,
   });
 
   factory QuranPicker.fromJson(Map<String, dynamic> json) {
@@ -13,16 +15,29 @@ class QuranPicker {
       number: json['number'],
       name: json['name'],
       numberOfAyahs: json['numberOfAyahs'],
+      englishNameTranslation: json['englishNameTranslation'],
     );
   }
 }
 
-class Quran {
-  String ayah;
-  Quran({this.ayah});
+class QuranAR {
+  String? ayah;
+  QuranAR({this.ayah});
 
-  factory Quran.fromJson(Map<String, dynamic> json) {
-    return Quran(
+  factory QuranAR.fromJson(Map<String, dynamic> json) {
+    return QuranAR(
+      ayah: json['text'],
+    );
+  }
+}
+
+class QuranEN {
+  String? ayah;
+
+  QuranEN({this.ayah});
+
+  factory QuranEN.fromJson(Map<String, dynamic> json) {
+    return QuranEN(
       ayah: json['text'],
     );
   }

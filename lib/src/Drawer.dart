@@ -7,16 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DrawerContent extends StatefulWidget {
-  const DrawerContent({Key key, @required TabController tabController})
-      : op = tabController,
+  const DrawerContent({Key? key, required TabController? tabController})
+      : tabcontroller = tabController,
         super(key: key);
-  final TabController op;
+  final TabController? tabcontroller;
   @override
   _DrawerContentState createState() => _DrawerContentState();
 }
 
 class _DrawerContentState extends State<DrawerContent> {
-  Future<QuranPicker> cardmodel;
+  Future<QuranPicker>? cardmodel;
 
   @override
   void initState() {
@@ -47,7 +47,8 @@ class _DrawerContentState extends State<DrawerContent> {
             icon: customIcon.MyFlutterApp.quran,
             title: "Quran",
             subtitle: "Read the holy Quran",
-            children: getQuranlist(widget.op, context),
+            children:
+                getQuranlist(widget.tabcontroller, context) as List<Widget>,
           ),
         ],
       ),
@@ -55,7 +56,7 @@ class _DrawerContentState extends State<DrawerContent> {
   }
 }
 
-List getQuranlist(TabController tabController, BuildContext context) {
+List getQuranlist(TabController? tabController, BuildContext context) {
   return <Widget>[
     ListTile(
       leading: Icon(
@@ -67,7 +68,7 @@ List getQuranlist(TabController tabController, BuildContext context) {
         style: TextStyle(fontSize: 50.sp),
       ),
       onTap: () {
-        tabController.animateTo(3);
+        tabController!.animateTo(3);
         Navigator.pop(context);
       },
       subtitle: Text("Original Quran"),
@@ -85,7 +86,8 @@ List getQuranlist(TabController tabController, BuildContext context) {
       subtitle: Text("Translated Quran"),
       trailing: Icon(Icons.arrow_forward_ios),
       onTap: () {
-        tabController.animateTo(3);
+        tabController!.animateTo(4);
+        Navigator.pop(context);
       },
     )
   ];

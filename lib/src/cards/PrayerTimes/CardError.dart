@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CardError extends StatelessWidget {
   const CardError({
-    Key key,
-    @required AsyncSnapshot snap,
+    Key? key,
+    required AsyncSnapshot snap,
   })  : snapshot = snap,
         super(key: key);
 
@@ -22,7 +22,7 @@ class CardError extends StatelessWidget {
               style: TextStyle(color: Colors.red, fontSize: 70.sp),
             ),
             Text(
-              snapshot.error,
+              snapshot.error as String,
               style: TextStyle(color: Colors.red, fontSize: 30.sp),
             ),
           ],

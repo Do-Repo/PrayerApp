@@ -1,31 +1,31 @@
 class CardModel {
   // Geographic
-  String city;
-  String province;
-  String country;
-  String timezone;
+  String? city;
+  String? province;
+  String? country;
+  String? timezone;
   // Prayertimes
-  String fajr;
-  String dhuhr;
-  String aasr;
-  String maghrib;
-  String isha;
+  String? fajr;
+  String? dhuhr;
+  String? aasr;
+  String? maghrib;
+  String? isha;
   //Extras
-  String imsak;
-  String sunset;
-  String sunrise;
+  String? imsak;
+  String? sunset;
+  String? sunrise;
   //Dates
-  String hijriDayNumber;
-  String hijriDayNameEN;
-  String hijriDayNameAR;
-  String hijriMonthEN;
-  String hijriMonthAR;
-  String hijriYear;
-  String hijriYearDesignation;
-  String gregorianDayNumber;
-  String gregorianDayName;
-  String gregorianMonth;
-  String gregorianYear;
+  String? hijriDayNumber;
+  String? hijriDayNameEN;
+  String? hijriDayNameAR;
+  String? hijriMonthEN;
+  String? hijriMonthAR;
+  String? hijriYear;
+  String? hijriYearDesignation;
+  String? gregorianDayNumber;
+  String? gregorianDayName;
+  String? gregorianMonth;
+  String? gregorianYear;
   CardModel({
     this.city,
     this.province,
@@ -53,7 +53,7 @@ class CardModel {
   });
 
   factory CardModel.fromJson(
-      Map<String, dynamic> json, String city, String province, String country) {
+      Map<String, dynamic> json, String? city, String? province, String? country) {
     return CardModel(
       city: city,
       province: province,

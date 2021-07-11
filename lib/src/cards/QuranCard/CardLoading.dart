@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CardLoading extends StatelessWidget {
   const CardLoading({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -14,7 +14,7 @@ class CardLoading extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: LinearGradient(
-                colors: [Colors.teal, Colors.green, Colors.green[300]])),
+                colors: [Colors.teal, Colors.green, Colors.green[300]!])),
         child: Container(
             decoration: BoxDecoration(
               color: Colors.white,

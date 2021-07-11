@@ -4,14 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CardDone extends StatefulWidget {
   const CardDone({
-    Key key,
-    @required String timeString,
-    @required AsyncSnapshot snap,
+    Key? key,
+    required String? timeString,
+    required AsyncSnapshot snap,
   })  : _timeString = timeString,
         snapshot = snap,
         super(key: key);
 
-  final String _timeString;
+  final String? _timeString;
   final AsyncSnapshot snapshot;
   @override
   _CardDoneState createState() => _CardDoneState();
@@ -40,6 +40,7 @@ bool _whotohighlight(
     } else
       return false;
   }
+  return false;
 }
 
 class _CardDoneState extends State<CardDone> {
@@ -70,7 +71,7 @@ class _CardDoneState extends State<CardDone> {
                       ),
                     ),
                     Text(
-                      widget._timeString,
+                      widget._timeString!,
                       style: TextStyle(
                           fontSize: 70.sp, fontWeight: FontWeight.w800),
                     )
@@ -103,7 +104,7 @@ class _CardDoneState extends State<CardDone> {
                         style: TextStyle(
                             color: _whotohighlight(
                                     false,
-                                    widget._timeString,
+                                    widget._timeString!,
                                     widget.snapshot.data.fajr,
                                     widget.snapshot.data.dhuhr)
                                 ? Colors.green
@@ -116,7 +117,7 @@ class _CardDoneState extends State<CardDone> {
                       style: TextStyle(
                           color: _whotohighlight(
                             false,
-                            widget._timeString,
+                            widget._timeString!,
                             widget.snapshot.data.fajr,
                             widget.snapshot.data.dhuhr,
                           )
@@ -137,7 +138,7 @@ class _CardDoneState extends State<CardDone> {
                         style: TextStyle(
                             color: _whotohighlight(
                                     false,
-                                    widget._timeString,
+                                    widget._timeString!,
                                     widget.snapshot.data.dhuhr,
                                     widget.snapshot.data.aasr)
                                 ? Colors.green
@@ -152,7 +153,7 @@ class _CardDoneState extends State<CardDone> {
                         fontWeight: FontWeight.w800,
                         color: _whotohighlight(
                                 false,
-                                widget._timeString,
+                                widget._timeString!,
                                 widget.snapshot.data.dhuhr,
                                 widget.snapshot.data.aasr)
                             ? Colors.green
@@ -171,7 +172,7 @@ class _CardDoneState extends State<CardDone> {
                         style: TextStyle(
                           color: _whotohighlight(
                                   false,
-                                  widget._timeString,
+                                  widget._timeString!,
                                   widget.snapshot.data.aasr,
                                   widget.snapshot.data.maghrib)
                               ? Colors.green
@@ -185,7 +186,7 @@ class _CardDoneState extends State<CardDone> {
                       style: TextStyle(
                         color: _whotohighlight(
                                 false,
-                                widget._timeString,
+                                widget._timeString!,
                                 widget.snapshot.data.aasr,
                                 widget.snapshot.data.maghrib)
                             ? Colors.green
@@ -206,7 +207,7 @@ class _CardDoneState extends State<CardDone> {
                         style: TextStyle(
                             color: _whotohighlight(
                                     false,
-                                    widget._timeString,
+                                    widget._timeString!,
                                     widget.snapshot.data.maghrib,
                                     widget.snapshot.data.isha)
                                 ? Colors.green
@@ -221,7 +222,7 @@ class _CardDoneState extends State<CardDone> {
                         fontWeight: FontWeight.w800,
                         color: _whotohighlight(
                                 false,
-                                widget._timeString,
+                                widget._timeString!,
                                 widget.snapshot.data.maghrib,
                                 widget.snapshot.data.isha)
                             ? Colors.green
@@ -242,7 +243,7 @@ class _CardDoneState extends State<CardDone> {
                           fontWeight: FontWeight.w800,
                           color: _whotohighlight(
                                   true,
-                                  widget._timeString,
+                                  widget._timeString!,
                                   widget.snapshot.data.isha,
                                   widget.snapshot.data.fajr)
                               ? Colors.green
@@ -256,7 +257,7 @@ class _CardDoneState extends State<CardDone> {
                         fontWeight: FontWeight.w800,
                         color: _whotohighlight(
                                 true,
-                                widget._timeString,
+                                widget._timeString!,
                                 widget.snapshot.data.isha,
                                 widget.snapshot.data.fajr)
                             ? Colors.green

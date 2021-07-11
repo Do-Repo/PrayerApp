@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
-    Key key,
-    TabController tabcontroller,
+    Key? key,
+    TabController? tabcontroller,
   })  : tabs = tabcontroller,
         super(key: key);
-  final TabController tabs;
+  final TabController? tabs;
   @override
   _HomePageState createState() => _HomePageState();
 }

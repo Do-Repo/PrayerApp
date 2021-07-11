@@ -1,30 +1,32 @@
-import 'package:application_1/screens/Quranpage/QuranpageAR.dart';
+import 'package:application_1/screens/Quranpage/Quranpage.dart';
+
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:just_audio/just_audio.dart';
 
 class CardDone extends StatefulWidget {
   const CardDone({
-    Key key,
-    @required TabController tabController,
-    @required AsyncSnapshot snap,
-    @required bool playn,
-    @required AudioPlayer audioPlayer,
+    Key? key,
+    required TabController? tabController,
+    required AsyncSnapshot snap,
+    required bool? playn,
+    required AudioPlayer audioPlayer,
   })  : tabcontroller = tabController,
         audioplayer = audioPlayer,
         snapshot = snap,
         playing = playn,
         super(key: key);
-  final TabController tabcontroller;
+  final TabController? tabcontroller;
   final AsyncSnapshot snapshot;
   final AudioPlayer audioplayer;
-  final bool playing;
+  final bool? playing;
   @override
   _CardDoneState createState() => _CardDoneState();
 }
 
 class _CardDoneState extends State<CardDone> {
-  PlayerState playerState;
+  PlayerState? playerState;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class _CardDoneState extends State<CardDone> {
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30)),
                 gradient: LinearGradient(
-                    colors: [Colors.teal, Colors.green, Colors.green[300]])),
+                    colors: [Colors.teal, Colors.green, Colors.green[300]!])),
             child: Container(
               padding: EdgeInsets.all(20.sp),
               width: 1.sw,
@@ -95,7 +97,7 @@ class _CardDoneState extends State<CardDone> {
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30)),
                 gradient: LinearGradient(
-                    colors: [Colors.teal, Colors.green, Colors.green[300]])),
+                    colors: [Colors.teal, Colors.green, Colors.green[300]!])),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -111,7 +113,7 @@ class _CardDoneState extends State<CardDone> {
                           onPressed: () {
                             playSound(widget.audioplayer);
                           },
-                          child: widget.playing
+                          child: widget.playing!
                               ? Icon(
                                   Icons.volume_off,
                                   color: Colors.green,
@@ -171,9 +173,11 @@ class _CardDoneState extends State<CardDone> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => QuranPageAR(
-                                  // title: widget.snapshot.data.surahNameAR,
-                                  // number: widget.snapshot.data.numberOfSurah,
+                              builder: (context) => QuranPage(
+                                    title: widget.snapshot.data.surahNameAR,
+                                    isArabic: true,
+                                    verseNumber:
+                                        widget.snapshot.data.numberOfSurah,
                                   )),
                         );
                       },
@@ -193,10 +197,12 @@ class _CardDoneState extends State<CardDone> {
 
   void playSound(AudioPlayer _audioPlayer) {
     setState(() {
-      if (!widget.playing) {
+      if (!widget.playing!) {
+        print('start');
         _audioPlayer.play();
       } else
-        _audioPlayer.stop();
+        print('strop');
+      _audioPlayer.stop();
     });
   }
 }

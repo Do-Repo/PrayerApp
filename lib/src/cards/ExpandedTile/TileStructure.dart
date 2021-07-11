@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 
 class CustomTile extends StatefulWidget {
   const CustomTile(
-      {Key key,
-      @required String title,
-      @required String subtitle,
-      @required IconData icon,
-      @required List<Widget> children})
+      {Key? key,
+      required String title,
+      required String subtitle,
+      required IconData icon,
+      required List<Widget> children})
       : t = title,
         s = subtitle,
         i = icon,
@@ -26,7 +26,6 @@ class CustomTile extends StatefulWidget {
 }
 
 class _CustomTileState extends State<CustomTile> {
-  Future<List<QuranPicker>> _future;
   @override
   void initState() {
     super.initState();
@@ -59,6 +58,7 @@ Future<List<QuranPicker>> getTile(String x) async {
     return jsonResponse.map((data) => new QuranPicker.fromJson(data)).toList();
   } else {
     print("error");
+    return <QuranPicker>[];
   }
 }
 

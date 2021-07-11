@@ -1,6 +1,5 @@
 import 'package:application_1/screens/Homepage.dart';
-import 'package:application_1/screens/Quranpage/QuranListAR.dart';
-import 'package:application_1/screens/Quranpage/QuranpageAR.dart';
+import 'package:application_1/screens/Quranpage/QuranList.dart';
 import 'package:application_1/src/Drawer.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TabbarStructure extends StatefulWidget {
-  const TabbarStructure({Key key}) : super(key: key);
+  const TabbarStructure({Key? key}) : super(key: key);
 
   @override
   _TabbarStructureState createState() => _TabbarStructureState();
@@ -16,18 +15,18 @@ class TabbarStructure extends StatefulWidget {
 
 class _TabbarStructureState extends State<TabbarStructure>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(() => setState(() {}));
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController!.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController!.dispose();
     super.dispose();
   }
 
@@ -82,7 +81,12 @@ class _TabbarStructureState extends State<TabbarStructure>
           Container(
             color: Colors.blue,
           ),
-          QuranListAR(
+          QuranList(
+            isArabic: true,
+            tabController: _tabController,
+          ),
+          QuranList(
+            isArabic: false,
             tabController: _tabController,
           ),
         ],

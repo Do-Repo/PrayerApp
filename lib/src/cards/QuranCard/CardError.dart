@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class CardFailed extends StatelessWidget {
   const CardFailed({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -16,7 +16,7 @@ class CardFailed extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: LinearGradient(
-                colors: [Colors.teal, Colors.green, Colors.green[300]])),
+                colors: [Colors.teal, Colors.green, Colors.green[300]!])),
         child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -24,9 +24,11 @@ class CardFailed extends StatelessWidget {
             ),
             padding: EdgeInsets.all(20.sp),
             width: 1.sw,
-            child: Text(
-              "Failed to connect",
-              style: TextStyle(color: Colors.red),
+            child: Center(
+              child: Text(
+                "Failed to connect",
+                style: TextStyle(color: Colors.red),
+              ),
             )));
   }
 }

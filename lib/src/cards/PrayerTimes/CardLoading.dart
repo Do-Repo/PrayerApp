@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class CardLoading extends StatefulWidget {
   const CardLoading({
-    Key key,
-    @required VoidCallback onpressed,
+    Key? key,
+    required VoidCallback onpressed,
   })  : _function = onpressed,
         super(key: key);
 
@@ -18,7 +18,7 @@ class CardLoading extends StatefulWidget {
 class _CardLoadingState extends State<CardLoading> {
   bool _timeout = false;
 
-  Timer _timer;
+  late Timer _timer;
 
   _eskettit() {
     _timer = new Timer(const Duration(seconds: 10), () {
