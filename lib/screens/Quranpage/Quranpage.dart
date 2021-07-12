@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:application_1/models/QuranModel.dart';
 import 'package:flutter/material.dart';

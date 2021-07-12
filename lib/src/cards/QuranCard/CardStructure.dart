@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:application_1/src/cards/QuranCard/CardDone.dart';
 import 'package:application_1/src/cards/QuranCard/CardError.dart';
 import 'package:application_1/src/cards/QuranCard/CardLoading.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:application_1/models/RandomVerse.dart';
 import 'package:flutter/material.dart';
@@ -32,23 +32,25 @@ class _QuranCardState extends State<QuranCard> {
   @override
   void initState() {
     randomVerse = getVerse();
-    _audioPlayer.playerStateStream.listen((playerState) {
-      final processingState = playerState.processingState;
-      final isPlaying = playerState.playing;
-      if (!isPlaying) {
-        playing = false;
-      } else if (processingState != ProcessingState.completed) {
-        playing = true;
-      } else if (processingState == ProcessingState.completed) {
-        playing = false;
-      }
-    });
 
+    // _audioPlayer.playerStateStream.listen((playerState) {
+    //   final processingState = playerState.processingState;
+    //   final isPlaying = playerState.playing;
+    //   if (!isPlaying) {
+    //     playing = false;
+    //   } else if (processingState != ProcessingState.completed) {
+    //     playing = true;
+    //   } else if (processingState == ProcessingState.completed) {
+    //     playing = false;
+    //   }
+    // });
+    _audioPlayer.setReleaseMode(ReleaseMode.STOP);
     super.initState();
   }
 
   @override
   void dispose() {
+    _audioPlayer.release();
     _audioPlayer.dispose();
 
     super.dispose();
@@ -67,7 +69,6 @@ class _QuranCardState extends State<QuranCard> {
                   audioPlayer: _audioPlayer,
                   tabController: widget.tabcontroller,
                   snap: snapshot,
-                  playn: playing,
                 );
               } else if (snapshot.hasError) {
                 print('snapshot error ${snapshot.error}');
@@ -87,8 +88,10 @@ class _QuranCardState extends State<QuranCard> {
 
     var data = jsonDecode(result.body);
     if (result.statusCode == 200) {
-      //await _audioPlayer.setUrl(data['data']['audio']);
-      return RandomVerse.fromJson(jsonDecode(result.body));
+      int results = await _audioPlayer.setUrl(data['data']['audio']);
+      if (results == 1) {
+        return RandomVerse.fromJson(jsonDecode(result.body));
+      }
     } else {
       print("error");
       return null;

@@ -3,30 +3,34 @@ import 'package:application_1/screens/Quranpage/Quranpage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class CardDone extends StatefulWidget {
   const CardDone({
     Key? key,
     required TabController? tabController,
     required AsyncSnapshot snap,
-    required bool? playn,
     required AudioPlayer audioPlayer,
   })  : tabcontroller = tabController,
         audioplayer = audioPlayer,
         snapshot = snap,
-        playing = playn,
         super(key: key);
   final TabController? tabcontroller;
   final AsyncSnapshot snapshot;
   final AudioPlayer audioplayer;
-  final bool? playing;
+
   @override
   _CardDoneState createState() => _CardDoneState();
 }
 
 class _CardDoneState extends State<CardDone> {
   PlayerState? playerState;
+  bool playiin = false;
+  @override
+  void initState() {
+    super.initState();
+    changeButton();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +117,7 @@ class _CardDoneState extends State<CardDone> {
                           onPressed: () {
                             playSound(widget.audioplayer);
                           },
-                          child: widget.playing!
+                          child: playiin
                               ? Icon(
                                   Icons.volume_off,
                                   color: Colors.green,
@@ -195,14 +199,28 @@ class _CardDoneState extends State<CardDone> {
     );
   }
 
+  void changeButton() {
+    widget.audioplayer.onPlayerStateChanged.listen((playerState) {
+      if (PlayerState.PLAYING == playerState) {
+        playiin = true;
+      } else if (PlayerState.COMPLETED == playerState ||
+          PlayerState.STOPPED == playerState) {
+        playiin = false;
+      }
+      if (mounted) {
+        setState(() {
+          playiin;
+        });
+      }
+    });
+  }
+
   void playSound(AudioPlayer _audioPlayer) {
     setState(() {
-      if (!widget.playing!) {
-        print('start');
-        _audioPlayer.play();
+      if (!playiin) {
+        _audioPlayer.resume();
       } else
-        print('strop');
-      _audioPlayer.stop();
+        _audioPlayer.stop();
     });
   }
 }
