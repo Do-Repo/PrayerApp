@@ -1,5 +1,8 @@
+import 'package:application_1/screens/HadithPage/HadithList.dart';
 import 'package:application_1/screens/Homepage.dart';
+import 'package:application_1/screens/Qiblah.dart';
 import 'package:application_1/screens/Quranpage/QuranList.dart';
+
 import 'package:application_1/src/Drawer.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,7 +23,7 @@ class _TabbarStructureState extends State<TabbarStructure>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
     _tabController!.addListener(() => setState(() {}));
   }
 
@@ -33,6 +36,7 @@ class _TabbarStructureState extends State<TabbarStructure>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       drawer: DrawerContent(
         tabController: _tabController,
       ),
@@ -40,6 +44,7 @@ class _TabbarStructureState extends State<TabbarStructure>
         backgroundColor: Colors.white,
         brightness: Brightness.dark,
         centerTitle: false,
+        elevation: 0,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -75,12 +80,6 @@ class _TabbarStructureState extends State<TabbarStructure>
           HomePage(
             tabcontroller: _tabController,
           ),
-          Container(
-            color: Colors.yellow,
-          ),
-          Container(
-            color: Colors.blue,
-          ),
           QuranList(
             isArabic: true,
             tabController: _tabController,
@@ -89,6 +88,9 @@ class _TabbarStructureState extends State<TabbarStructure>
             isArabic: false,
             tabController: _tabController,
           ),
+          HadithList(isArabic: false, tabController: _tabController),
+          HadithList(isArabic: true, tabController: _tabController),
+          Qiblah(tabController: _tabController),
         ],
         controller: _tabController,
       ),

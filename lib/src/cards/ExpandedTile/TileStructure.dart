@@ -35,6 +35,8 @@ class _CustomTileState extends State<CustomTile> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       textColor: Colors.green,
+      trailing:
+          RotatedBox(quarterTurns: 1, child: Icon(Icons.arrow_forward_ios)),
       iconColor: Colors.green,
       leading: Icon(
         widget.i,
@@ -61,11 +63,3 @@ Future<List<QuranPicker>> getTile(String x) async {
     return <QuranPicker>[];
   }
 }
-
-// List<QuranPicker> data = snapshot.data;
-// List<Widget> reasonList = [];
-// data.forEach((element) {
-//   reasonList.add(ListTile(
-//     onTap: () {
-//       print(element.number);
-//     },

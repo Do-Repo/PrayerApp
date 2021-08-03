@@ -8,12 +8,22 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:application_1/models/PrayerTimeCard.dart';
-import 'package:location/location.dart' as Location;
 
 typedef Future<CardModel> FutureGenerator();
 
 class PrayertimesCard extends StatefulWidget {
-  const PrayertimesCard({Key? key}) : super(key: key);
+  const PrayertimesCard(
+      {Key? key,
+      required double latitude,
+      required int timestamp,
+      required double longitude})
+      : lt = latitude,
+        ts = timestamp,
+        lot = longitude,
+        super(key: key);
+  final double lt;
+  final int ts;
+  final double lot;
 
   @override
   _PrayertimesCardState createState() => _PrayertimesCardState();
@@ -54,6 +64,7 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+        color: Colors.white,
         child: FutureBuilder<CardModel?>(
             future: cardmodel,
             builder: (context, snapshot) {
@@ -77,18 +88,14 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
   }
 
   Future<CardModel?> getCardReady() async {
-    Location.Location location = new Location.Location();
-    Location.LocationData _locationData;
-// GETTING LOCATION
-    _locationData = await location.getLocation();
-    List<Placemark> placemark = await placemarkFromCoordinates(
-        _locationData.latitude!, _locationData.longitude!);
+    List<Placemark> placemark =
+        await placemarkFromCoordinates(widget.lt, widget.lot);
 
 // GETTING CURRENT DAY FOR PRAYERTIMES
-    String timestamp = _locationData.time!.toInt().toString();
+    String timestamp = widget.ts.toString();
 // cALLING API
     final result = await http.get(Uri.parse(
-        "http://api.aladhan.com/v1/timings/${timestamp.substring(0, 10)}?latitude=${_locationData.latitude}&longitude=${_locationData.longitude}&method=2"));
+        "http://api.aladhan.com/v1/timings/${timestamp.substring(0, 10)}?latitude=${widget.lt}&longitude=${widget.lot}&method=2"));
     if (result.statusCode == 200) {
       return CardModel.fromJson(
           jsonDecode(result.body),

@@ -15,14 +15,14 @@ class CardError extends StatelessWidget {
     return Container(
       height: 420.h,
       child: Center(
-        child: Row(
+        child: Column(
           children: [
             Text(
               "ERROR PLEASE REPORT",
               style: TextStyle(color: Colors.red, fontSize: 70.sp),
             ),
             Text(
-              snapshot.error as String,
+              snapshot.error.toString(),
               style: TextStyle(color: Colors.red, fontSize: 30.sp),
             ),
           ],

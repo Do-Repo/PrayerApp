@@ -21,11 +21,16 @@ class QuranPicker {
 }
 
 class QuranAR {
-  String? ayah;
-  QuranAR({this.ayah});
+  String audio;
+  String ayah;
+  QuranAR({
+    required this.audio,
+    required this.ayah,
+  });
 
   factory QuranAR.fromJson(Map<String, dynamic> json) {
     return QuranAR(
+      audio: json['audio'],
       ayah: json['text'],
     );
   }

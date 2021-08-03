@@ -49,140 +49,121 @@ class _CardDoneState extends State<CardDone> {
     return Container(
       child: Column(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border.symmetric(
-                  horizontal: BorderSide(width: 2.sp, color: Colors.green)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: Text(
-                        widget.snapshot.data.city,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 70.sp,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      widget._timeString!,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Text(
+                      widget.snapshot.data.city,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontSize: 70.sp, fontWeight: FontWeight.w800),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: Text(
-                        widget.snapshot.data.province +
-                            " " +
-                            widget.snapshot.data.country,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 35.sp),
-                      ),
-                    ),
-                    Container(
-                      width: 100.sp,
-                    ),
-                  ],
-                ),
-                // FIRST SALET ROW
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 400.w,
-                    ),
-                    Text('Fajr',
-                        style: TextStyle(
-                            color: _whotohighlight(
-                                    false,
-                                    widget._timeString!,
-                                    widget.snapshot.data.fajr,
-                                    widget.snapshot.data.dhuhr)
-                                ? Colors.green
-                                : Colors.black,
-                            fontSize: 50.sp,
-                            fontWeight: FontWeight.w800)),
-                    Spacer(),
-                    Text(
-                      widget.snapshot.data.fajr,
-                      style: TextStyle(
-                          color: _whotohighlight(
-                            false,
-                            widget._timeString!,
-                            widget.snapshot.data.fajr,
-                            widget.snapshot.data.dhuhr,
-                          )
-                              ? Colors.green
-                              : Colors.black,
-                          fontSize: 50.sp,
-                          fontWeight: FontWeight.w800),
-                    )
-                  ],
-                ),
-                // SECOND SALET ROW
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 400.w,
-                    ),
-                    Text('Dhuhr',
-                        style: TextStyle(
-                            color: _whotohighlight(
-                                    false,
-                                    widget._timeString!,
-                                    widget.snapshot.data.dhuhr,
-                                    widget.snapshot.data.aasr)
-                                ? Colors.green
-                                : Colors.black,
-                            fontSize: 50.sp,
-                            fontWeight: FontWeight.w800)),
-                    Spacer(),
-                    Text(
-                      widget.snapshot.data.dhuhr,
-                      style: TextStyle(
-                        fontSize: 50.sp,
+                        fontSize: 70.sp,
                         fontWeight: FontWeight.w800,
-                        color: _whotohighlight(
-                                false,
-                                widget._timeString!,
-                                widget.snapshot.data.dhuhr,
-                                widget.snapshot.data.aasr)
-                            ? Colors.green
-                            : Colors.black,
                       ),
-                    )
-                  ],
-                ),
-                // THIRD SALET ROW
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 400.w,
                     ),
-                    Text('Aasr',
-                        style: TextStyle(
+                  ),
+                  Text(
+                    widget._timeString!,
+                    style:
+                        TextStyle(fontSize: 70.sp, fontWeight: FontWeight.w800),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Text(
+                      widget.snapshot.data.province +
+                          " " +
+                          widget.snapshot.data.country,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 35.sp),
+                    ),
+                  ),
+                  Container(
+                    width: 100.sp,
+                  ),
+                ],
+              ),
+              // FIRST SALET ROW
+              Row(
+                children: [
+                  SizedBox(
+                    width: 400.w,
+                  ),
+                  Text('Fajr',
+                      style: TextStyle(
                           color: _whotohighlight(
                                   false,
                                   widget._timeString!,
-                                  widget.snapshot.data.aasr,
-                                  widget.snapshot.data.maghrib)
+                                  widget.snapshot.data.fajr,
+                                  widget.snapshot.data.dhuhr)
                               ? Colors.green
                               : Colors.black,
                           fontSize: 50.sp,
-                          fontWeight: FontWeight.w800,
-                        )),
-                    Spacer(),
-                    Text(
-                      widget.snapshot.data.aasr,
+                          fontWeight: FontWeight.w800)),
+                  Spacer(),
+                  Text(
+                    widget.snapshot.data.fajr,
+                    style: TextStyle(
+                        color: _whotohighlight(
+                          false,
+                          widget._timeString!,
+                          widget.snapshot.data.fajr,
+                          widget.snapshot.data.dhuhr,
+                        )
+                            ? Colors.green
+                            : Colors.black,
+                        fontSize: 50.sp,
+                        fontWeight: FontWeight.w800),
+                  )
+                ],
+              ),
+              // SECOND SALET ROW
+              Row(
+                children: [
+                  SizedBox(
+                    width: 400.w,
+                  ),
+                  Text('Dhuhr',
+                      style: TextStyle(
+                          color: _whotohighlight(
+                                  false,
+                                  widget._timeString!,
+                                  widget.snapshot.data.dhuhr,
+                                  widget.snapshot.data.aasr)
+                              ? Colors.green
+                              : Colors.black,
+                          fontSize: 50.sp,
+                          fontWeight: FontWeight.w800)),
+                  Spacer(),
+                  Text(
+                    widget.snapshot.data.dhuhr,
+                    style: TextStyle(
+                      fontSize: 50.sp,
+                      fontWeight: FontWeight.w800,
+                      color: _whotohighlight(
+                              false,
+                              widget._timeString!,
+                              widget.snapshot.data.dhuhr,
+                              widget.snapshot.data.aasr)
+                          ? Colors.green
+                          : Colors.black,
+                    ),
+                  )
+                ],
+              ),
+              // THIRD SALET ROW
+              Row(
+                children: [
+                  SizedBox(
+                    width: 400.w,
+                  ),
+                  Text('Aasr',
                       style: TextStyle(
                         color: _whotohighlight(
                                 false,
@@ -193,65 +174,65 @@ class _CardDoneState extends State<CardDone> {
                             : Colors.black,
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
-                      ),
-                    )
-                  ],
-                ),
-                // FOURTH SALET ROW
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 400.w,
+                      )),
+                  Spacer(),
+                  Text(
+                    widget.snapshot.data.aasr,
+                    style: TextStyle(
+                      color: _whotohighlight(
+                              false,
+                              widget._timeString!,
+                              widget.snapshot.data.aasr,
+                              widget.snapshot.data.maghrib)
+                          ? Colors.green
+                          : Colors.black,
+                      fontSize: 50.sp,
+                      fontWeight: FontWeight.w800,
                     ),
-                    Text('Maghrib',
-                        style: TextStyle(
-                            color: _whotohighlight(
-                                    false,
-                                    widget._timeString!,
-                                    widget.snapshot.data.maghrib,
-                                    widget.snapshot.data.isha)
-                                ? Colors.green
-                                : Colors.black,
-                            fontSize: 50.sp,
-                            fontWeight: FontWeight.w800)),
-                    Spacer(),
-                    Text(
-                      widget.snapshot.data.maghrib,
+                  )
+                ],
+              ),
+              // FOURTH SALET ROW
+              Row(
+                children: [
+                  SizedBox(
+                    width: 400.w,
+                  ),
+                  Text('Maghrib',
                       style: TextStyle(
-                        fontSize: 50.sp,
-                        fontWeight: FontWeight.w800,
-                        color: _whotohighlight(
-                                false,
-                                widget._timeString!,
-                                widget.snapshot.data.maghrib,
-                                widget.snapshot.data.isha)
-                            ? Colors.green
-                            : Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-                // FIFTH SALET ROW
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 400.w,
-                    ),
-                    Text('Isha',
-                        style: TextStyle(
-                          fontSize: 50.sp,
-                          fontWeight: FontWeight.w800,
                           color: _whotohighlight(
-                                  true,
+                                  false,
                                   widget._timeString!,
-                                  widget.snapshot.data.isha,
-                                  widget.snapshot.data.fajr)
+                                  widget.snapshot.data.maghrib,
+                                  widget.snapshot.data.isha)
                               ? Colors.green
                               : Colors.black,
-                        )),
-                    Spacer(),
-                    Text(
-                      widget.snapshot.data.isha,
+                          fontSize: 50.sp,
+                          fontWeight: FontWeight.w800)),
+                  Spacer(),
+                  Text(
+                    widget.snapshot.data.maghrib,
+                    style: TextStyle(
+                      fontSize: 50.sp,
+                      fontWeight: FontWeight.w800,
+                      color: _whotohighlight(
+                              false,
+                              widget._timeString!,
+                              widget.snapshot.data.maghrib,
+                              widget.snapshot.data.isha)
+                          ? Colors.green
+                          : Colors.black,
+                    ),
+                  )
+                ],
+              ),
+              // FIFTH SALET ROW
+              Row(
+                children: [
+                  SizedBox(
+                    width: 400.w,
+                  ),
+                  Text('Isha',
                       style: TextStyle(
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
@@ -262,12 +243,28 @@ class _CardDoneState extends State<CardDone> {
                                 widget.snapshot.data.fajr)
                             ? Colors.green
                             : Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
+                      )),
+                  Spacer(),
+                  Text(
+                    widget.snapshot.data.isha,
+                    style: TextStyle(
+                      fontSize: 50.sp,
+                      fontWeight: FontWeight.w800,
+                      color: _whotohighlight(
+                              true,
+                              widget._timeString!,
+                              widget.snapshot.data.isha,
+                              widget.snapshot.data.fajr)
+                          ? Colors.green
+                          : Colors.black,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+          Divider(
+            color: Colors.green,
           ),
           Container(
             child: Column(

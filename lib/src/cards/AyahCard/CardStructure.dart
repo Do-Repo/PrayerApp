@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:application_1/src/cards/QuranCard/CardDone.dart';
-import 'package:application_1/src/cards/QuranCard/CardError.dart';
-import 'package:application_1/src/cards/QuranCard/CardLoading.dart';
+import 'package:application_1/src/cards/AyahCard/CardDone.dart';
+import 'package:application_1/src/cards/AyahCard/CardError.dart';
+import 'package:application_1/src/cards/AyahCard/CardLoading.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:application_1/models/RandomVerse.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-class QuranCard extends StatefulWidget {
-  const QuranCard({
+class AyahCard extends StatefulWidget {
+  const AyahCard({
     Key? key,
     required TabController? tabController,
   })  : tabcontroller = tabController,
         super(key: key);
   final TabController? tabcontroller;
   @override
-  _QuranCardState createState() => _QuranCardState();
+  _AyahCardState createState() => _AyahCardState();
 }
 
-class _QuranCardState extends State<QuranCard> {
+class _AyahCardState extends State<AyahCard> {
   Future<RandomVerse?>? randomVerse;
 
   bool? playing = false;
@@ -33,17 +33,6 @@ class _QuranCardState extends State<QuranCard> {
   void initState() {
     randomVerse = getVerse();
 
-    // _audioPlayer.playerStateStream.listen((playerState) {
-    //   final processingState = playerState.processingState;
-    //   final isPlaying = playerState.playing;
-    //   if (!isPlaying) {
-    //     playing = false;
-    //   } else if (processingState != ProcessingState.completed) {
-    //     playing = true;
-    //   } else if (processingState == ProcessingState.completed) {
-    //     playing = false;
-    //   }
-    // });
     _audioPlayer.setReleaseMode(ReleaseMode.STOP);
     super.initState();
   }
@@ -89,6 +78,7 @@ class _QuranCardState extends State<QuranCard> {
     var data = jsonDecode(result.body);
     if (result.statusCode == 200) {
       int results = await _audioPlayer.setUrl(data['data']['audio']);
+
       if (results == 1) {
         return RandomVerse.fromJson(jsonDecode(result.body));
       }

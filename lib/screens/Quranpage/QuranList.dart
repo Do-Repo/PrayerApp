@@ -66,6 +66,7 @@ class _QuranListState extends State<QuranList> {
                                       ? element.name
                                       : element.englishNameTranslation,
                                   isArabic: widget.iA,
+                                  numberOfAyahs: element.numberOfAyahs,
                                   verseNumber: element.number,
                                 )),
                       );
@@ -73,7 +74,12 @@ class _QuranListState extends State<QuranList> {
                     dense: true,
                     contentPadding: EdgeInsets.all(20.sp),
                     selectedTileColor: Colors.green,
-                    leading: Text(element.number.toString()),
+                    leading: (!widget.iA)
+                        ? Text(element.number.toString())
+                        : Text(''),
+                    trailing: (!widget.iA)
+                        ? Text('')
+                        : Text(element.number.toString()),
                     title: Directionality(
                       textDirection:
                           widget.iA ? TextDirection.rtl : TextDirection.ltr,
@@ -81,7 +87,9 @@ class _QuranListState extends State<QuranList> {
                         widget.iA
                             ? element.name
                             : element.englishNameTranslation,
-                        style: TextStyle(fontSize: 60.sp),
+                        style: (!widget.iA)
+                            ? TextStyle(fontSize: 60.sp)
+                            : TextStyle(fontSize: 70.sp),
                       ),
                     ),
                   ));

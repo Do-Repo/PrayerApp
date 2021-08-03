@@ -109,7 +109,6 @@ class _CardDoneState extends State<CardDone> {
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
                           bottomRight: Radius.circular(25),
                         )),
                     child: Center(
@@ -155,11 +154,7 @@ class _CardDoneState extends State<CardDone> {
                         ),
                       ],
                     ),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10))),
+                    color: Colors.white,
                   ),
                 ),
                 Container(
@@ -169,7 +164,6 @@ class _CardDoneState extends State<CardDone> {
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(10),
                         bottomLeft: Radius.circular(25),
                       )),
                   child: IconButton(
@@ -180,6 +174,8 @@ class _CardDoneState extends State<CardDone> {
                               builder: (context) => QuranPage(
                                     title: widget.snapshot.data.surahNameAR,
                                     isArabic: true,
+                                    numberOfAyahs:
+                                        widget.snapshot.data.ayahsInSurah,
                                     verseNumber:
                                         widget.snapshot.data.numberOfSurah,
                                   )),
@@ -208,9 +204,7 @@ class _CardDoneState extends State<CardDone> {
         playiin = false;
       }
       if (mounted) {
-        setState(() {
-          playiin;
-        });
+        setState(() {});
       }
     });
   }
