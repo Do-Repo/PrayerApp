@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
+
 import 'package:application_1/src/cards/PrayerTimes/CardDone.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardError.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardLoading.dart';
+import 'package:application_1/src/customWidgets/API.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:intl/intl.dart';
 import 'package:application_1/models/PrayerTimeCard.dart';
 
@@ -39,7 +39,7 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
     super.initState();
     _timeString = _formatDateTimeSeconds(DateTime.now());
     t = new Timer.periodic(Duration(seconds: 1), (Timer timer) => _getTime());
-    cardmodel = getCardReady();
+    cardmodel = getCardReady(widget.ts, widget.lt, widget.lot);
   }
 
   @override
@@ -64,46 +64,28 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 10),
         child: FutureBuilder<CardModel?>(
             future: cardmodel,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return (CardLoading(
-                  onpressed: () {
-                    setState(() {
-                      cardmodel = getCardReady();
-                    });
-                  },
-                ));
+                return (CardLoading());
               }
               if (snapshot.hasError) {
-                return CardError(snap: snapshot);
+                return CardError(
+                  snap: snapshot,
+                  onPressed: () {
+                    setState(() {
+                      cardmodel =
+                          getCardReady(widget.ts, widget.lt, widget.lot);
+                    });
+                  },
+                );
               }
               if (snapshot.hasData) {
                 return CardDone(timeString: _timeString, snap: snapshot);
               }
               return Container();
             }));
-  }
-
-  Future<CardModel?> getCardReady() async {
-    List<Placemark> placemark =
-        await placemarkFromCoordinates(widget.lt, widget.lot);
-
-// GETTING CURRENT DAY FOR PRAYERTIMES
-    String timestamp = widget.ts.toString();
-// cALLING API
-    final result = await http.get(Uri.parse(
-        "http://api.aladhan.com/v1/timings/${timestamp.substring(0, 10)}?latitude=${widget.lt}&longitude=${widget.lot}&method=2"));
-    if (result.statusCode == 200) {
-      return CardModel.fromJson(
-          jsonDecode(result.body),
-          placemark.first.locality,
-          placemark.first.administrativeArea,
-          placemark.first.country);
-    } else {
-      return null;
-    }
   }
 }

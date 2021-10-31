@@ -4,11 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CardError extends StatelessWidget {
   const CardError({
     Key? key,
+    required VoidCallback onPressed,
     required AsyncSnapshot snap,
   })  : snapshot = snap,
+        func = onPressed,
         super(key: key);
 
   final AsyncSnapshot snapshot;
+  final VoidCallback func;
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +19,31 @@ class CardError extends StatelessWidget {
       height: 420.h,
       child: Center(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "ERROR PLEASE REPORT",
-              style: TextStyle(color: Colors.red, fontSize: 70.sp),
+              "Oops... Looks like something went wrong",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              snapshot.error.toString(),
-              style: TextStyle(color: Colors.red, fontSize: 30.sp),
+              "Make sure you're connected to the Internet and press retry, if that doesn't work you can always report the issue",
             ),
+            Text(
+              "ERROR: ${snapshot.error.toString()}",
+              style: TextStyle(fontSize: 10),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Spacer(),
+                TextButton(
+                    onPressed: func,
+                    child: Text(
+                      "Try Again",
+                      style: TextStyle(color: Colors.green),
+                    )),
+              ],
+            )
           ],
         ),
       ),

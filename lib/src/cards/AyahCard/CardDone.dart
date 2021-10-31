@@ -8,14 +8,12 @@ import 'package:audioplayers/audioplayers.dart';
 class CardDone extends StatefulWidget {
   const CardDone({
     Key? key,
-    required TabController? tabController,
     required AsyncSnapshot snap,
     required AudioPlayer audioPlayer,
-  })  : tabcontroller = tabController,
-        audioplayer = audioPlayer,
+  })  : audioplayer = audioPlayer,
         snapshot = snap,
         super(key: key);
-  final TabController? tabcontroller;
+
   final AsyncSnapshot snapshot;
   final AudioPlayer audioplayer;
 
@@ -49,8 +47,15 @@ class _CardDoneState extends State<CardDone> {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30)),
-                gradient: LinearGradient(
-                    colors: [Colors.teal, Colors.green, Colors.green[300]!])),
+                gradient: LinearGradient(colors: [
+                  (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.green
+                      : Colors.teal,
+                  Colors.green,
+                  (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.green
+                      : Colors.green[300]!
+                ])),
             child: Container(
               padding: EdgeInsets.all(20.sp),
               width: 1.sw,
@@ -86,7 +91,7 @@ class _CardDoneState extends State<CardDone> {
                 ],
               ),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).backgroundColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(25),
                     topRight: Radius.circular(25),
@@ -100,14 +105,21 @@ class _CardDoneState extends State<CardDone> {
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30)),
-                gradient: LinearGradient(
-                    colors: [Colors.teal, Colors.green, Colors.green[300]!])),
+                gradient: LinearGradient(colors: [
+                  (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.green
+                      : Colors.teal,
+                  Colors.green,
+                  (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.green
+                      : Colors.green[300]!
+                ])),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).backgroundColor,
                         borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(25),
                         )),
@@ -118,12 +130,12 @@ class _CardDoneState extends State<CardDone> {
                           },
                           child: playiin
                               ? Icon(
-                                  Icons.volume_off,
+                                  Icons.volume_up,
                                   color: Colors.green,
                                   size: 70.sp,
                                 )
                               : Icon(
-                                  Icons.volume_up,
+                                  Icons.volume_off,
                                   color: Colors.green,
                                   size: 70.sp,
                                 )),
@@ -147,14 +159,16 @@ class _CardDoneState extends State<CardDone> {
                         Container(
                           width: 40.sp,
                         ),
-                        Text(
-                          widget.snapshot.data.audioName,
-                          style: TextStyle(
-                              fontSize: 50.sp, fontWeight: FontWeight.w500),
+                        Flexible(
+                          child: Text(
+                            widget.snapshot.data.audioName,
+                            style: TextStyle(
+                                fontSize: 50.sp, fontWeight: FontWeight.w500),
+                          ),
                         ),
                       ],
                     ),
-                    color: Colors.white,
+                    color: Theme.of(context).backgroundColor,
                   ),
                 ),
                 Container(
@@ -162,7 +176,7 @@ class _CardDoneState extends State<CardDone> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).backgroundColor,
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(25),
                       )),

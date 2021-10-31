@@ -1,9 +1,11 @@
-import 'dart:convert';
+import 'package:application_1/main.dart';
+import 'package:application_1/src/customWidgets/API.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:http/http.dart' as http;
-import 'package:application_1/models/QuranModel.dart';
+import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QuranPage extends StatefulWidget {
@@ -28,18 +30,20 @@ class QuranPage extends StatefulWidget {
 
 class _QuranPageState extends State<QuranPage> {
   int counter = 0;
+
   bool isOn = false;
   int currentposition = 0;
   bool playiin = true;
   @override
   void initState() {
-    counter = 0;
     super.initState();
+    counter = 0;
   }
 
   @override
   void dispose() {
     audio.release();
+
     super.dispose();
   }
 
@@ -47,6 +51,7 @@ class _QuranPageState extends State<QuranPage> {
   int duration = 0;
   @override
   Widget build(BuildContext context) {
+    final rec = Provider.of<RecitationProvider>(context);
     return SafeArea(
         child: Scaffold(
       body: Directionality(
@@ -60,7 +65,6 @@ class _QuranPageState extends State<QuranPage> {
             children: [
               ExpansionTile(
                 iconColor: Colors.green,
-                textColor: Colors.black,
                 leading: IconButton(
                     icon: Icon(
                       Icons.arrow_back,
@@ -70,6 +74,7 @@ class _QuranPageState extends State<QuranPage> {
                       Navigator.pop(context, false);
                     }),
                 collapsedTextColor: Colors.green,
+                textColor: Theme.of(context).primaryColor,
                 title: Text(
                   widget.t,
                   overflow: TextOverflow.ellipsis,
@@ -83,14 +88,16 @@ class _QuranPageState extends State<QuranPage> {
                           child: Directionality(
                             textDirection: TextDirection.ltr,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Container(
                                   child: FutureBuilder(
-                                    future: getAyahAR(widget.vs),
+                                    future:
+                                        getAyahAR(widget.vs, rec.recitation),
                                     builder: (context,
                                         AsyncSnapshot<List> snapshot) {
-                                      if (!snapshot.hasData) {
+                                      if (snapshot.connectionState !=
+                                          ConnectionState.done) {
                                         return Container(
                                           padding: EdgeInsets.all(30.sp),
                                           margin: EdgeInsets.all(18.sp),
@@ -103,7 +110,12 @@ class _QuranPageState extends State<QuranPage> {
                                         );
                                       } else if (snapshot.hasError) {
                                         return IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            setState(() {
+                                              getAyahAR(
+                                                  widget.vs, rec.recitation);
+                                            });
+                                          },
                                           splashColor: Colors.red[100],
                                           highlightColor: Colors.transparent,
                                           icon: Icon(Icons.refresh),
@@ -154,58 +166,20 @@ class _QuranPageState extends State<QuranPage> {
                                     },
                                   ),
                                 ),
-                                Expanded(
-                                  child: Column(
+                                Container(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            fit: FlexFit.tight,
-                                            child: Text(
-                                              "Recitation:",
-                                              style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 50.sp,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            fit: FlexFit.loose,
-                                            child: Text(
-                                              "Mishary bin Rashid Alafasy",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 40.sp),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        "Number of ayah's: ",
+                                        style: TextStyle(
+                                            color: Colors.green,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            fit: FlexFit.tight,
-                                            child: Text(
-                                              "Number of Ayah's:",
-                                              style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 50.sp,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Text(
-                                              widget.na.toString(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 40.sp),
-                                            ),
-                                          ),
-                                        ],
-                                      )
+                                      Text(widget.na.toString()),
                                     ],
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -222,16 +196,12 @@ class _QuranPageState extends State<QuranPage> {
                 child: SingleChildScrollView(
                     child: FutureBuilder(
                   future: widget.iA
-                      ? getAyahAR(
-                          widget.vs,
-                        )
+                      ? getAyahAR(widget.vs, rec.recitation)
                       : getAyahEN(widget.vs),
                   builder: (context, AsyncSnapshot<List> snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.green,
-                        ),
+                      return LinearProgressIndicator(
+                        color: Colors.green,
                       );
                     } else if (snapshot.hasError) {
                       return Center(
@@ -244,14 +214,18 @@ class _QuranPageState extends State<QuranPage> {
                       List<TextSpan> reasonList = [];
                       snapshot.data!.forEach((element) {
                         reasonList.add(TextSpan(
+                            recognizer: LongPressGestureRecognizer()
+                              ..onLongPress = () {},
                             style: widget.iA
                                 ? reasonList.length + 1 == counter
                                     ? TextStyle(
                                         color: Colors.green, fontSize: 70.sp)
                                     : TextStyle(
-                                        color: Colors.black, fontSize: 70.sp)
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 70.sp)
                                 : TextStyle(
-                                    color: Colors.black, fontSize: 60.sp),
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 60.sp),
                             text: widget.iA
                                 ? '${element.ayah} ۝ '
                                 : element.ayah + ' '));
@@ -274,15 +248,12 @@ class _QuranPageState extends State<QuranPage> {
 
   playQuran(List<String> list, AudioPlayer audioPlayer) async {
     if (currentposition >= list.length - 1) currentposition = 0;
-
     for (var i = currentposition; i < list.length; i++) {
       currentposition = i;
-
       setState(() {
         counter = i + 1;
       });
       await audioPlayer.play(list[i]);
-
       while (audioPlayer.state == PlayerState.PLAYING ||
           audioPlayer.state == PlayerState.PAUSED) {
         await Future.delayed(Duration(seconds: 1));
@@ -297,8 +268,7 @@ class _QuranPageState extends State<QuranPage> {
         }
       }
     }
-
-    print('yea bro');
+    print('We done');
     setState(() {
       playiin = true;
       currentposition = 0;
@@ -364,30 +334,5 @@ class EnglishInfo extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-Future<List<QuranAR>> getAyahAR(int surahNumber) async {
-  print(surahNumber);
-  final result = await http.get(
-      Uri.parse("http://api.alquran.cloud/v1/surah/$surahNumber/ar.alafasy"));
-  if (result.statusCode == 200) {
-    List jsonResponse = json.decode(result.body)['data']['ayahs'];
-    return jsonResponse.map((data) => new QuranAR.fromJson(data)).toList();
-  } else {
-    return <QuranAR>[];
-  }
-}
-
-Future<List<QuranEN>> getAyahEN(int surahNumber) async {
-  print(surahNumber);
-  final result = await http
-      .get(Uri.parse("http://api.alquran.cloud/v1/surah/$surahNumber/en.asad"));
-  if (result.statusCode == 200) {
-    List jsonResponse = json.decode(result.body)['data']['ayahs'];
-
-    return jsonResponse.map((data) => new QuranEN.fromJson(data)).toList();
-  } else {
-    return <QuranEN>[];
   }
 }

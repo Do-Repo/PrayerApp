@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CardDone extends StatefulWidget {
   const CardDone({
@@ -95,6 +96,9 @@ class _CardDoneState extends State<CardDone> {
                   SizedBox(
                     width: 400.w,
                   ),
+                  SizedBox(
+                    width: 20.sp,
+                  ),
                   Text('Fajr',
                       style: TextStyle(
                           color: _whotohighlight(
@@ -103,7 +107,7 @@ class _CardDoneState extends State<CardDone> {
                                   widget.snapshot.data.fajr,
                                   widget.snapshot.data.dhuhr)
                               ? Colors.green
-                              : Colors.black,
+                              : Theme.of(context).primaryColor,
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800)),
                   Spacer(),
@@ -117,7 +121,7 @@ class _CardDoneState extends State<CardDone> {
                           widget.snapshot.data.dhuhr,
                         )
                             ? Colors.green
-                            : Colors.black,
+                            : Theme.of(context).primaryColor,
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800),
                   )
@@ -129,6 +133,9 @@ class _CardDoneState extends State<CardDone> {
                   SizedBox(
                     width: 400.w,
                   ),
+                  SizedBox(
+                    width: 20.sp,
+                  ),
                   Text('Dhuhr',
                       style: TextStyle(
                           color: _whotohighlight(
@@ -137,7 +144,7 @@ class _CardDoneState extends State<CardDone> {
                                   widget.snapshot.data.dhuhr,
                                   widget.snapshot.data.aasr)
                               ? Colors.green
-                              : Colors.black,
+                              : Theme.of(context).primaryColor,
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800)),
                   Spacer(),
@@ -152,7 +159,7 @@ class _CardDoneState extends State<CardDone> {
                               widget.snapshot.data.dhuhr,
                               widget.snapshot.data.aasr)
                           ? Colors.green
-                          : Colors.black,
+                          : Theme.of(context).primaryColor,
                     ),
                   )
                 ],
@@ -163,6 +170,9 @@ class _CardDoneState extends State<CardDone> {
                   SizedBox(
                     width: 400.w,
                   ),
+                  SizedBox(
+                    width: 20.sp,
+                  ),
                   Text('Aasr',
                       style: TextStyle(
                         color: _whotohighlight(
@@ -171,7 +181,7 @@ class _CardDoneState extends State<CardDone> {
                                 widget.snapshot.data.aasr,
                                 widget.snapshot.data.maghrib)
                             ? Colors.green
-                            : Colors.black,
+                            : Theme.of(context).primaryColor,
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
                       )),
@@ -185,7 +195,7 @@ class _CardDoneState extends State<CardDone> {
                               widget.snapshot.data.aasr,
                               widget.snapshot.data.maghrib)
                           ? Colors.green
-                          : Colors.black,
+                          : Theme.of(context).primaryColor,
                       fontSize: 50.sp,
                       fontWeight: FontWeight.w800,
                     ),
@@ -198,6 +208,9 @@ class _CardDoneState extends State<CardDone> {
                   SizedBox(
                     width: 400.w,
                   ),
+                  SizedBox(
+                    width: 20.sp,
+                  ),
                   Text('Maghrib',
                       style: TextStyle(
                           color: _whotohighlight(
@@ -206,7 +219,7 @@ class _CardDoneState extends State<CardDone> {
                                   widget.snapshot.data.maghrib,
                                   widget.snapshot.data.isha)
                               ? Colors.green
-                              : Colors.black,
+                              : Theme.of(context).primaryColor,
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800)),
                   Spacer(),
@@ -221,7 +234,7 @@ class _CardDoneState extends State<CardDone> {
                               widget.snapshot.data.maghrib,
                               widget.snapshot.data.isha)
                           ? Colors.green
-                          : Colors.black,
+                          : Theme.of(context).primaryColor,
                     ),
                   )
                 ],
@@ -231,6 +244,9 @@ class _CardDoneState extends State<CardDone> {
                 children: [
                   SizedBox(
                     width: 400.w,
+                  ),
+                  SizedBox(
+                    width: 20.sp,
                   ),
                   Text('Isha',
                       style: TextStyle(
@@ -242,7 +258,7 @@ class _CardDoneState extends State<CardDone> {
                                 widget.snapshot.data.isha,
                                 widget.snapshot.data.fajr)
                             ? Colors.green
-                            : Colors.black,
+                            : Theme.of(context).primaryColor,
                       )),
                   Spacer(),
                   Text(
@@ -256,7 +272,7 @@ class _CardDoneState extends State<CardDone> {
                               widget.snapshot.data.isha,
                               widget.snapshot.data.fajr)
                           ? Colors.green
-                          : Colors.black,
+                          : Theme.of(context).primaryColor,
                     ),
                   )
                 ],
@@ -277,7 +293,7 @@ class _CardDoneState extends State<CardDone> {
                         Text(
                           widget.snapshot.data.hijriDayNumber,
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 55.sp,
                               fontWeight: FontWeight.bold),
                         ),
@@ -286,7 +302,7 @@ class _CardDoneState extends State<CardDone> {
                               " " +
                               widget.snapshot.data.gregorianDayNumber,
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 45.sp,
                               fontWeight: FontWeight.normal),
                         ),
@@ -300,14 +316,14 @@ class _CardDoneState extends State<CardDone> {
                             widget.snapshot.data.hijriMonthEN,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Theme.of(context).primaryColor,
                                 fontSize: 55.sp,
                                 fontWeight: FontWeight.bold),
                           ),
                           Text(
                             widget.snapshot.data.gregorianMonth,
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Theme.of(context).primaryColor,
                                 fontSize: 45.sp,
                                 fontWeight: FontWeight.normal),
                           ),
@@ -318,13 +334,13 @@ class _CardDoneState extends State<CardDone> {
                       children: [
                         Text(widget.snapshot.data.hijriYear,
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Theme.of(context).primaryColor,
                                 fontSize: 55.sp,
                                 fontWeight: FontWeight.bold)),
                         Text(
                           widget.snapshot.data.gregorianYear,
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 45.sp,
                               fontWeight: FontWeight.normal),
                         ),

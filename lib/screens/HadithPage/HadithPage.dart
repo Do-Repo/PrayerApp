@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:application_1/src/customWidgets/appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:application_1/models/HadithModel.dart';
 import 'package:flutter/material.dart';
@@ -39,37 +40,7 @@ class _HadithPageState extends State<HadithPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: true,
-          elevation: 0,
-          centerTitle: true,
-          title: Text(
-            widget.bt,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.green, fontSize: 30),
-          ),
-          iconTheme: IconThemeData(color: Colors.black),
-          bottom: PreferredSize(
-              child: Container(
-                  padding: EdgeInsets.only(left: 30.sp, right: 30.sp),
-                  child: Column(
-                    children: [
-                      Text(
-                        widget.ct,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.grey, fontSize: 20),
-                      ),
-                      Container(
-                        color: Colors.green,
-                        height: 3.sp,
-                        width: 1.sw,
-                      )
-                    ],
-                  )),
-              preferredSize: Size(1.sw, 100.sp)),
-        ),
-        backgroundColor: Colors.white,
+        appBar: customAppbar(context),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(30.sp),
           child: FutureBuilder(
@@ -130,7 +101,6 @@ class _HadithPageState extends State<HadithPage> {
                                 child: Text(
                                   element.text,
                                   style: TextStyle(
-                                    color: Colors.black,
                                     fontSize: 50.sp,
                                   ),
                                 ),

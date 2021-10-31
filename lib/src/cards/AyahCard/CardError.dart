@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
 class CardFailed extends StatelessWidget {
-  const CardFailed({
-    Key? key,
-  }) : super(key: key);
-
+  const CardFailed({Key? key, required VoidCallback onPressed})
+      : func = onPressed,
+        super(key: key);
+  final VoidCallback func;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,20 +15,30 @@ class CardFailed extends StatelessWidget {
         height: 300.h,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: LinearGradient(
-                colors: [Colors.teal, Colors.green, Colors.green[300]!])),
+            gradient: LinearGradient(colors: [
+              (Theme.of(context).brightness == Brightness.dark)
+                  ? Colors.green
+                  : Colors.teal,
+              Colors.green,
+              (Theme.of(context).brightness == Brightness.dark)
+                  ? Colors.green
+                  : Colors.green[300]!
+            ])),
         child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).backgroundColor,
               borderRadius: BorderRadius.circular(24),
             ),
             padding: EdgeInsets.all(20.sp),
             width: 1.sw,
             child: Center(
-              child: Text(
-                "Failed to connect",
-                style: TextStyle(color: Colors.red),
+                child: IconButton(
+              onPressed: func,
+              icon: Icon(
+                Icons.refresh,
+                color: Colors.green,
+                size: 80.sp,
               ),
-            )));
+            ))));
   }
 }
