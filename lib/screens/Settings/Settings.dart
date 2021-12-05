@@ -1,6 +1,8 @@
-import 'package:application_1/main.dart';
+import 'package:application_1/screens/Settings/AdvancedSettings.dart';
 import 'package:application_1/screens/Settings/Recitation.dart';
 import 'package:application_1/screens/Settings/Theme.dart';
+import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -17,30 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final rec = Provider.of<RecitationProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(
-          "Settings",
-          style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontSize: 60.sp),
-        ),
-        elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back,
-                  size: 100.sp,
-                ));
-          },
-        ),
-        iconTheme: IconThemeData(color: Colors.green),
-      ),
+      appBar: customAppbar(context, false, "Settings", false),
       body: Container(
         child: Column(
           children: [
@@ -122,17 +101,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               leading: Icon(
-                Icons.info_outline,
+                Icons.settings,
                 size: 100.sp,
               ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AdvancedSettings()));
+              },
               title: Text(
-                "About",
+                "Advanced",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                "Learn more about us",
+                "Advanced application settings",
               ),
             ),
             ListTile(

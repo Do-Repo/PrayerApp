@@ -10,33 +10,25 @@ class CardFailed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(20.sp),
+        padding: EdgeInsets.all(10.sp),
         width: 1.sw,
         height: 300.h,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: LinearGradient(colors: [
-              (Theme.of(context).brightness == Brightness.dark)
-                  ? Colors.green
-                  : Colors.teal,
-              Colors.green,
-              (Theme.of(context).brightness == Brightness.dark)
-                  ? Colors.green
-                  : Colors.green[300]!
-            ])),
+            color: Theme.of(context).accentColor),
         child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
               borderRadius: BorderRadius.circular(24),
             ),
-            padding: EdgeInsets.all(20.sp),
+            padding: EdgeInsets.all(10.sp),
             width: 1.sw,
             child: Center(
                 child: IconButton(
               onPressed: func,
               icon: Icon(
                 Icons.refresh,
-                color: Colors.green,
+                color: Theme.of(context).accentColor,
                 size: 80.sp,
               ),
             ))));

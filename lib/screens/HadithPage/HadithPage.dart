@@ -40,7 +40,7 @@ class _HadithPageState extends State<HadithPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: customAppbar(context),
+        appBar: customAppbar(context, false, "Hadith", true),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(30.sp),
           child: FutureBuilder(
@@ -52,7 +52,7 @@ class _HadithPageState extends State<HadithPage> {
                   height: 200.h,
                   child: Center(
                     child: CircularProgressIndicator(
-                      color: Colors.green,
+                      color: Theme.of(context).accentColor,
                     ),
                   ),
                 );
@@ -85,14 +85,14 @@ class _HadithPageState extends State<HadithPage> {
                                 child: Text(
                                   element.sanad,
                                   style: TextStyle(
-                                      color: Colors.green,
+                                      color: Theme.of(context).accentColor,
                                       fontSize: 40.sp,
                                       fontStyle: FontStyle.italic,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
                               Divider(
-                                color: Colors.green,
+                                color: Theme.of(context).accentColor,
                               ),
                               Directionality(
                                 textDirection: widget.ia

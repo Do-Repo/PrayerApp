@@ -1,4 +1,5 @@
-import 'package:application_1/main.dart';
+import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -15,30 +16,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(
-          "Theme",
-          style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontSize: 60.sp),
-        ),
-        elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back,
-                  size: 100.sp,
-                ));
-          },
-        ),
-        iconTheme: IconThemeData(color: Colors.green),
-      ),
+      appBar: customAppbar(context, false, "Theme", false),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,6 +26,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
               size: 100.sp,
             ),
             trailing: Switch(
+              activeColor: Theme.of(context).accentColor,
               value: themeChange.darkTheme,
               onChanged: (val) {
                 themeChange.darkTheme = val;

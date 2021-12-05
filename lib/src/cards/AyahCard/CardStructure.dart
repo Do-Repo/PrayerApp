@@ -53,7 +53,6 @@ class _AyahCardState extends State<AyahCard> {
               if (snapshot.connectionState != ConnectionState.done) {
                 return CardLoading();
               } else if (snapshot.hasError) {
-                print('snapshot error ${snapshot.error}');
                 return CardFailed(
                   onPressed: () {
                     setState(() {

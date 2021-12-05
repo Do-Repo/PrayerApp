@@ -1,11 +1,14 @@
-import 'package:application_1/main.dart';
+import 'package:application_1/screens/Settings/Recitation.dart';
 import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/gestures.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:quran/quran.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QuranPage extends StatefulWidget {
@@ -28,27 +31,33 @@ class QuranPage extends StatefulWidget {
   _QuranPageState createState() => _QuranPageState();
 }
 
-class _QuranPageState extends State<QuranPage> {
+class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
   int counter = 0;
-
   bool isOn = false;
   int currentposition = 0;
-  bool playiin = true;
+  AudioPlayer audio = AudioPlayer();
+  int duration = 0;
+  int bookmarkIndex = 0;
+  String selectedAyah = "";
+  bool playing = true;
+
   @override
   void initState() {
     super.initState();
+    BookmarkPref().getBookmark(widget.vs).then((value) {
+      setState(() {
+        bookmarkIndex = value;
+      });
+    });
     counter = 0;
   }
 
   @override
   void dispose() {
     audio.release();
-
     super.dispose();
   }
 
-  AudioPlayer audio = AudioPlayer();
-  int duration = 0;
   @override
   Widget build(BuildContext context) {
     final rec = Provider.of<RecitationProvider>(context);
@@ -64,7 +73,7 @@ class _QuranPageState extends State<QuranPage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               ExpansionTile(
-                iconColor: Colors.green,
+                iconColor: Theme.of(context).accentColor,
                 leading: IconButton(
                     icon: Icon(
                       Icons.arrow_back,
@@ -73,7 +82,7 @@ class _QuranPageState extends State<QuranPage> {
                     onPressed: () {
                       Navigator.pop(context, false);
                     }),
-                collapsedTextColor: Colors.green,
+                collapsedTextColor: Theme.of(context).accentColor,
                 textColor: Theme.of(context).primaryColor,
                 title: Text(
                   widget.t,
@@ -100,27 +109,28 @@ class _QuranPageState extends State<QuranPage> {
                                           ConnectionState.done) {
                                         return Container(
                                           padding: EdgeInsets.all(30.sp),
-                                          margin: EdgeInsets.all(18.sp),
-                                          height: 205.sp,
-                                          width: 205.sp,
+                                          height: 200.sp,
+                                          width: 200.sp,
                                           child: CircularProgressIndicator(
-                                            color: Colors.green,
+                                            color:
+                                                Theme.of(context).accentColor,
                                             strokeWidth: 17.sp,
                                           ),
                                         );
                                       } else if (snapshot.hasError) {
-                                        return IconButton(
-                                          onPressed: () {
+                                        return InkWell(
+                                          onTap: () {
                                             setState(() {
                                               getAyahAR(
                                                   widget.vs, rec.recitation);
                                             });
                                           },
-                                          splashColor: Colors.red[100],
-                                          highlightColor: Colors.transparent,
-                                          icon: Icon(Icons.refresh),
-                                          iconSize: 200.sp,
-                                          color: Colors.green,
+                                          child: Icon(
+                                            Icons.refresh,
+                                            size: 200.sp,
+                                            color:
+                                                Theme.of(context).accentColor,
+                                          ),
                                         );
                                       } else {
                                         List<String> reasonList = [];
@@ -128,56 +138,210 @@ class _QuranPageState extends State<QuranPage> {
                                           reasonList.add(element.audio);
                                         });
 
-                                        return playiin
-                                            ? IconButton(
-                                                splashColor: Colors.green[100],
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onPressed: () {
-                                                  playiin = false;
+                                        return playing
+                                            ? InkWell(
+                                                onTap: () {
+                                                  playing = false;
                                                   isOn
                                                       ? resumeQuran(audio)
                                                       : playQuran(
                                                           reasonList, audio);
                                                 },
-                                                iconSize: 200.sp,
-                                                icon: Icon(
-                                                  Icons.play_circle_outline,
-                                                  color: Colors.green,
+                                                child: Icon(
+                                                  Icons
+                                                      .play_circle_outline_outlined,
+                                                  size: 200.sp,
+                                                  color: Theme.of(context)
+                                                      .accentColor,
                                                 ),
                                               )
-                                            : IconButton(
-                                                splashColor: Colors.green[100],
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onPressed: () {
+                                            : InkWell(
+                                                child: Icon(
+                                                  Icons
+                                                      .pause_circle_outline_outlined,
+                                                  size: 200.sp,
+                                                  color: Theme.of(context)
+                                                      .accentColor,
+                                                ),
+                                                onTap: () {
                                                   audio.pause();
                                                   setState(() {
-                                                    playiin = true;
+                                                    playing = true;
                                                   });
                                                 },
-                                                iconSize: 200.sp,
-                                                icon: Icon(
-                                                  Icons.pause_circle_outline,
-                                                  color: Colors.green,
-                                                ),
                                               );
                                       }
                                     },
                                   ),
                                 ),
-                                Container(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "Number of ayah's: ",
-                                        style: TextStyle(
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.bold),
+                                InkWell(
+                                  onTap: () {
+                                    showMaterialModalBottomSheet(
+                                        context: context,
+                                        builder: (context) => (bookmarkIndex !=
+                                                    0 &&
+                                                selectedAyah.isNotEmpty)
+                                            ? HighlightedAyahSettings(
+                                                ayah: selectedAyah)
+                                            : Container(
+                                                padding: EdgeInsets.all(20.sp),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 200.sp,
+                                                      width: 200.sp,
+                                                      child:
+                                                          LottieBuilder.asset(
+                                                        "assets/images/longtap.json",
+                                                        reverse: true,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "Tap and hold on any ayah to highlight and bookmark",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    )
+                                                  ],
+                                                ),
+                                              ));
+                                  },
+                                  child: AnimatedSize(
+                                    vsync: this,
+                                    duration: Duration(milliseconds: 500),
+                                    child: Container(
+                                      padding: EdgeInsets.all(18.sp),
+                                      child: Container(
+                                        padding: EdgeInsets.all(15.sp),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              height: 1.sw,
+                                              padding: EdgeInsets.all(20.sp),
+                                              child: Center(
+                                                  child: Row(
+                                                children: [
+                                                  Icon((bookmarkIndex == 0)
+                                                      ? Icons
+                                                          .bookmark_add_outlined
+                                                      : Icons
+                                                          .bookmark_border_outlined),
+                                                  Text(
+                                                      " $bookmarkIndex/${widget.na.toString()}")
+                                                ],
+                                              )),
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .scaffoldBackgroundColor,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              100))),
+                                            ),
+                                          ],
+                                        ),
+                                        decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).accentColor,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(100))),
                                       ),
-                                      Text(widget.na.toString()),
-                                    ],
+                                      height: 200.sp,
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  fit: FlexFit.loose,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                RecitationScreen(
+                                              recitation: rec.recitation,
+                                            ),
+                                          ));
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.all(18.sp),
+                                      padding: EdgeInsets.all(15.sp),
+                                      child: Row(
+                                        children: [
+                                          Flexible(
+                                            fit: FlexFit.tight,
+                                            child: Container(
+                                              padding: EdgeInsets.all(10.sp),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  CircleAvatar(
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .backgroundColor,
+                                                    backgroundImage: AssetImage(
+                                                        imageUrls[identifiers
+                                                            .indexOf(rec
+                                                                .recitation)]),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 20.sp,
+                                                  ),
+                                                  Flexible(
+                                                    fit: FlexFit.loose,
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Flexible(
+                                                          fit: FlexFit.loose,
+                                                          child: Text(
+                                                            nameEn[identifiers
+                                                                    .indexOf(rec
+                                                                        .recitation)]
+                                                                .toString(),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          fit: FlexFit.loose,
+                                                          child: Text(
+                                                            nameAr[identifiers
+                                                                    .indexOf(rec
+                                                                        .recitation)]
+                                                                .toString(),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .scaffoldBackgroundColor,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              100))),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context).accentColor,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(100))),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -188,7 +352,7 @@ class _QuranPageState extends State<QuranPage> {
                 ],
               ),
               Container(
-                color: Colors.green,
+                color: Theme.of(context).accentColor,
                 width: 1.sw,
                 height: 3.sp,
               ),
@@ -201,7 +365,7 @@ class _QuranPageState extends State<QuranPage> {
                   builder: (context, AsyncSnapshot<List> snapshot) {
                     if (!snapshot.hasData) {
                       return LinearProgressIndicator(
-                        color: Colors.green,
+                        color: Theme.of(context).accentColor,
                       );
                     } else if (snapshot.hasError) {
                       return Center(
@@ -212,23 +376,53 @@ class _QuranPageState extends State<QuranPage> {
                       );
                     } else {
                       List<TextSpan> reasonList = [];
+                      if (bookmarkIndex != 0)
+                        selectedAyah = snapshot.data![bookmarkIndex - 1].ayah;
                       snapshot.data!.forEach((element) {
                         reasonList.add(TextSpan(
                             recognizer: LongPressGestureRecognizer()
-                              ..onLongPress = () {},
+                              ..onLongPress = () {
+                                setState(() {
+                                  if (bookmarkIndex ==
+                                      snapshot.data!.indexOf(element) + 1) {
+                                    bookmarkIndex = 0;
+                                    BookmarkPref()
+                                        .setBookmark(widget.vs, bookmarkIndex);
+                                  } else {
+                                    bookmarkIndex =
+                                        snapshot.data!.indexOf(element) + 1;
+                                    BookmarkPref()
+                                        .setBookmark(widget.vs, bookmarkIndex);
+                                    selectedAyah =
+                                        snapshot.data![bookmarkIndex - 1].ayah;
+                                    showMaterialModalBottomSheet(
+                                        context: context,
+                                        builder: (context) =>
+                                            HighlightedAyahSettings(
+                                                ayah: element.ayah));
+                                  }
+                                });
+                              },
                             style: widget.iA
                                 ? reasonList.length + 1 == counter
                                     ? TextStyle(
-                                        color: Colors.green, fontSize: 70.sp)
-                                    : TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                                        color: Theme.of(context).accentColor,
                                         fontSize: 70.sp)
+                                    : (bookmarkIndex - 1 == reasonList.length)
+                                        ? TextStyle(
+                                            color: Colors.yellow,
+                                            fontSize: 70.sp)
+                                        : TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 70.sp)
                                 : TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontSize: 60.sp),
                             text: widget.iA
-                                ? '${element.ayah} ۝ '
-                                : element.ayah + ' '));
+                                ? element.ayah +
+                                    '${getVerseEndSymbol(reasonList.length + 1)} '
+                                : element.ayah + '\n\n'));
                       });
                       return Container(
                           child: RichText(
@@ -252,6 +446,10 @@ class _QuranPageState extends State<QuranPage> {
       currentposition = i;
       setState(() {
         counter = i + 1;
+        if (bookmarkIndex == counter) {
+          bookmarkIndex = 0;
+          BookmarkPref().setBookmark(widget.vs, bookmarkIndex);
+        }
       });
       await audioPlayer.play(list[i]);
       while (audioPlayer.state == PlayerState.PLAYING ||
@@ -268,9 +466,8 @@ class _QuranPageState extends State<QuranPage> {
         }
       }
     }
-    print('We done');
     setState(() {
-      playiin = true;
+      playing = true;
       currentposition = 0;
       counter = 0;
       isOn = false;
@@ -280,7 +477,7 @@ class _QuranPageState extends State<QuranPage> {
   resumeQuran(AudioPlayer audioPlayer) {
     audioPlayer.resume();
     setState(() {
-      playiin = false;
+      playing = false;
     });
   }
 }
@@ -300,7 +497,7 @@ class EnglishInfo extends StatelessWidget {
               Text(
                 'Translator: ',
                 style: TextStyle(
-                    color: Colors.green,
+                    color: Theme.of(context).accentColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 50.sp),
               ),
@@ -318,7 +515,7 @@ class EnglishInfo extends StatelessWidget {
               Text(
                 'Wikipedia: ',
                 style: TextStyle(
-                    color: Colors.green,
+                    color: Theme.of(context).accentColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 50.sp),
               ),
@@ -334,5 +531,34 @@ class EnglishInfo extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class HighlightedAyahSettings extends StatefulWidget {
+  const HighlightedAyahSettings({Key? key, required this.ayah})
+      : super(key: key);
+  final String ayah;
+  @override
+  _HighlightedAyahSettingsState createState() =>
+      _HighlightedAyahSettingsState();
+}
+
+class _HighlightedAyahSettingsState extends State<HighlightedAyahSettings> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 1.sw,
+        padding: EdgeInsets.all(20.sp),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.ayah,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 50.sp),
+            ),
+            Divider(),
+          ],
+        ));
   }
 }

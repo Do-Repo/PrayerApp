@@ -1,4 +1,8 @@
-import 'package:application_1/main.dart';
+import 'package:application_1/models/RandomVerse.dart';
+import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/providerSettings.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -14,9 +18,13 @@ class RecitationScreen extends StatefulWidget {
 class _RecitationScreenState extends State<RecitationScreen>
     with TickerProviderStateMixin {
   late TabController tabController;
+  AudioPlayer audio = AudioPlayer();
+  bool loading = false;
+
   @override
   void initState() {
     super.initState();
+
     tabController = TabController(
         length: 15,
         initialIndex: identifiers.indexOf(widget.recitation),
@@ -25,34 +33,17 @@ class _RecitationScreenState extends State<RecitationScreen>
   }
 
   @override
+  void dispose() {
+    audio.release();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final rec = Provider.of<RecitationProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(
-          "Recitation",
-          style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontSize: 60.sp),
-        ),
-        elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back,
-                  size: 100.sp,
-                ));
-          },
-        ),
-        iconTheme: IconThemeData(color: Colors.green),
-      ),
+      appBar: customAppbar(context, false, "Recitation", false),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -61,27 +52,62 @@ class _RecitationScreenState extends State<RecitationScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 (tabController.index == nameEn.indexOf(nameEn.first))
-                    ? Container()
+                    ? IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(0.2),
+                        ))
                     : IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
+                          color: Theme.of(context).primaryColor,
                         ),
                         onPressed: () {
                           tabController.animateTo(tabController.index - 1);
                         },
                       ),
-                IconButton(
-                  tooltip: "Try it out",
-                  icon: Icon(
-                    Icons.hearing_outlined,
-                  ),
-                  onPressed: () {},
-                ),
+                FutureBuilder(
+                    future:
+                        getVerse(identifiers[tabController.index], 2, audio),
+                    builder: (context, AsyncSnapshot<RandomVerse?> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return IconButton(
+                          tooltip: "Try it out",
+                          icon: Icon(
+                            Icons.hearing_outlined,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          onPressed: () {
+                            if (audio.state == PlayerState.PLAYING) {
+                              setState(() {
+                                audio.pause();
+                              });
+                            } else
+                              setState(() {
+                                audio.resume();
+                              });
+                          },
+                        );
+                      } else
+                        return IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.more_horiz_outlined));
+                    }),
                 (tabController.index == nameEn.indexOf(nameEn.last))
-                    ? Container()
+                    ? IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.arrow_forward_ios,
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(0.2),
+                        ),
+                      )
                     : IconButton(
                         icon: Icon(
                           Icons.arrow_forward_ios,
+                          color: Theme.of(context).primaryColor,
                         ),
                         onPressed: () {
                           tabController.animateTo(tabController.index + 1);
@@ -264,55 +290,3 @@ class TriangleClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(TriangleClipper oldClipper) => false;
 }
-
-List<String> nameEn = [
-  "Abdul Basit",
-  "Abdullah Basfar",
-  "Abdurrahmaan As-Sudais",
-  "Abu Bakr Ash-Shaatree",
-  "Ahmed ibn Ali al-Ajamy",
-  "Alafasy",
-  "Hani Rifai",
-  "Husary",
-  "Hudhaify",
-  "Ibrahim Akhdar",
-  "Maher Al Muaiqly",
-  "Minshawi",
-  "Muhammad Ayyoub",
-  "Muhammad Jibreel",
-  "Saood bin Ibraaheem Ash-Shuraym",
-];
-List<String> identifiers = [
-  "ar.abdulbasitmurattal",
-  "ar.abdullahbasfar",
-  "ar.abdurrahmaansudais",
-  "ar.shaatree",
-  "ar.ahmedajamy",
-  "ar.alafasy",
-  "ar.hanirifai",
-  "ar.husary",
-  "ar.hudhaify",
-  "ar.ibrahimakhbar",
-  "ar.mahermuaiqly",
-  "ar.minshawi",
-  "ar.muhammadayyoub",
-  "ar.muhammadjibreel",
-  "ar.saoodshuraym",
-];
-List<String> nameAr = [
-  "عبد الباسط عبد الصمد المرتل",
-  "عبد الله بصفر",
-  "عبدالرحمن السديس",
-  "أبو بكر الشاطري",
-  "أحمد بن علي العجمي",
-  "مشاري العفاسي",
-  "هاني الرفاعي",
-  "محمود خليل الحصري",
-  "علي بن عبدالرحمن الحذيفي",
-  "إبراهيم الأخضر",
-  "ماهر المعيقلي",
-  "محمد صديق المنشاوي",
-  "محمد أيوب",
-  "محمد جبريل",
-  "سعود بن ابراهيم الشريم",
-];

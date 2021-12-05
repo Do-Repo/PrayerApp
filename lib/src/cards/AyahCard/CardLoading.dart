@@ -9,19 +9,11 @@ class CardLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(20.sp),
+        padding: EdgeInsets.all(10.sp),
         width: 1.sw,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: LinearGradient(colors: [
-              (Theme.of(context).brightness == Brightness.dark)
-                  ? Colors.green
-                  : Colors.teal,
-              Colors.green,
-              (Theme.of(context).brightness == Brightness.dark)
-                  ? Colors.green
-                  : Colors.green[300]!
-            ])),
+            color: Theme.of(context).accentColor),
         child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
@@ -31,7 +23,8 @@ class CardLoading extends StatelessWidget {
             width: 1.sw,
             child: Center(
               child: CircularProgressIndicator(
-                color: Colors.green,
+                strokeWidth: 10.sp,
+                color: Theme.of(context).accentColor,
               ),
             )));
   }

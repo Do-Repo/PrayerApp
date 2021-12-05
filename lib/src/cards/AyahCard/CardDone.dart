@@ -38,24 +38,16 @@ class _CardDoneState extends State<CardDone> {
         children: [
           Container(
             padding: EdgeInsets.only(
-              top: 20.sp,
-              left: 20.sp,
-              right: 20.sp,
+              top: 10.sp,
+              left: 10.sp,
+              right: 10.sp,
             ),
             width: 1.sw,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30)),
-                gradient: LinearGradient(colors: [
-                  (Theme.of(context).brightness == Brightness.dark)
-                      ? Colors.green
-                      : Colors.teal,
-                  Colors.green,
-                  (Theme.of(context).brightness == Brightness.dark)
-                      ? Colors.green
-                      : Colors.green[300]!
-                ])),
+                color: Theme.of(context).accentColor),
             child: Container(
               padding: EdgeInsets.all(20.sp),
               width: 1.sw,
@@ -71,7 +63,7 @@ class _CardDoneState extends State<CardDone> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green,
+                                color: Theme.of(context).accentColor,
                                 fontSize: 50.sp)),
                       ),
                       Text(
@@ -80,7 +72,7 @@ class _CardDoneState extends State<CardDone> {
                               widget.snapshot.data.ayahsInSurah.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              color: Theme.of(context).accentColor,
                               fontSize: 50.sp)),
                     ],
                   ),
@@ -99,21 +91,13 @@ class _CardDoneState extends State<CardDone> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(20.sp),
+            padding: EdgeInsets.all(10.sp),
             height: 150.sp,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30)),
-                gradient: LinearGradient(colors: [
-                  (Theme.of(context).brightness == Brightness.dark)
-                      ? Colors.green
-                      : Colors.teal,
-                  Colors.green,
-                  (Theme.of(context).brightness == Brightness.dark)
-                      ? Colors.green
-                      : Colors.green[300]!
-                ])),
+                color: Theme.of(context).accentColor),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -131,28 +115,28 @@ class _CardDoneState extends State<CardDone> {
                           child: playiin
                               ? Icon(
                                   Icons.volume_up,
-                                  color: Colors.green,
+                                  color: Theme.of(context).accentColor,
                                   size: 70.sp,
                                 )
                               : Icon(
                                   Icons.volume_off,
-                                  color: Colors.green,
+                                  color: Theme.of(context).accentColor,
                                   size: 70.sp,
                                 )),
                     )),
                 Container(
-                  padding: EdgeInsets.only(left: 20.sp),
+                  padding: EdgeInsets.only(left: 10.sp),
                 ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.all(20.sp),
+                    padding: EdgeInsets.all(10.sp),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'صوت:',
                           style: TextStyle(
-                              color: Colors.green,
+                              color: Theme.of(context).accentColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 50.sp),
                         ),
@@ -172,7 +156,7 @@ class _CardDoneState extends State<CardDone> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 20.sp),
+                  padding: EdgeInsets.only(left: 10.sp),
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -198,7 +182,7 @@ class _CardDoneState extends State<CardDone> {
                       iconSize: 90.sp,
                       icon: Icon(
                         Icons.more_horiz,
-                        color: Colors.green,
+                        color: Theme.of(context).accentColor,
                       )),
                 ),
               ],

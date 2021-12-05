@@ -43,7 +43,7 @@ class _SibhahState extends State<Sibhah> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(context),
+      appBar: customAppbar(context, false, "Tasbeeh", true),
       body: Center(
         child: CustomPaint(
           painter: CirclePainter(
@@ -76,7 +76,7 @@ class _SibhahState extends State<Sibhah> with TickerProviderStateMixin {
                     highlightColor: Colors.transparent,
                     overlayColor: MaterialStateProperty.all(Colors.transparent),
                     onTap: () {
-                      HapticFeedback.mediumImpact();
+                      HapticFeedback.heavyImpact();
                       SystemSound.play(SystemSoundType.click);
                       setState(() {
                         if (variable == 100) {
@@ -88,7 +88,6 @@ class _SibhahState extends State<Sibhah> with TickerProviderStateMixin {
                           variable++;
                           variable_2++;
                         }
-
                         if (variable_2 > 3) variable_2 = 1;
                       });
                     },

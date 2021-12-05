@@ -4,10 +4,12 @@ import 'package:application_1/src/cards/PrayerTimes/CardDone.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardError.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardLoading.dart';
 import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:application_1/models/PrayerTimeCard.dart';
+import 'package:provider/provider.dart';
 
 typedef Future<CardModel> FutureGenerator();
 
@@ -32,14 +34,19 @@ class PrayertimesCard extends StatefulWidget {
 class _PrayertimesCardState extends State<PrayertimesCard> {
   String? _timeString;
   late Timer t;
-
+  late PrayertimesProvider prayerTimeCalcul;
   Future<CardModel?>? cardmodel;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      prayerTimeCalcul =
+          Provider.of<PrayertimesProvider>(context, listen: false);
+      cardmodel = getCardReady(
+          widget.ts, widget.lt, widget.lot, prayerTimeCalcul.timeSettings);
+    });
     _timeString = _formatDateTimeSeconds(DateTime.now());
     t = new Timer.periodic(Duration(seconds: 1), (Timer timer) => _getTime());
-    cardmodel = getCardReady(widget.ts, widget.lt, widget.lot);
   }
 
   @override
@@ -76,8 +83,8 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
                   snap: snapshot,
                   onPressed: () {
                     setState(() {
-                      cardmodel =
-                          getCardReady(widget.ts, widget.lt, widget.lot);
+                      cardmodel = getCardReady(widget.ts, widget.lt, widget.lot,
+                          prayerTimeCalcul.timeSettings);
                     });
                   },
                 );

@@ -2,11 +2,13 @@ class QuranPicker {
   int number;
   String name;
   int numberOfAyahs;
+  String relevationType;
   String englishNameTranslation;
   QuranPicker({
     required this.number,
     required this.name,
     required this.numberOfAyahs,
+    required this.relevationType,
     required this.englishNameTranslation,
   });
 
@@ -15,6 +17,7 @@ class QuranPicker {
       number: json['number'],
       name: json['name'],
       numberOfAyahs: json['numberOfAyahs'],
+      relevationType: json['revelationType'],
       englishNameTranslation: json['englishNameTranslation'],
     );
   }

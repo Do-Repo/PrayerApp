@@ -18,20 +18,12 @@ class _HadithListState extends State<HadithList> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back,
-                  size: 100.sp,
-                ));
-          },
+        title: Text(
+          "Hadith",
+          style: (TextStyle(color: Theme.of(context).accentColor)),
         ),
-        iconTheme: IconThemeData(color: Colors.green),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Theme.of(context).accentColor),
         actions: [
           Container(
               child: TextButton(
@@ -47,7 +39,7 @@ class _HadithListState extends State<HadithList> {
                     (iA) ? 'AR' : 'EN',
                     style: TextStyle(
                       fontSize: 70.sp,
-                      color: Colors.green,
+                      color: Theme.of(context).accentColor,
                     ),
                   ))),
           IconButton(
@@ -68,7 +60,7 @@ class _HadithListState extends State<HadithList> {
             builder: (context, AsyncSnapshot<List> snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return LinearProgressIndicator(
-                  color: Colors.green,
+                  color: Theme.of(context).accentColor,
                 );
               } else if (snapshot.hasError) {
                 return Container(
@@ -82,6 +74,12 @@ class _HadithListState extends State<HadithList> {
                 List<Widget> reasonList = [];
                 snapshot.data!.forEach((element) {
                   reasonList.add(ExpansionTile(
+                    collapsedBackgroundColor:
+                        (snapshot.data!.indexOf(element).isOdd)
+                            ? Theme.of(context).backgroundColor
+                            : Theme.of(context).scaffoldBackgroundColor,
+                    backgroundColor:
+                        Theme.of(context).accentColor.withOpacity(0.05),
                     children: <Widget>[
                       FutureBuilder(
                           future: getHadithChapter(element.bookid, iA),
@@ -122,8 +120,8 @@ class _HadithListState extends State<HadithList> {
                             }
                           })
                     ],
-                    textColor: Colors.green,
-                    iconColor: Colors.green,
+                    textColor: Theme.of(context).accentColor,
+                    iconColor: Theme.of(context).accentColor,
                     title: Directionality(
                       textDirection: iA ? TextDirection.rtl : TextDirection.ltr,
                       child: Text(
