@@ -1,4 +1,4 @@
-import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,7 +26,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
               size: 100.sp,
             ),
             trailing: Switch(
-              activeColor: Theme.of(context).accentColor,
+              activeColor: Theme.of(context).colorScheme.secondary,
               value: themeChange.darkTheme,
               onChanged: (val) {
                 themeChange.darkTheme = val;

@@ -1,6 +1,6 @@
 import 'package:application_1/models/DuasModel.dart';
 import 'package:application_1/src/customWidgets/API.dart';
-import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +28,7 @@ class _DuasPageState extends State<DuasPage> {
               return Column(
                 children: [
                   LinearProgressIndicator(
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                   Spacer()
                 ],
@@ -55,8 +55,10 @@ class _DuasPageState extends State<DuasPage> {
                   if (i <= 8)
                     //Duas expansiontiles
                     return ExpansionTile(
-                        backgroundColor:
-                            Theme.of(context).accentColor.withOpacity(0.1),
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.1),
                         title: Text(
                           snapshot.data![i].title,
                           style: TextStyle(fontSize: 45.sp),
@@ -85,8 +87,10 @@ class _DuasPageState extends State<DuasPage> {
                     //Azkar expansiontiles
                     //Using index - 1 to match iconlist because subtitle listtile uses one index
                     return ExpansionTile(
-                        backgroundColor:
-                            Theme.of(context).accentColor.withOpacity(0.05),
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.05),
                         title: Text(
                           snapshot.data![i - 1].title,
                           style: TextStyle(fontSize: 45.sp),
@@ -149,7 +153,7 @@ class _DuasState extends State<Duas> {
                 widget.subtitle,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).colorScheme.secondary,
                     fontSize: 50.sp,
                     fontWeight: FontWeight.w500),
               ),
@@ -157,9 +161,9 @@ class _DuasState extends State<Duas> {
             Container(
               height: 2.sp,
               width: 1.sw,
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).colorScheme.secondary,
             ),
-            Flexible(
+            Expanded(
               child: SingleChildScrollView(
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -208,7 +212,8 @@ class _DuasState extends State<Duas> {
                             ExpansionTile(
                               trailing: SizedBox(),
                               backgroundColor: Theme.of(context)
-                                  .accentColor
+                                  .colorScheme
+                                  .secondary
                                   .withOpacity(0.1),
                               title: Text("Translate"),
                               children: [

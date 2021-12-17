@@ -1,9 +1,9 @@
-import 'dart:convert';
-import 'package:application_1/src/customWidgets/appbar.dart';
-import 'package:http/http.dart' as http;
-import 'package:application_1/models/HadithModel.dart';
+import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'dart:ui' as ui;
 
 class HadithPage extends StatefulWidget {
   const HadithPage(
@@ -29,6 +29,7 @@ class HadithPage extends StatefulWidget {
 
 class _HadithPageState extends State<HadithPage> {
   late Future<List> _futureEN, _futureAR;
+
   @override
   void initState() {
     _futureEN = getHadithEN(widget.bi, widget.ci);
@@ -41,116 +42,106 @@ class _HadithPageState extends State<HadithPage> {
     return SafeArea(
       child: Scaffold(
         appBar: customAppbar(context, false, "Hadith", true),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(30.sp),
-          child: FutureBuilder(
-            future: widget.ia ? _futureAR : _futureEN,
-            builder: (context, AsyncSnapshot<List> snapshot) {
-              if (!snapshot.hasData) {
-                return Container(
-                  width: 1.sw,
-                  height: 200.h,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Container(
-                  width: 1.sw,
-                  height: 200.h,
-                  child: Center(
-                    child: Text(
-                      'connection failed',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                );
-              } else {
-                List<Widget> reasonList = [];
-                snapshot.data!.forEach((element) {
-                  reasonList.add(Column(
-                    children: [
-                      Material(
-                        elevation: 2,
-                        child: Container(
-                          padding: EdgeInsets.all(30),
-                          child: Column(
-                            children: [
-                              Directionality(
-                                textDirection: widget.ia
-                                    ? TextDirection.rtl
-                                    : TextDirection.ltr,
-                                child: Text(
-                                  element.sanad,
-                                  style: TextStyle(
-                                      color: Theme.of(context).accentColor,
-                                      fontSize: 40.sp,
-                                      fontStyle: FontStyle.italic,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Divider(
-                                color: Theme.of(context).accentColor,
-                              ),
-                              Directionality(
-                                textDirection: widget.ia
-                                    ? TextDirection.rtl
-                                    : TextDirection.ltr,
-                                child: Text(
-                                  element.text,
-                                  style: TextStyle(
-                                    fontSize: 50.sp,
-                                  ),
-                                ),
-                              ),
-                            ],
+        body: Column(
+          children: [
+            Directionality(
+              textDirection:
+                  (widget.ia) ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+              child: ListTile(
+                title: Text(
+                  widget.bt,
+                ),
+                subtitle: Text(widget.ct),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(30.sp),
+                child: FutureBuilder(
+                  future: widget.ia ? _futureAR : _futureEN,
+                  builder: (context, AsyncSnapshot<List> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container(
+                        width: 1.sw,
+                        height: 200.h,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 40.sp,
-                      )
-                    ],
-                  ));
-                });
-                return Column(
-                  children: [
-                    Column(
-                      children: reasonList,
-                    ),
-                  ],
-                );
-              }
-            },
-          ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Container(
+                        width: 1.sw,
+                        height: 200.h,
+                        child: Center(
+                          child: Text(
+                            'connection failed',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      );
+                    } else {
+                      List<Widget> reasonList = [];
+                      snapshot.data!.forEach((element) {
+                        reasonList.add(Column(
+                          children: [
+                            Material(
+                              elevation: 2,
+                              child: Container(
+                                padding: EdgeInsets.all(30),
+                                child: Column(
+                                  children: [
+                                    Directionality(
+                                      textDirection: widget.ia
+                                          ? ui.TextDirection.rtl
+                                          : ui.TextDirection.ltr,
+                                      child: Text(
+                                        element.sanad,
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            fontSize: 40.sp,
+                                            fontStyle: FontStyle.italic,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Divider(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                    Directionality(
+                                      textDirection: widget.ia
+                                          ? ui.TextDirection.rtl
+                                          : ui.TextDirection.ltr,
+                                      child: Text(
+                                        element.text,
+                                        style: TextStyle(
+                                          fontSize: 50.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 40.sp,
+                            )
+                          ],
+                        ));
+                      });
+                      return Column(children: reasonList);
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
-
-Future<List<HadithsEN>> getHadithEN(int bookid, int chapterid) async {
-  final result = await http.get(Uri.parse(
-      "https://ahadith-api.herokuapp.com/api/ahadith/$bookid/$chapterid/en"));
-  if (result.statusCode == 200) {
-    List jsonResponse = json.decode(result.body)['Chapter'];
-    return jsonResponse.map((data) => new HadithsEN.fromJson(data)).toList();
-  } else {
-    print("error");
-  }
-  return <HadithsEN>[];
-}
-
-Future<List<HadithsAR>> getHadithAR(int bookid, int chapterid) async {
-  final result = await http.get(Uri.parse(
-      "https://ahadith-api.herokuapp.com/api/ahadith/$bookid/$chapterid/ar-tashkeel"));
-  if (result.statusCode == 200) {
-    List jsonResponse = json.decode(result.body)['Chapter'];
-    return jsonResponse.map((data) => new HadithsAR.fromJson(data)).toList();
-  } else {
-    print("error");
-  }
-  return <HadithsAR>[];
 }

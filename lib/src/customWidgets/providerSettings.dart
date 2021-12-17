@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // These settings work for pray assistant
@@ -87,13 +88,30 @@ class Styles {
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
     return ThemeData(
       appBarTheme: AppBarTheme(
-          brightness: (isDarkTheme) ? Brightness.dark : Brightness.light,
-          color: (isDarkTheme) ? Color(0xFF121212) : Colors.white),
+          systemOverlayStyle: (isDarkTheme)
+              ? SystemUiOverlayStyle(
+                  statusBarBrightness: Brightness.dark,
+                  statusBarIconBrightness: Brightness.dark)
+              : SystemUiOverlayStyle(
+                  statusBarBrightness: Brightness.light,
+                  statusBarIconBrightness: Brightness.light),
+          color: (isDarkTheme) ? Color(0xFF121212) : Color(0xFFFFFFFA)),
       backgroundColor: (isDarkTheme) ? Colors.grey[900] : Colors.grey[200],
-      scaffoldBackgroundColor: (isDarkTheme) ? Color(0xFF121212) : Colors.white,
+      scaffoldBackgroundColor:
+          (isDarkTheme) ? Color(0xFF121212) : Color(0xFFFFFFFA),
       primaryColor: (isDarkTheme) ? Colors.white : Colors.black,
-      accentColor: (isDarkTheme) ? Colors.greenAccent[400] : Colors.green,
-      brightness: (isDarkTheme) ? Brightness.dark : Brightness.light,
+      toggleableActiveColor:
+          (isDarkTheme) ? Colors.green : Colors.green, //Colors.greenAccent[400]
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: (isDarkTheme)
+            ? Colors.green
+            : Colors.green, //Colors.greenAccent[400]
+        background: (isDarkTheme) ? Colors.grey[900] : Colors.grey[200],
+        brightness: (isDarkTheme) ? Brightness.dark : Brightness.light,
+        secondary: (isDarkTheme)
+            ? Colors.green
+            : Colors.green, //Colors.greenAccent[400]
+      ),
       splashColor: Colors.transparent,
     );
   }

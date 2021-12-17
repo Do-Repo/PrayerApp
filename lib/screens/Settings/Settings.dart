@@ -1,7 +1,8 @@
+import 'package:application_1/screens/Settings/AdsSettingsPage.dart';
 import 'package:application_1/screens/Settings/AdvancedSettings.dart';
 import 'package:application_1/screens/Settings/Recitation.dart';
 import 'package:application_1/screens/Settings/Theme.dart';
-import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,7 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               leading: Icon(
-                Icons.highlight_off,
+                Icons.ad_units_outlined,
                 size: 100.sp,
               ),
               title: Text(
@@ -83,25 +84,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: Text(
                 "Ads settings",
               ),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AdsSettingsPage())),
             ),
             ListTile(
               leading: Icon(
-                Icons.monetization_on_outlined,
-                size: 100.sp,
-              ),
-              title: Text(
-                "Donate",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                "Buy me a coffee :)",
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.settings,
+                Icons.settings_outlined,
                 size: 100.sp,
               ),
               onTap: () {
@@ -136,8 +124,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             Spacer(),
-            Text("Yasine Romdhane"),
-            Text("All rights reserved 2021 - 2022"),
           ],
         ),
       ),

@@ -33,7 +33,7 @@ class CardError extends StatelessWidget {
               ),
               subtitle: RichText(
                 text: TextSpan(
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: Theme.of(context).primaryColor),
                     text:
                         "Make sure you're connected to the Internet and press retry.",
                     children: <TextSpan>[
@@ -54,7 +54,8 @@ class CardError extends StatelessWidget {
                                               style: TextStyle(
                                                   fontSize: 50.sp,
                                                   color: Theme.of(context)
-                                                      .accentColor,
+                                                      .colorScheme
+                                                      .secondary,
                                                   fontWeight: FontWeight.w500),
                                             ),
                                             Text(
@@ -67,7 +68,7 @@ class CardError extends StatelessWidget {
                             },
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.w400),
+                              fontWeight: FontWeight.w700),
                           text:
                               "\nWhy do I need to be connected to the internet?")
                     ]),
@@ -90,13 +91,15 @@ class CardError extends StatelessWidget {
                     },
                     child: Text(
                       "Location Settings",
-                      style: TextStyle(color: Theme.of(context).accentColor),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
                     )),
                 TextButton(
                     onPressed: func,
                     child: Text(
                       "Retry",
-                      style: TextStyle(color: Theme.of(context).accentColor),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
                     )),
               ],
             )

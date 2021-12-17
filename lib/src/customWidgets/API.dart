@@ -213,11 +213,57 @@ Future<List<QuranPicker>> getSurahTitles() async {
   final result = await http.get(Uri.parse("http://api.alquran.cloud/v1/surah"));
   if (result.statusCode == 200) {
     List jsonResponse = json.decode(result.body)['data'];
-    return jsonResponse.map((data) => new QuranPicker.fromJson(data)).toList();
+    return jsonResponse
+        .map((data) => new QuranPicker.fromJson(data, false))
+        .toList();
   } else {
-    print("error");
+    return <QuranPicker>[
+      QuranPicker(
+          number: 0,
+          name: "",
+          numberOfAyahs: 0,
+          relevationType: "",
+          englishName: "",
+          englishNameTranslation: "",
+          onError: true)
+    ];
   }
-  return <QuranPicker>[];
+}
+
+Future<List<HadithsEN>> getHadithEN(int bookid, int chapterid) async {
+  final result = await http.get(Uri.parse(
+      "https://ahadith-api.herokuapp.com/api/ahadith/$bookid/$chapterid/en"));
+  if (result.statusCode == 200) {
+    List jsonResponse = json.decode(result.body)['Chapter'];
+    return jsonResponse
+        .map((data) => new HadithsEN.fromJson(data, false))
+        .toList();
+  } else {
+    print("error in hadith english");
+  }
+  return <HadithsEN>[
+    HadithsEN(hadithid: 0, onError: true, text: "", sanad: "")
+  ];
+}
+
+Future<List<HadithsAR>> getHadithAR(int bookid, int chapterid) async {
+  final result = await http.get(Uri.parse(
+      "https://ahadith-api.herokuapp.com/api/ahadith/$bookid/$chapterid/ar-tashkeel"));
+  if (result.statusCode == 200) {
+    List jsonResponse = json.decode(result.body)['Chapter'];
+    return jsonResponse
+        .map((data) => new HadithsAR.fromJson(data, false))
+        .toList();
+  } else {
+    return <HadithsAR>[
+      HadithsAR(
+        hadithid: 0,
+        text: "",
+        sanad: "",
+        onError: true,
+      )
+    ];
+  }
 }
 
 Future<List<HadithChapter>> getHadithChapter(int bookid, bool isArabic) async {
@@ -227,12 +273,13 @@ Future<List<HadithChapter>> getHadithChapter(int bookid, bool isArabic) async {
   if (result.statusCode == 200) {
     List jsonResponse = json.decode(result.body)['Chapter'];
     return jsonResponse
-        .map((data) => new HadithChapter.fromJson(data))
+        .map((data) => new HadithChapter.fromJson(data, false))
         .toList();
   } else {
-    print("error");
+    return <HadithChapter>[
+      HadithChapter(onError: true, chapter: "", chapterid: 0)
+    ];
   }
-  return <HadithChapter>[];
 }
 
 Future<List<DuasModel>> getDuas(BuildContext context) async {
@@ -249,12 +296,13 @@ Future<List<HadithListing>> getHadithList(bool isArabic) async {
   if (result.statusCode == 200) {
     List jsonResponse = json.decode(result.body)['Books'];
     return jsonResponse
-        .map((data) => new HadithListing.fromJson(data))
+        .map((data) => new HadithListing.fromJson(data, false))
         .toList();
   } else {
-    print("error");
+    return <HadithListing>[
+      HadithListing(bookname: "", bookid: 0, onError: true)
+    ];
   }
-  return <HadithListing>[];
 }
 
 List<String> nameEn = [

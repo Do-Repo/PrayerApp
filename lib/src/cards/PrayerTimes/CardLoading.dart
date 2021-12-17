@@ -17,7 +17,7 @@ class _CardLoadingState extends State<CardLoading> {
         height: 500.h + 40.sp,
         child: Center(
             child: CircularProgressIndicator(
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).colorScheme.secondary,
         )));
   }
 }

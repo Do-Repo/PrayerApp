@@ -13,7 +13,7 @@ class CardLoading extends StatelessWidget {
         width: 1.sw,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            color: Theme.of(context).accentColor),
+            color: Theme.of(context).colorScheme.secondary),
         child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
@@ -24,7 +24,7 @@ class CardLoading extends StatelessWidget {
             child: Center(
               child: CircularProgressIndicator(
                 strokeWidth: 10.sp,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             )));
   }

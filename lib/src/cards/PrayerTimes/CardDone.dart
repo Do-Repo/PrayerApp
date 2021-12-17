@@ -45,6 +45,11 @@ bool _whotohighlight(
 
 class _CardDoneState extends State<CardDone> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
@@ -109,7 +114,7 @@ class _CardDoneState extends State<CardDone> {
                                   widget._timeString!,
                                   widget.snapshot.data.fajr,
                                   widget.snapshot.data.dhuhr)
-                              ? Theme.of(context).accentColor
+                              ? Theme.of(context).colorScheme.secondary
                               : Theme.of(context).primaryColor,
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800)),
@@ -123,7 +128,7 @@ class _CardDoneState extends State<CardDone> {
                           widget.snapshot.data.fajr,
                           widget.snapshot.data.dhuhr,
                         )
-                            ? Theme.of(context).accentColor
+                            ? Theme.of(context).colorScheme.secondary
                             : Theme.of(context).primaryColor,
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800),
@@ -146,7 +151,7 @@ class _CardDoneState extends State<CardDone> {
                                   widget._timeString!,
                                   widget.snapshot.data.dhuhr,
                                   widget.snapshot.data.aasr)
-                              ? Theme.of(context).accentColor
+                              ? Theme.of(context).colorScheme.secondary
                               : Theme.of(context).primaryColor,
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800)),
@@ -161,7 +166,7 @@ class _CardDoneState extends State<CardDone> {
                               widget._timeString!,
                               widget.snapshot.data.dhuhr,
                               widget.snapshot.data.aasr)
-                          ? Theme.of(context).accentColor
+                          ? Theme.of(context).colorScheme.secondary
                           : Theme.of(context).primaryColor,
                     ),
                   )
@@ -183,7 +188,7 @@ class _CardDoneState extends State<CardDone> {
                                 widget._timeString!,
                                 widget.snapshot.data.aasr,
                                 widget.snapshot.data.maghrib)
-                            ? Theme.of(context).accentColor
+                            ? Theme.of(context).colorScheme.secondary
                             : Theme.of(context).primaryColor,
                         fontSize: 50.sp,
                         fontWeight: FontWeight.w800,
@@ -197,7 +202,7 @@ class _CardDoneState extends State<CardDone> {
                               widget._timeString!,
                               widget.snapshot.data.aasr,
                               widget.snapshot.data.maghrib)
-                          ? Theme.of(context).accentColor
+                          ? Theme.of(context).colorScheme.secondary
                           : Theme.of(context).primaryColor,
                       fontSize: 50.sp,
                       fontWeight: FontWeight.w800,
@@ -221,7 +226,7 @@ class _CardDoneState extends State<CardDone> {
                                   widget._timeString!,
                                   widget.snapshot.data.maghrib,
                                   widget.snapshot.data.isha)
-                              ? Theme.of(context).accentColor
+                              ? Theme.of(context).colorScheme.secondary
                               : Theme.of(context).primaryColor,
                           fontSize: 50.sp,
                           fontWeight: FontWeight.w800)),
@@ -236,7 +241,7 @@ class _CardDoneState extends State<CardDone> {
                               widget._timeString!,
                               widget.snapshot.data.maghrib,
                               widget.snapshot.data.isha)
-                          ? Theme.of(context).accentColor
+                          ? Theme.of(context).colorScheme.secondary
                           : Theme.of(context).primaryColor,
                     ),
                   )
@@ -260,7 +265,7 @@ class _CardDoneState extends State<CardDone> {
                                 widget._timeString!,
                                 widget.snapshot.data.isha,
                                 widget.snapshot.data.fajr)
-                            ? Theme.of(context).accentColor
+                            ? Theme.of(context).colorScheme.secondary
                             : Theme.of(context).primaryColor,
                       )),
                   Spacer(),
@@ -274,7 +279,7 @@ class _CardDoneState extends State<CardDone> {
                               widget._timeString!,
                               widget.snapshot.data.isha,
                               widget.snapshot.data.fajr)
-                          ? Theme.of(context).accentColor
+                          ? Theme.of(context).colorScheme.secondary
                           : Theme.of(context).primaryColor,
                     ),
                   )
@@ -283,7 +288,7 @@ class _CardDoneState extends State<CardDone> {
             ],
           ),
           Divider(
-            color: Theme.of(context).accentColor,
+            color: Theme.of(context).colorScheme.secondary,
           ),
           Container(
             child: Column(
@@ -356,6 +361,7 @@ class _CardDoneState extends State<CardDone> {
           )
         ],
       ),
+      color: Colors.transparent,
     );
   }
 }

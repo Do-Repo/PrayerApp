@@ -1,5 +1,5 @@
 import 'package:application_1/src/customWidgets/API.dart';
-import 'package:application_1/src/customWidgets/appbar.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -109,7 +109,7 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
           subtitle:
               Text("Checks last known location, usually faster on startup"),
           tileColor: (_character == LocationMethodGroup.one)
-              ? Theme.of(context).accentColor.withOpacity(0.05)
+              ? Theme.of(context).colorScheme.secondary.withOpacity(0.05)
               : Colors.transparent,
         ),
         AnimatedCrossFade(
@@ -120,7 +120,10 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                   if (snapshot.connectionState != ConnectionState.done) {
                     return ListTile(
                         tileColor: (_character == LocationMethodGroup.one)
-                            ? Theme.of(context).accentColor.withOpacity(0.05)
+                            ? Theme.of(context)
+                                .colorScheme
+                                .secondary
+                                .withOpacity(0.05)
                             : Colors.transparent,
                         title: Text(title),
                         subtitle: Text(subtitle),
@@ -130,7 +133,8 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                         ? ListTile(
                             tileColor: (_character == LocationMethodGroup.one)
                                 ? Theme.of(context)
-                                    .accentColor
+                                    .colorScheme
+                                    .secondary
                                     .withOpacity(0.05)
                                 : Colors.transparent,
                             leading: SizedBox(),
@@ -153,7 +157,8 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                                     tileColor:
                                         (_character == LocationMethodGroup.one)
                                             ? Theme.of(context)
-                                                .accentColor
+                                                .colorScheme
+                                                .secondary
                                                 .withOpacity(0.05)
                                             : Colors.transparent,
                                     title: Text(title),
@@ -164,7 +169,8 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                                   tileColor:
                                       (_character == LocationMethodGroup.one)
                                           ? Theme.of(context)
-                                              .accentColor
+                                              .colorScheme
+                                              .secondary
                                               .withOpacity(0.05)
                                           : Colors.transparent,
                                   leading: SizedBox(),
@@ -186,7 +192,8 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                                   tileColor:
                                       (_character == LocationMethodGroup.one)
                                           ? Theme.of(context)
-                                              .accentColor
+                                              .colorScheme
+                                              .secondary
                                               .withOpacity(0.05)
                                           : Colors.transparent,
                                   title: Text(title),
@@ -204,7 +211,7 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
         RadioListTile(
             title: Text("Manually"),
             tileColor: (_character == LocationMethodGroup.two)
-                ? Theme.of(context).accentColor.withOpacity(0.05)
+                ? Theme.of(context).colorScheme.secondary.withOpacity(0.05)
                 : Theme.of(context).scaffoldBackgroundColor,
             subtitle: Text("Set your location manually"),
             value: LocationMethodGroup.two,
@@ -221,7 +228,7 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                       MaterialPageRoute(builder: (context) => MapInterface()));
                 },
                 tileColor: (_character == LocationMethodGroup.two)
-                    ? Theme.of(context).accentColor.withOpacity(0.05)
+                    ? Theme.of(context).colorScheme.secondary.withOpacity(0.05)
                     : Colors.transparent,
                 leading: SizedBox(),
                 title: Text("Set location"),
@@ -282,7 +289,7 @@ class _MapInterfaceState extends State<MapInterface> {
       appBar: AppBar(
         title: Text(
           "Set Location",
-          style: TextStyle(color: Theme.of(context).accentColor),
+          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
         actions: [
           IconButton(
@@ -291,8 +298,8 @@ class _MapInterfaceState extends State<MapInterface> {
               },
               icon: Icon(Icons.filter_center_focus_outlined))
         ],
-        iconTheme:
-            IconThemeData(color: Theme.of(context).accentColor, size: 100.sp),
+        iconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.secondary, size: 100.sp),
         backgroundColor:
             Theme.of(context).appBarTheme.backgroundColor!.withOpacity(0.7),
       ),
@@ -367,7 +374,7 @@ class _MapInterfaceState extends State<MapInterface> {
                       children: [
                         LinearProgressIndicator(
                           backgroundColor: Colors.transparent,
-                          color: Theme.of(context).accentColor,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                         Text(
                           "Oops... Something went wrong",
@@ -395,13 +402,13 @@ class _MapInterfaceState extends State<MapInterface> {
                     children: [
                       LinearProgressIndicator(
                         backgroundColor: Colors.transparent,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       Text(
                         city,
                         style: TextStyle(
                             fontSize: 60.sp,
-                            color: Theme.of(context).accentColor),
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                       Text(
                         country,
@@ -420,7 +427,7 @@ class _MapInterfaceState extends State<MapInterface> {
                     children: [
                       LinearProgressIndicator(
                         backgroundColor: Colors.transparent,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.secondary,
                         value: 0,
                       ),
                       Padding(
@@ -430,7 +437,7 @@ class _MapInterfaceState extends State<MapInterface> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               fontSize: 60.sp,
-                              color: Theme.of(context).accentColor),
+                              color: Theme.of(context).colorScheme.secondary),
                         ),
                       ),
                       Padding(
@@ -499,7 +506,8 @@ class _PickTimeMethodState extends State<PickTimeMethod> {
     final prayerTimeCalcul = Provider.of<PrayertimesProvider>(context);
     return ExpansionTile(
       title: Text("Calculation method"),
-      backgroundColor: Theme.of(context).accentColor.withOpacity(0.05),
+      backgroundColor:
+          Theme.of(context).colorScheme.secondary.withOpacity(0.05),
       children: [
         Container(
           height: 600.h,

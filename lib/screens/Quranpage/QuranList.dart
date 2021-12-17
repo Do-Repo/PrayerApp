@@ -1,10 +1,14 @@
 import 'package:application_1/screens/Quranpage/Quranpage.dart';
 import 'package:application_1/screens/Settings/Settings.dart';
 import 'package:application_1/src/customWidgets/API.dart';
-
+import 'package:application_1/src/customIcons/my_flutter_app_icons.dart'
+    as customIcon;
 import 'package:application_1/models/QuranModel.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class QuranList extends StatefulWidget {
   const QuranList({Key? key}) : super(key: key);
@@ -30,10 +34,11 @@ class _QuranListState extends State<QuranList> {
         centerTitle: false,
         title: Text(
           "Quran",
-          style: (TextStyle(color: Theme.of(context).accentColor)),
+          style: (TextStyle(color: Theme.of(context).colorScheme.secondary)),
         ),
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).accentColor),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.secondary),
         actions: [
           Container(
               child: TextButton(
@@ -49,7 +54,7 @@ class _QuranListState extends State<QuranList> {
                     (iA) ? 'AR' : 'EN',
                     style: TextStyle(
                       fontSize: 70.sp,
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ))),
           IconButton(
@@ -77,15 +82,15 @@ class _QuranListState extends State<QuranList> {
                     text = value;
                   });
                 },
-                cursorColor: Theme.of(context).accentColor,
+                cursorColor: Theme.of(context).colorScheme.secondary,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
                       Icons.search,
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                     focusedBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Theme.of(context).accentColor))),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary))),
               ),
             ),
           ),
@@ -97,65 +102,140 @@ class _QuranListState extends State<QuranList> {
                       (context, AsyncSnapshot<List<QuranPicker>> snapshot) {
                     if (snapshot.connectionState != ConnectionState.done) {
                       return LinearProgressIndicator(
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.secondary,
                       );
                     } else if (snapshot.hasError) {
                       return Container(
                           height: 500.h,
                           width: 1.sw,
-                          child: Center(
-                            child: Text('Error loading data',
-                                style: TextStyle(
-                                    color: Colors.red, fontSize: 60.sp)),
-                          ));
-                    } else {
-                      List<Widget> reasonList = [];
-                      snapshot.data!.forEach((element) {
-                        if (text.isEmpty ||
-                            (text.isNotEmpty && (iA)
-                                ? element.name.contains(text)
-                                : element.englishNameTranslation
-                                    .toUpperCase()
-                                    .contains(text.toUpperCase()))) {
-                          reasonList.add(ListTile(
-                            tileColor: (reasonList.length.isOdd)
-                                ? Theme.of(context).backgroundColor
-                                : Theme.of(context).scaffoldBackgroundColor,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => QuranPage(
-                                          title: iA
-                                              ? element.name
-                                              : element.englishNameTranslation,
-                                          isArabic: iA,
-                                          numberOfAyahs: element.numberOfAyahs,
-                                          verseNumber: element.number,
-                                        )),
-                              );
-                            },
-                            dense: true,
-                            contentPadding: EdgeInsets.all(20.sp),
-                            leading: (iA)
-                                ? Text(element.number.toString())
-                                : Text(''),
-                            trailing: (iA)
-                                ? Text('')
-                                : Text(element.number.toString()),
-                            title: Directionality(
-                              textDirection:
-                                  iA ? TextDirection.rtl : TextDirection.ltr,
-                              child: Text(
-                                  iA
-                                      ? element.name
-                                      : element.englishNameTranslation,
-                                  style: TextStyle(fontSize: 60.sp)),
+                          child: ListTile(
+                            isThreeLine: true,
+                            title: Text(
+                              "Failed to connect to the internet",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 50.sp),
+                            ),
+                            subtitle: RichText(
+                              text: TextSpan(
+                                  style: TextStyle(color: Colors.grey),
+                                  text:
+                                      "Make sure you're connected to the Internet and try again.",
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            showMaterialModalBottomSheet(
+                                                context: context,
+                                                builder: (context) => Container(
+                                                      padding:
+                                                          EdgeInsets.all(20.sp),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            "Why do I have to be connected to the internet?",
+                                                            style: TextStyle(
+                                                                fontSize: 50.sp,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                          Text(
+                                                            "\nAll the data in the app like Quran, Hadith, Audio files and Country names are stored online in order to keep the application size reasonable. \n \nThere's nothing to worry about since none of your data is being stored online.",
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    40.sp),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ));
+                                          },
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.w400),
+                                        text:
+                                            "\nWhy do I need to be connected to the internet?")
+                                  ]),
+                            ),
+                            leading: Icon(
+                              customIcon.MyFlutterApp.no_wifi,
+                              size: 200.sp,
                             ),
                           ));
-                        }
-                      });
-                      return Column(children: reasonList);
+                    } else {
+                      if (snapshot.data!.first.onError) {
+                        return Center(
+                          child: customErrorWidget(),
+                        );
+                      } else {
+                        List<Widget> reasonList = [];
+                        snapshot.data!.forEach((element) {
+                          if (text.isEmpty ||
+                              (text.isNotEmpty && (iA)
+                                  ? element.name.contains(text)
+                                  : element.englishName
+                                      .toUpperCase()
+                                      .contains(text.toUpperCase()))) {
+                            reasonList.add(ListTile(
+                              tileColor: (reasonList.length.isOdd)
+                                  ? Theme.of(context).backgroundColor
+                                  : Theme.of(context).scaffoldBackgroundColor,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => QuranPage(
+                                            title: iA
+                                                ? element.name
+                                                : element.englishName,
+                                            isArabic: iA,
+                                            numberOfAyahs:
+                                                element.numberOfAyahs,
+                                            verseNumber: element.number,
+                                          )),
+                                );
+                              },
+                              dense: true,
+                              contentPadding: EdgeInsets.all(20.sp),
+                              leading: (iA)
+                                  ? (element.relevationType == "Meccan")
+                                      ? Icon(customIcon.MyFlutterApp.mecca)
+                                      : Text('')
+                                  : Text(''),
+                              trailing: (iA)
+                                  ? Text('')
+                                  : (element.relevationType == "Meccan")
+                                      ? Icon(customIcon.MyFlutterApp.mecca)
+                                      : Text(''),
+                              subtitle: Directionality(
+                                textDirection:
+                                    iA ? TextDirection.rtl : TextDirection.ltr,
+                                child: Text((iA)
+                                    ? 'Number of ayahs: ' +
+                                        element.numberOfAyahs.toString()
+                                    : element.englishNameTranslation),
+                              ),
+                              title: Directionality(
+                                textDirection:
+                                    iA ? TextDirection.rtl : TextDirection.ltr,
+                                child: Text(
+                                    iA ? element.name : element.englishName,
+                                    style: TextStyle(fontSize: 60.sp)),
+                              ),
+                            ));
+                          }
+                        });
+                        return Column(children: reasonList);
+                      }
                     }
                   })
             ]),

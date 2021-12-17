@@ -15,7 +15,7 @@ class CardFailed extends StatelessWidget {
         height: 300.h,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            color: Theme.of(context).accentColor),
+            color: Theme.of(context).colorScheme.secondary),
         child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
@@ -28,7 +28,7 @@ class CardFailed extends StatelessWidget {
               onPressed: func,
               icon: Icon(
                 Icons.refresh,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).colorScheme.secondary,
                 size: 80.sp,
               ),
             ))));

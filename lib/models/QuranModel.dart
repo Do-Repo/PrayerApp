@@ -3,23 +3,28 @@ class QuranPicker {
   String name;
   int numberOfAyahs;
   String relevationType;
+  String englishName;
   String englishNameTranslation;
+  bool onError;
   QuranPicker({
     required this.number,
     required this.name,
     required this.numberOfAyahs,
     required this.relevationType,
+    required this.englishName,
     required this.englishNameTranslation,
+    required this.onError,
   });
 
-  factory QuranPicker.fromJson(Map<String, dynamic> json) {
+  factory QuranPicker.fromJson(Map<String, dynamic> json, bool onError) {
     return QuranPicker(
-      number: json['number'],
-      name: json['name'],
-      numberOfAyahs: json['numberOfAyahs'],
-      relevationType: json['revelationType'],
-      englishNameTranslation: json['englishNameTranslation'],
-    );
+        number: json['number'],
+        name: json['name'],
+        numberOfAyahs: json['numberOfAyahs'],
+        relevationType: json['revelationType'],
+        englishName: json['englishName'],
+        englishNameTranslation: json['englishNameTranslation'],
+        onError: onError);
   }
 }
 

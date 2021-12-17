@@ -66,4 +66,5 @@ class MyFlutterApp {
   static const IconData zakat = IconData(0xe82b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData no_wifi = IconData(0xe82c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData warning = IconData(0xe82d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData miscellaneous = IconData(0xe82e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

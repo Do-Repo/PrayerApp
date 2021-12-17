@@ -47,7 +47,7 @@ class _CardDoneState extends State<CardDone> {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30)),
-                color: Theme.of(context).accentColor),
+                color: Theme.of(context).colorScheme.secondary),
             child: Container(
               padding: EdgeInsets.all(20.sp),
               width: 1.sw,
@@ -63,7 +63,7 @@ class _CardDoneState extends State<CardDone> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                                 fontSize: 50.sp)),
                       ),
                       Text(
@@ -72,7 +72,7 @@ class _CardDoneState extends State<CardDone> {
                               widget.snapshot.data.ayahsInSurah.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).accentColor,
+                              color: Theme.of(context).colorScheme.secondary,
                               fontSize: 50.sp)),
                     ],
                   ),
@@ -97,7 +97,7 @@ class _CardDoneState extends State<CardDone> {
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30)),
-                color: Theme.of(context).accentColor),
+                color: Theme.of(context).colorScheme.secondary),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -115,12 +115,14 @@ class _CardDoneState extends State<CardDone> {
                           child: playiin
                               ? Icon(
                                   Icons.volume_up,
-                                  color: Theme.of(context).accentColor,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   size: 70.sp,
                                 )
                               : Icon(
                                   Icons.volume_off,
-                                  color: Theme.of(context).accentColor,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   size: 70.sp,
                                 )),
                     )),
@@ -136,7 +138,7 @@ class _CardDoneState extends State<CardDone> {
                         Text(
                           'صوت:',
                           style: TextStyle(
-                              color: Theme.of(context).accentColor,
+                              color: Theme.of(context).colorScheme.secondary,
                               fontWeight: FontWeight.bold,
                               fontSize: 50.sp),
                         ),
@@ -182,7 +184,7 @@ class _CardDoneState extends State<CardDone> {
                       iconSize: 90.sp,
                       icon: Icon(
                         Icons.more_horiz,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.secondary,
                       )),
                 ),
               ],
