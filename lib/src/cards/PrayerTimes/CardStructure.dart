@@ -1,15 +1,14 @@
 import 'dart:async';
-
 import 'package:application_1/src/cards/PrayerTimes/CardDone.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardError.dart';
 import 'package:application_1/src/cards/PrayerTimes/CardLoading.dart';
 import 'package:application_1/src/customWidgets/API.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 import 'package:application_1/models/PrayerTimeCard.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef Future<CardModel> FutureGenerator();
 
@@ -76,7 +75,9 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
             future: cardmodel,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return (CardLoading());
+                return (CardLoading(
+                  message: AppLocalizations.of(context)!.lookinuploc,
+                ));
               }
               if (snapshot.hasError) {
                 return CardError(

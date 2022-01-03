@@ -1,9 +1,10 @@
 import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/animator.dart';
 import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HadithPage extends StatefulWidget {
   const HadithPage(
@@ -28,12 +29,11 @@ class HadithPage extends StatefulWidget {
 }
 
 class _HadithPageState extends State<HadithPage> {
-  late Future<List> _futureEN, _futureAR;
+  late Future<List> _future;
 
   @override
   void initState() {
-    _futureEN = getHadithEN(widget.bi, widget.ci);
-    _futureAR = getHadithAR(widget.bi, widget.ci);
+    _future = getHadith(widget.bi, widget.ci, widget.ia);
     super.initState();
   }
 
@@ -41,7 +41,8 @@ class _HadithPageState extends State<HadithPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: customAppbar(context, false, "Hadith", true),
+        appBar: customAppbar(
+            context, false, AppLocalizations.of(context)!.hadith, true),
         body: Column(
           children: [
             Directionality(
@@ -56,11 +57,10 @@ class _HadithPageState extends State<HadithPage> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(30.sp),
                 child: FutureBuilder(
-                  future: widget.ia ? _futureAR : _futureEN,
-                  builder: (context, AsyncSnapshot<List> snapshot) {
-                    if (!snapshot.hasData) {
+                  future: _future,
+                  builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
                       return Container(
                         width: 1.sw,
                         height: 200.h,
@@ -71,59 +71,59 @@ class _HadithPageState extends State<HadithPage> {
                         ),
                       );
                     } else if (snapshot.hasError) {
-                      return Container(
-                        width: 1.sw,
-                        height: 200.h,
-                        child: Center(
-                          child: Text(
-                            'connection failed',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
+                      return NoConnectionWidget(
+                        function: () {
+                          setState(() {
+                            _future =
+                                getHadith(widget.bi, widget.ci, widget.ia);
+                          });
+                        },
                       );
                     } else {
                       List<Widget> reasonList = [];
                       snapshot.data!.forEach((element) {
                         reasonList.add(Column(
                           children: [
-                            Material(
-                              elevation: 2,
-                              child: Container(
-                                padding: EdgeInsets.all(30),
-                                child: Column(
-                                  children: [
-                                    Directionality(
-                                      textDirection: widget.ia
-                                          ? ui.TextDirection.rtl
-                                          : ui.TextDirection.ltr,
-                                      child: Text(
-                                        element.sanad,
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            fontSize: 40.sp,
-                                            fontStyle: FontStyle.italic,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    Divider(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                    Directionality(
-                                      textDirection: widget.ia
-                                          ? ui.TextDirection.rtl
-                                          : ui.TextDirection.ltr,
-                                      child: Text(
-                                        element.text,
-                                        style: TextStyle(
-                                          fontSize: 50.sp,
+                            WidgetAnimator(
+                              child: Material(
+                                elevation: 2,
+                                child: Container(
+                                  padding: EdgeInsets.all(30),
+                                  child: Column(
+                                    children: [
+                                      Directionality(
+                                        textDirection: widget.ia
+                                            ? ui.TextDirection.rtl
+                                            : ui.TextDirection.ltr,
+                                        child: Text(
+                                          element.sanad,
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              fontSize: 40.sp,
+                                              fontStyle: FontStyle.italic,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Divider(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                      Directionality(
+                                        textDirection: widget.ia
+                                            ? ui.TextDirection.rtl
+                                            : ui.TextDirection.ltr,
+                                        child: Text(
+                                          element.text,
+                                          style: TextStyle(
+                                            fontSize: 50.sp,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

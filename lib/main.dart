@@ -1,13 +1,19 @@
 import 'package:application_1/screens/Homepage.dart';
+import 'package:application_1/screens/IntroScreens/DarkMode.dart';
+import 'package:application_1/screens/IntroScreens/Language.dart';
+import 'package:application_1/screens/IntroScreens/Location.dart';
+import 'package:application_1/screens/Settings/AdvancedSettings.dart';
 import 'package:application_1/src/customWidgets/ad_helper.dart';
-import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:application_1/src/customWidgets/notificationService.dart';
+import 'package:application_1/src/customWidgets/payment_service.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +23,12 @@ Future<void> main() async {
   await getCurrentAppTheme();
   await getCurrentRecitation();
   await getCurrentPrayerTimeSettings();
-  await getAdvancedSettings();
+  await getLocationOption();
   await getSavedLat();
   await getSavedLong();
+  await getSavedNotification();
+  await initPlatformState();
+  await getLanguageOption();
   runApp(Provider.value(value: adState, builder: (context, child) => MyApp()));
 }
 
@@ -28,10 +37,30 @@ RecitationProvider recitationChanger = RecitationProvider();
 PrayertimesProvider prayertimesChanger = PrayertimesProvider();
 SavedLocationProvider savedLocationChanger = SavedLocationProvider();
 AdvancedSettingsProvider advancedSettingsChanger = AdvancedSettingsProvider();
+SavedNotificationProvider savedNotificationChanger =
+    SavedNotificationProvider();
 
-Future<void> getAdvancedSettings() async {
+Future<void> getSavedNotification() async {
+  savedNotificationChanger.savedFajr =
+      await savedNotificationChanger.savedNotificationPref.getFajr();
+  savedNotificationChanger.savedDhuhr =
+      await savedNotificationChanger.savedNotificationPref.getDhuhr();
+  savedNotificationChanger.savedAasr =
+      await savedNotificationChanger.savedNotificationPref.getAasr();
+  savedNotificationChanger.savedMaghrib =
+      await savedNotificationChanger.savedNotificationPref.getMaghrib();
+  savedNotificationChanger.savedIshaa =
+      await savedNotificationChanger.savedNotificationPref.getIshaa();
+}
+
+Future<void> getLanguageOption() async {
+  advancedSettingsChanger.languageOption =
+      await advancedSettingsChanger.advancedSettingsPref.getLanguage();
+}
+
+Future<void> getLocationOption() async {
   advancedSettingsChanger.locationOption =
-      await advancedSettingsChanger.savedLocationPref.getLocationOption();
+      await advancedSettingsChanger.advancedSettingsPref.getLocationOption();
 }
 
 Future<void> getCurrentRecitation() async {
@@ -69,28 +98,33 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
     banner = null;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     final adState = Provider.of<AdState>(context);
-    adState.initialization.then((value) {
-      setState(() {
-        banner = BannerAd(
-            size: AdSize.banner,
-            adUnitId: adState.homeBannerAd,
-            listener: adState.bannerAdListener,
-            request: AdRequest())
-          ..load();
+    if (!appData.isPro) {
+      adState.initialization.then((value) {
+        setState(() {
+          banner = BannerAd(
+              size: AdSize.banner,
+              adUnitId: adState.homeBannerAd,
+              listener: adState.bannerAdListener,
+              request: AdRequest())
+            ..load();
+        });
       });
-    });
+    }
   }
 
   @override
   void dispose() {
     banner!.dispose();
+
     super.dispose();
   }
 
@@ -104,6 +138,9 @@ class _MyAppState extends State<MyApp> {
           },
         ),
         ChangeNotifierProvider(create: (_) {
+          return savedNotificationChanger;
+        }),
+        ChangeNotifierProvider(create: (_) {
           return prayertimesChanger;
         }),
         ChangeNotifierProvider(create: (_) {
@@ -116,9 +153,14 @@ class _MyAppState extends State<MyApp> {
           return savedLocationChanger;
         })
       ],
-      child: Consumer4<DarkThemeProvider, RecitationProvider,
-          PrayertimesProvider, AdvancedSettingsProvider>(
-        builder: (BuildContext context, value, value2, value3, value4, child) {
+      child: Consumer5<
+          DarkThemeProvider,
+          RecitationProvider,
+          PrayertimesProvider,
+          AdvancedSettingsProvider,
+          SavedNotificationProvider>(
+        builder: (BuildContext context, value, value2, value3, value4, value5,
+            child) {
           return ScreenUtilInit(
             designSize: Size(1080, 2160),
             builder: () => Column(
@@ -130,13 +172,15 @@ class _MyAppState extends State<MyApp> {
                       supportedLocales: AppLocalizations.supportedLocales,
                       theme: Styles.themeData(themeChanger.darkTheme, context),
                       debugShowCheckedModeBanner: false,
-                      home: HomePage(
+                      locale: Locale.fromSubtags(
+                          languageCode: languageList[value4.languageOption]),
+                      home: Wrapper(
                         optionIndex: value4.locationOption,
                       )),
                 ),
-                (banner != null)
+                (banner != null && !appData.isPro)
                     ? Container(
-                        color: Color(0xFFFFFFFA),
+                        color: Colors.white,
                         child: AdWidget(
                           ad: banner!,
                         ),
@@ -153,195 +197,114 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Wrapper extends StatefulWidget {
-  const Wrapper({Key? key, required this.advancedSettingsProvider})
-      : super(key: key);
-  final AdvancedSettingsProvider advancedSettingsProvider;
-
+  const Wrapper({Key? key, required this.optionIndex}) : super(key: key);
+  final int optionIndex;
   @override
   State<Wrapper> createState() => _WrapperState();
 }
 
-class _WrapperState extends State<Wrapper> with TickerProviderStateMixin {
-  var _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    )..repeat();
-  }
-
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
-
+class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
-    var tabController = TabController(length: 2, vsync: this);
-    return Scaffold(
-      appBar: customAppbar(context, false, '', false),
-      body: Container(
-        child: TabBarView(
-          controller: tabController,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            LanguagePage(tabController: tabController),
-            Container(
-              padding: EdgeInsets.all(20.sp),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    size: 300.sp,
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Allow Location Access",
-                      style: TextStyle(
-                          fontSize: 55.sp, fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text(
-                        "We need to access your location or set it manually"),
-                  ),
-                  SizedBox(
-                    height: 50.sp,
-                  ),
-                  SizedBox(
-                    height: 200.h,
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        tabController.animateTo(1);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            top: 20.sp,
-                            bottom: 20.sp,
-                            left: 100.sp,
-                            right: 100.sp),
-                        child: Text(
-                          "Allow Location Access",
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 50.sp),
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      )),
-                  SizedBox(
-                    height: 100.h,
-                  ),
-                ],
-              ),
-            )
-          ],
+    var advancedSettingsProvider =
+        Provider.of<AdvancedSettingsProvider>(context, listen: false);
+    return FutureBuilder(
+      future: checkIfFirstTime(false),
+      builder: (context, AsyncSnapshot<bool> snapshot) {
+        if (!snapshot.hasData) return Container();
+        if (snapshot.hasError)
+          return Container();
+        else {
+          if (snapshot.data!) {
+            return Intro(
+              advancedSettingsProvider: advancedSettingsProvider,
+              optionIndex: widget.optionIndex,
+            );
+          } else {
+            return HomePage(optionIndex: widget.optionIndex);
+          }
+        }
+      },
+    );
+  }
+}
+
+class Intro extends StatefulWidget {
+  const Intro(
+      {Key? key,
+      required this.optionIndex,
+      required this.advancedSettingsProvider})
+      : super(key: key);
+  final int optionIndex;
+  final AdvancedSettingsProvider advancedSettingsProvider;
+
+  @override
+  State<Intro> createState() => _IntroState();
+}
+
+class _IntroState extends State<Intro> {
+  @override
+  Widget build(BuildContext context) {
+    var pageController = PageController(initialPage: 0, keepPage: true);
+    return WillPopScope(
+      onWillPop: () {
+        pageController.previousPage(
+            duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        body: Container(
+          child: PageView(
+            controller: pageController,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              LanguagePage(pageController: pageController),
+              LocationPage(pageController: pageController),
+              DarkModePage(
+                pageController: pageController,
+                optionIndex: widget.optionIndex,
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class LanguagePage extends StatelessWidget {
-  const LanguagePage({
-    Key? key,
-    required this.tabController,
-  }) : super(key: key);
-
-  final TabController tabController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.sp),
-      child: Column(
-        children: [
-          Icon(
-            Icons.translate_outlined,
-            size: 300.sp,
-          ),
-          ListTile(
-            title: Text(
-              "Choose Your Preffered Lanugage",
-              style: TextStyle(fontSize: 55.sp, fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text("Please select your language"),
-          ),
-          SizedBox(
-            height: 50.sp,
-          ),
-          Flexible(
-            child: Container(
-                child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    title: Text("English"),
-                    subtitle: Text("English US"),
-                    leading: CircleAvatar(
-                      backgroundImage: AssetImage("assets/images/usa.png"),
-                    ),
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text("Nederlands"),
-                    subtitle: Text("Nederlands NL"),
-                    leading: RotatedBox(
-                      quarterTurns: 3,
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage("assets/images/france.png"),
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text("Français "),
-                    subtitle: Text("Français FR"),
-                    leading: CircleAvatar(
-                      backgroundImage: AssetImage("assets/images/france.png"),
-                    ),
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text("Deutsch "),
-                    subtitle: Text("Deutsch DE"),
-                    leading: CircleAvatar(
-                      backgroundImage: AssetImage("assets/images/germany.png"),
-                    ),
-                  ),
-                ],
-              ),
-            )),
-          ),
-          SizedBox(
-            height: 200.h,
-          ),
-          TextButton(
-              onPressed: () {
-                tabController.animateTo(1);
-              },
-              child: Container(
-                padding: EdgeInsets.only(
-                    top: 20.sp, bottom: 20.sp, left: 300.sp, right: 300.sp),
-                child: Text(
-                  "Continue",
-                  style: TextStyle(color: Colors.white, fontSize: 50.sp),
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              )),
-          SizedBox(
-            height: 100.h,
-          ),
-        ],
-      ),
-    );
+Future<bool> checkIfFirstTime(bool end) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  if (!end) {
+    return pref.getBool("Firsttime") ?? true;
+  } else {
+    pref.setBool("Firsttime", false);
+    return false;
   }
+}
+
+Future<void> initPlatformState() async {
+  await Purchases.setDebugLogsEnabled(true);
+  await Purchases.setup("goog_ZBoncTHoaOtuPxDhDsGEWjjQttq");
+  PurchaserInfo purchaserInfo;
+  purchaserInfo = await Purchases.getPurchaserInfo();
+
+  print("Purchaser info : ${purchaserInfo.toString()}");
+
+  if (purchaserInfo.entitlements.all['1mNoAds'] != null) if (purchaserInfo
+      .entitlements.all['1mNoAds']!.isActive) {
+    appData.isPro = true;
+    print("true 1");
+  }
+  if (purchaserInfo.entitlements.all['3mNoAds'] != null) if (purchaserInfo
+      .entitlements.all["3mNoAds"]!.isActive) {
+    appData.isPro = true;
+    print("true 2");
+  }
+  if (purchaserInfo.entitlements.all["12mNoAds"] != null) if (purchaserInfo
+      .entitlements.all["12mNoAds"]!.isActive) {
+    appData.isPro = true;
+    print("true 3");
+  }
+
+  print("User is pro: ${appData.isPro}");
 }

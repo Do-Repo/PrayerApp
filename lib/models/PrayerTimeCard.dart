@@ -52,8 +52,8 @@ class CardModel {
     this.gregorianYear,
   });
 
-  factory CardModel.fromJson(
-      Map<String, dynamic> json, String? city, String? province, String? country) {
+  factory CardModel.fromJson(Map<String, dynamic> json, String? city,
+      String? province, String? country) {
     return CardModel(
       city: city,
       province: province,

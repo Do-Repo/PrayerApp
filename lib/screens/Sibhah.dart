@@ -1,9 +1,10 @@
 import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart' as ap;
 import 'dart:math' as math show sin, pi, sqrt;
-import 'package:flutter/animation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Sibhah extends StatefulWidget {
   const Sibhah({
@@ -43,7 +44,8 @@ class _SibhahState extends State<Sibhah> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(context, false, "Tasbeeh", true),
+      appBar: customAppbar(
+          context, false, AppLocalizations.of(context)!.tasbeeh, true),
       body: Column(
         children: [
           Flexible(
@@ -117,7 +119,9 @@ class _SibhahState extends State<Sibhah> with TickerProviderStateMixin {
                                         child: Center(
                                           child: (variable == 0)
                                               ? Text(
-                                                  "Start",
+                                                  ap.AppLocalizations.of(
+                                                          context)!
+                                                      .start,
                                                   style: (TextStyle(
                                                       color: Colors.green[900],
                                                       fontWeight:

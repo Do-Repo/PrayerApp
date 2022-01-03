@@ -1,9 +1,10 @@
 import 'package:application_1/screens/Quranpage/Quranpage.dart';
-
+import 'package:application_1/screens/Settings/Recitation.dart';
+import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:provider/provider.dart';
 
 class CardDone extends StatefulWidget {
   const CardDone({
@@ -32,6 +33,8 @@ class _CardDoneState extends State<CardDone> {
 
   @override
   Widget build(BuildContext context) {
+    var rec = Provider.of<RecitationProvider>(context, listen: false);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Column(
@@ -130,31 +133,38 @@ class _CardDoneState extends State<CardDone> {
                   padding: EdgeInsets.only(left: 10.sp),
                 ),
                 Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(10.sp),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'صوت:',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 50.sp),
-                        ),
-                        Container(
-                          width: 40.sp,
-                        ),
-                        Flexible(
-                          child: Text(
-                            widget.snapshot.data.audioName,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              RecitationScreen(recitation: rec.recitation)));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10.sp),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'صوت:',
                             style: TextStyle(
-                                fontSize: 50.sp, fontWeight: FontWeight.w500),
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 50.sp),
                           ),
-                        ),
-                      ],
+                          Container(
+                            width: 40.sp,
+                          ),
+                          Flexible(
+                            child: Text(
+                              widget.snapshot.data.audioName,
+                              style: TextStyle(
+                                  fontSize: 50.sp, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
+                      ),
+                      color: Theme.of(context).backgroundColor,
                     ),
-                    color: Theme.of(context).backgroundColor,
                   ),
                 ),
                 Container(

@@ -6,6 +6,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RecitationScreen extends StatefulWidget {
   const RecitationScreen({Key? key, required this.recitation})
@@ -41,7 +42,6 @@ class _RecitationScreenState extends State<RecitationScreen>
   @override
   Widget build(BuildContext context) {
     final rec = Provider.of<RecitationProvider>(context);
-
     return WillPopScope(
       onWillPop: () {
         rec.recitation = identifiers[tabController.index];
@@ -49,7 +49,8 @@ class _RecitationScreenState extends State<RecitationScreen>
         return Future.value(false);
       },
       child: Scaffold(
-        appBar: customAppbar(context, false, "Recitation", false),
+        appBar: customAppbar(
+            context, false, AppLocalizations.of(context)!.recitation, false),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -80,7 +81,6 @@ class _RecitationScreenState extends State<RecitationScreen>
                       builder: (context, AsyncSnapshot<RandomVerse?> snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return IconButton(
-                            tooltip: "Try it out",
                             icon: Icon(
                               Icons.hearing_outlined,
                               color: Theme.of(context).primaryColor,
@@ -255,11 +255,39 @@ class _RecitationScreenState extends State<RecitationScreen>
                 ],
               )
             ]),
+            Flexible(
+                child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: recitationList(tabController, context),
+              ),
+            ))
           ],
         ),
       ),
     );
   }
+}
+
+List<Widget> recitationList(TabController tabController, BuildContext context) {
+  List<Widget> reasonlist = [];
+  nameEn.forEach((element) {
+    reasonlist.add(Container(
+      color: Theme.of(context).backgroundColor,
+      margin: EdgeInsets.symmetric(vertical: 5.sp),
+      child: ListTile(
+        onTap: () {
+          tabController.animateTo(nameEn.indexOf(element));
+        },
+        title: Text(element),
+        subtitle: Text(nameAr[nameEn.indexOf(element)]),
+        leading: CircleAvatar(
+          backgroundImage: AssetImage(imageUrls[nameEn.indexOf(element)]),
+        ),
+      ),
+    ));
+  });
+  return reasonlist;
 }
 
 class TriangleClipper extends CustomClipper<Path> {

@@ -23,7 +23,7 @@ class CardLoading extends StatelessWidget {
             width: 1.sw,
             child: Center(
               child: CircularProgressIndicator(
-                strokeWidth: 10.sp,
+                strokeWidth: 8.sp,
                 color: Theme.of(context).colorScheme.secondary,
               ),
             )));

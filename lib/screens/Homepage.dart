@@ -1,40 +1,43 @@
-import 'dart:async';
+import 'package:application_1/screens/AsmaHosna.dart';
 import 'package:application_1/screens/DuasAndAzkar/Duas.dart';
 import 'package:application_1/screens/HadithPage/HadithList.dart';
 import 'package:application_1/screens/Quranpage/QuranList.dart';
-import 'package:application_1/screens/Settings/AdvancedSettings.dart';
 import 'package:application_1/screens/Sibhah.dart';
+import 'package:application_1/src/cards/PrayerTimes/CardLoading.dart' as pt;
 import 'package:application_1/src/cards/PrayerTimes/CardStructure.dart';
+import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/animator.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
+import 'package:application_1/src/customWidgets/payment_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 import 'package:application_1/src/cards/AyahCard/CardStructure.dart';
 import 'package:application_1/src/customIcons/my_flutter_app_icons.dart'
     as customIcon;
-import 'package:application_1/src/customWidgets/API.dart';
 import 'package:application_1/src/customWidgets/ad_helper.dart';
-import 'package:application_1/src/customWidgets/customWidgets.dart';
-import 'package:application_1/src/customWidgets/notificationService.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.optionIndex}) : super(key: key);
   final int optionIndex;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<Position> getLocation;
-
+  HomePageEffects effects = HomePageEffects();
+  PageController pageController =
+      PageController(initialPage: 0, keepPage: true);
   @override
   void initState() {
     super.initState();
-    tz.initializeTimeZones();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -43,170 +46,111 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.optionIndex) {
-      case 0:
-        getLocation = getLiveLocation();
-        break;
-      case 1:
-        getLocation = getSavedLocation();
-        break;
-      case 2:
-        getLocation = getChosenLocation(context);
-        break;
-    }
-    return Scaffold(
-      appBar: customAppbar(context, true, "assets/images/muslim.png", true),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-              child: FutureBuilder(
-            future: getLocation,
-            builder: (context, AsyncSnapshot<Position> snapshot) {
-              if (snapshot.hasError) {
-                return LocationFailed(
-                  onPressed: () {
-                    setState(() {
-                      getLocation = getLocation;
-                    });
-                  },
-                );
-              } else {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Column(
-                    children: [
-                      LinearProgressIndicator(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      Expanded(child: Container())
-                    ],
-                  );
-                } else {
-                  return (snapshot.data!.latitude == 0 &&
-                          snapshot.data!.longitude == 0)
-                      ? LocationFailed(
-                          onPressed: () {
-                            setState(() {
-                              getLocation = getLocation;
-                            });
-                          },
-                        )
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            PrayertimesCard(
-                                latitude: snapshot.data!.latitude,
-                                timestamp: snapshot
-                                    .data!.timestamp!.millisecondsSinceEpoch,
-                                longitude: snapshot.data!.longitude),
-                            SizedBox(
-                              height: 40.sp,
-                            ),
-                            BelowCard(),
-                          ],
-                        );
-                }
-              }
-            },
-          )),
-        ],
+    return ChangeNotifierProvider(
+      create: (_) {
+        return effects;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            AnimatedSize(
+              duration: Duration(milliseconds: 300),
+              child: Container(
+                margin: EdgeInsets.all(20.sp),
+                width: 1.sw,
+                color: Colors.black,
+                child: Consumer<HomePageEffects>(
+                  builder: (context, value, child) => AnimatedCrossFade(
+                    crossFadeState: (!value.onCollapsed)
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: Duration(milliseconds: 300),
+                    sizeCurve: Curves.easeInOut,
+                    secondChild: Container(),
+                    firstChild: AnimatedSize(
+                      duration: Duration(milliseconds: 300),
+                      child: FutureBuilder(
+                          future: getLocation(widget.optionIndex, context),
+                          builder: (context, AsyncSnapshot<Position> snapshot) {
+                            if (snapshot.hasError) {
+                              return Container();
+                            } else if (snapshot.connectionState !=
+                                ConnectionState.done) {
+                              return Center(
+                                  child: pt.CardLoading(
+                                      message: AppLocalizations.of(context)!
+                                          .loadingloc));
+                            } else {
+                              return (snapshot.data!.latitude == 0 &&
+                                      snapshot.data!.longitude == 0)
+                                  ? Container()
+                                  : Center(
+                                      child: PrayertimesCard(
+                                          latitude: snapshot.data!.latitude,
+                                          timestamp: DateTime.now()
+                                              .millisecondsSinceEpoch,
+                                          longitude: snapshot.data!.longitude),
+                                    );
+                            }
+                          }),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50)),
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    width: 1.sw,
+                    child: PageView(
+                      scrollDirection: Axis.horizontal,
+                      physics: NeverScrollableScrollPhysics(),
+                      controller: pageController,
+                      children: [
+                        BelowCard(
+                          pageController: pageController,
+                        ),
+                        QuranList(
+                          pageController: pageController,
+                        ),
+                        HadithList(
+                          pageController: pageController,
+                        ),
+                        DuasPage(pageController: pageController),
+                        AsmaHosna(pageController: pageController)
+                      ],
+                    ),
+                  )),
+            )
+          ]),
+        ),
       ),
     );
   }
 }
 
-class LocationFailed extends StatelessWidget {
-  const LocationFailed({Key? key, required this.onPressed}) : super(key: key);
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.sp),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            isThreeLine: true,
-            leading: Icon(
-              customIcon.MyFlutterApp.warning,
-              color: Theme.of(context).colorScheme.secondary,
-              size: 200.sp,
-            ),
-            title: Text(
-              "Couldn't find your location",
-              style: TextStyle(
-                  fontSize: 60.sp,
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontWeight: FontWeight.w500),
-            ),
-            subtitle: Text(
-              "This usually happens when the gps is turned off or when the application is not allowed to know your location\n\nBefore retrying make sure:",
-              style: TextStyle(
-                  color: Theme.of(context).primaryColor, fontSize: 50.sp),
-            ),
-          ),
-          Text(
-            "\n- The app has permission to know your location\n",
-          ),
-          Text(
-            "- Gps is turned on\n",
-          ),
-          Text(
-            "- You are connected to the internet\n",
-          ),
-          SizedBox(
-            width: 1.sw,
-            height: 30.sp,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AdvancedSettings()));
-                  },
-                  child: Text(
-                    "Location Settings",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary),
-                  )),
-              TextButton(
-                  onPressed: onPressed,
-                  child: Text(
-                    "Retry",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary),
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-// Because the shadow scrolling animation is triggered by setState() everytime
-// the user scrolls, getLocation gets called so I divided them in seperate stateful widgets
 class BelowCard extends StatefulWidget {
   const BelowCard({
     Key? key,
+    required this.pageController,
   }) : super(key: key);
-
+  final PageController pageController;
   @override
   _BelowCardState createState() => _BelowCardState();
 }
 
-class _BelowCardState extends State<BelowCard> {
-  int shadowsize = 0;
+class _BelowCardState extends State<BelowCard>
+    with AutomaticKeepAliveClientMixin {
   var _scrollController = ScrollController();
   InterstitialAd? _interstitialAd;
   bool _isInterstitialAdReady = false;
   late Timer _timer;
+  var _valueKey;
 
   loadInterstitialAd() {
     final adState = Provider.of<AdState>(context, listen: false);
@@ -235,24 +179,15 @@ class _BelowCardState extends State<BelowCard> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 10)).then((value) => loadInterstitialAd());
-    _timer = Timer.periodic(
-        Duration(minutes: 5),
-        (Timer t) => (_isInterstitialAdReady)
-            ? print("Ad is ready")
-            : loadInterstitialAd());
-    _scrollController.addListener(() {
-      if (_scrollController.hasClients) {
-        if (_scrollController.offset > 10) {
-          setState(() {
-            shadowsize = 40;
-          });
-        } else
-          setState(() {
-            shadowsize = 0;
-          });
-      }
-    });
+    if (!appData.isPro) {
+      Future.delayed(Duration(seconds: 10))
+          .then((value) => loadInterstitialAd());
+      _timer = Timer.periodic(
+          Duration(minutes: 5),
+          (Timer t) => (_isInterstitialAdReady)
+              ? print("Ad is ready")
+              : loadInterstitialAd());
+    }
   }
 
   @override
@@ -264,206 +199,219 @@ class _BelowCardState extends State<BelowCard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var rec = Provider.of<RecitationProvider>(context, listen: true);
-    return Expanded(
-      child: Stack(
-        children: [
-          NotificationListener<OverscrollIndicatorNotification>(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        customHomeAppbar(context, widget.pageController,
+            AppLocalizations.of(context)!.home, false, () {}),
+        Flexible(
+          child: NotificationListener<OverscrollIndicatorNotification>(
             onNotification: (overscroll) {
-              overscroll.disallowGlow();
+              overscroll.disallowIndicator();
               return true;
             },
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    AyahCard(
-                      recitation: rec.recitation,
-                    ),
-                    SizedBox(
-                      height: 40.sp,
-                    ),
-                    ListTile(
-                      isThreeLine: true,
-                      leading: Icon(
-                        customIcon.MyFlutterApp.quran_1,
-                        size: 200.sp,
+            child: RefreshIndicator(
+              onRefresh: () {
+                return Future.delayed(Duration(seconds: 1)).then((value) {
+                  setState(() {
+                    _valueKey = Object();
+                  });
+                });
+              },
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 10,
                       ),
-                      title: Text(
-                        "The Holy Quran",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary),
+                      WidgetAnimator(
+                        child: AyahCard(
+                          key: ValueKey(_valueKey),
+                          recitation: rec.recitation,
+                        ),
                       ),
-                      onTap: () {
-                        if (_isInterstitialAdReady) {
-                          _interstitialAd!.show().then((value) =>
+                      SizedBox(
+                        height: 40.sp,
+                      ),
+                      WidgetAnimator(
+                        child: ListTile(
+                          isThreeLine: true,
+                          leading: Icon(
+                            customIcon.MyFlutterApp.quran_1,
+                            size: 200.sp,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.theHolyQuran,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          onTap: () {
+                            if (_isInterstitialAdReady && !appData.isPro) {
+                              _interstitialAd!.show().then((value) =>
+                                  widget.pageController.animateToPage(1,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOutQuart));
+                            } else
+                              widget.pageController.animateToPage(1,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOutQuart);
+                          },
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.quranSubtitle),
+                        ),
+                      ),
+                      WidgetAnimator(
+                        child: ListTile(
+                          isThreeLine: true,
+                          leading: Icon(
+                            customIcon.MyFlutterApp.prophet,
+                            size: 200.sp,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.hadith,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          onTap: () {
+                            if (_isInterstitialAdReady && !appData.isPro) {
+                              _interstitialAd!.show().then((value) =>
+                                  widget.pageController.animateToPage(2,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOutQuart));
+                            } else
+                              widget.pageController.animateToPage(2,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOutQuart);
+                          },
+                          subtitle: Text(
+                              AppLocalizations.of(context)!.hadithSubtitle),
+                        ),
+                      ),
+                      SizedBox(height: 40.sp),
+                      WidgetAnimator(
+                        child: ListTile(
+                          isThreeLine: true,
+                          leading: Icon(
+                            customIcon.MyFlutterApp.beads_1,
+                            size: 200.sp,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.tasbeeh,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          onTap: () {
+                            if (_isInterstitialAdReady && !appData.isPro) {
+                              _interstitialAd!.show().then((value) =>
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Sibhah())));
+                            } else
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => QuranList())));
-                        } else
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => QuranList()));
-                      },
-                      subtitle: Text(
-                          "Read and listen every verse of the holy Quran in Arabic and English"),
-                    ),
-                    ListTile(
-                      isThreeLine: true,
-                      leading: Icon(
-                        customIcon.MyFlutterApp.prophet,
-                        size: 200.sp,
+                                      builder: (context) => Sibhah()));
+                          },
+                          subtitle: Text(
+                              AppLocalizations.of(context)!.tasbeehSubtitle),
+                        ),
                       ),
-                      title: Text(
-                        "Hadith",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary),
+                      SizedBox(
+                        height: 40.sp,
                       ),
-                      onTap: () {
-                        if (_isInterstitialAdReady) {
-                          _interstitialAd!.show().then((value) =>
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HadithList())));
-                        } else
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HadithList()));
-                      },
-                      subtitle: Text(
-                          "A collection of traditions containing sayings of the prophet Muhammad, with accounts of his daily practice"),
-                    ),
-                    SizedBox(height: 40.sp),
-                    ListTile(
-                      isThreeLine: true,
-                      leading: Icon(
-                        customIcon.MyFlutterApp.beads_1,
-                        size: 200.sp,
+                      WidgetAnimator(
+                        child: ListTile(
+                          isThreeLine: true,
+                          leading: Icon(
+                            customIcon.MyFlutterApp.allah,
+                            size: 200.sp,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.asmaAlHusnatitle,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          onTap: () {
+                            if (_isInterstitialAdReady && !appData.isPro) {
+                              _interstitialAd!.show().then((value) =>
+                                  widget.pageController.animateToPage(4,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOutQuart));
+                            } else
+                              widget.pageController.animateToPage(4,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOutQuart);
+                          },
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.asmaAlHusna),
+                        ),
                       ),
-                      title: Text(
-                        "Tasbeeh ",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary),
+                      SizedBox(
+                        height: 40.sp,
                       ),
-                      onTap: () {
-                        if (_isInterstitialAdReady) {
-                          _interstitialAd!.show().then((value) =>
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Sibhah())));
-                        } else
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Sibhah()));
-                      },
-                      subtitle: Text(
-                          'Assist in the glorification of Allah following prayers: Tasbeeh, Tahmeed, and Takbeer'),
-                    ),
-                    SizedBox(
-                      height: 40.sp,
-                    ),
-                    ListTile(
-                      isThreeLine: true,
-                      leading: Icon(
-                        customIcon.MyFlutterApp.open_hands,
-                        size: 200.sp,
+                      WidgetAnimator(
+                        child: ListTile(
+                          isThreeLine: true,
+                          leading: Icon(
+                            customIcon.MyFlutterApp.open_hands,
+                            size: 200.sp,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.duas,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          onTap: () {
+                            if (_isInterstitialAdReady && !appData.isPro) {
+                              _interstitialAd!.show().then((value) =>
+                                  widget.pageController.animateToPage(3,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOutQuart));
+                            } else
+                              widget.pageController.animateToPage(3,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOutQuart);
+                          },
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.duasSubtitle),
+                        ),
                       ),
-                      title: Text(
-                        "Duas & Azkar",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary),
+                      SizedBox(
+                        height: 20.sp,
                       ),
-                      onTap: () {
-                        if (_isInterstitialAdReady) {
-                          _interstitialAd!.show().then((value) =>
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DuasPage())));
-                        } else
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DuasPage()));
-                      },
-                      subtitle: Text(
-                          "A collection of duas and azkar for every situation"),
-                    ),
-                    SizedBox(
-                      height: 20.sp,
-                    ),
-                    ListTile(
-                      isThreeLine: true,
-                      leading: Icon(
-                        customIcon.MyFlutterApp.zakat,
-                        size: 200.sp,
-                      ),
-                      title: Text(
-                        "Zakat calculator",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                      onTap: () {
-                        NotificationService()
-                            .showNotification(1, "title", "body", 5);
-                      },
-                      subtitle: Text(
-                          "Zakat is based on income and the value of possessions, calculate how much your zakat is worth"),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          AnimatedContainer(
-            height: shadowsize.sp,
-            width: 1.sw,
-            duration: Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                  (Theme.of(context).brightness == Brightness.dark)
-                      ? Colors.black
-                      : Colors.grey,
-                  Colors.transparent
-                ])),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
-Widget beta(BuildContext context) {
-  return Container(
-    padding: EdgeInsets.all(10.sp),
-    decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: BorderRadius.all(Radius.circular(30))),
-    child: Center(
-      child: Text(
-        'Beta',
-        style: TextStyle(fontSize: 30.sp, color: Colors.white),
-      ),
-    ),
-  );
+Future<Position> getLocation(int optionIndex, BuildContext context) {
+  var getLocation;
+  (optionIndex == 0)
+      ? getLocation = getLiveLocation()
+      : (optionIndex == 1)
+          ? getLocation = getSavedLocation()
+          : getLocation = getChosenLocation(context);
+  return getLocation;
 }

@@ -1,71 +1,44 @@
 class HadithListing {
   String bookname;
   int bookid;
-  bool onError;
   HadithListing({
-    required this.onError,
     required this.bookname,
     required this.bookid,
   });
-  factory HadithListing.fromJson(Map<String, dynamic> json, bool onError) {
-    return HadithListing(
-        onError: onError, bookid: json['Book_ID'], bookname: json['Book_Name']);
+  factory HadithListing.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return HadithListing(bookid: json['Book_ID'], bookname: json['Book_Name']);
   }
 }
 
 class HadithChapter {
   String chapter;
   int chapterid;
-  bool onError;
+
   HadithChapter({
-    required this.onError,
     required this.chapter,
     required this.chapterid,
   });
-  factory HadithChapter.fromJson(Map<String, dynamic> json, bool onError) {
+  factory HadithChapter.fromJson(Map<String, dynamic> json) {
     return HadithChapter(
-        onError: onError,
-        chapter: json['Chapter_Name'],
-        chapterid: json['Chapter_ID']);
+        chapter: json['Chapter_Name'], chapterid: json['Chapter_ID']);
   }
 }
 
-class HadithsEN {
+class Hadiths {
   int hadithid;
   String text;
   String sanad;
-  bool onError;
-  HadithsEN({
-    required this.hadithid,
-    required this.onError,
-    required this.text,
-    required this.sanad,
-  });
-  factory HadithsEN.fromJson(Map<String, dynamic> json, bool onError) {
-    return HadithsEN(
-        onError: onError,
-        hadithid: json['Hadith_ID'],
-        text: json['En_Text'],
-        sanad: json['En_Sanad']);
-  }
-}
-
-class HadithsAR {
-  int hadithid;
-  String text;
-  String sanad;
-  bool onError;
-  HadithsAR({
+  Hadiths({
     required this.hadithid,
     required this.text,
     required this.sanad,
-    required this.onError,
   });
-  factory HadithsAR.fromJson(Map<String, dynamic> json, bool onError) {
-    return HadithsAR(
-        onError: onError,
+  factory Hadiths.fromJson(Map<String, dynamic> json, bool isArabic) {
+    return Hadiths(
         hadithid: json['Hadith_ID'],
-        text: json['Ar_Text'],
-        sanad: json['Ar_Sanad_1']);
+        text: json[(isArabic) ? 'Ar_Text' : 'En_Text'],
+        sanad: json[(isArabic) ? 'Ar_Sanad_1' : 'En_Sanad']);
   }
 }

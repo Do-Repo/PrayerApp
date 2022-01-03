@@ -7,6 +7,7 @@ import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -20,7 +21,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final rec = Provider.of<RecitationProvider>(context);
     return Scaffold(
-      appBar: customAppbar(context, false, "Settings", false),
+      appBar: customAppbar(
+          context, false, AppLocalizations.of(context)!.settings, false),
       body: Container(
         child: Column(
           children: [
@@ -30,13 +32,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 size: 100.sp,
               ),
               title: Text(
-                "Theme",
+                AppLocalizations.of(context)!.theme,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                "Customize app appearance",
+                AppLocalizations.of(context)!.themesub,
               ),
               onTap: () {
                 Navigator.push(
@@ -52,13 +54,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 size: 100.sp,
               ),
               title: Text(
-                "Recitation",
+                AppLocalizations.of(context)!.recitation,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                "Change recitation voice for audio Quran",
+                AppLocalizations.of(context)!.recitationsub,
               ),
               onTap: () {
                 Navigator.push(
@@ -76,13 +78,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 size: 100.sp,
               ),
               title: Text(
-                "Ads",
+                AppLocalizations.of(context)!.ads,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                "Ads settings",
+                AppLocalizations.of(context)!.adssub,
               ),
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => AdsSettingsPage())),
@@ -99,30 +101,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         builder: (context) => AdvancedSettings()));
               },
               title: Text(
-                "Advanced",
+                AppLocalizations.of(context)!.advanced,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                "Advanced application settings",
+                AppLocalizations.of(context)!.advancedsub,
               ),
             ),
-            ListTile(
-              leading: Icon(
-                Icons.report_problem_outlined,
-                size: 100.sp,
-              ),
-              title: Text(
-                "Report a problem",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                "Report a problem, bug or feedback",
-              ),
-            ),
+            // ListTile(
+            //   leading: Icon(
+            //     Icons.report_problem_outlined,
+            //     size: 100.sp,
+            //   ),
+            //   title: Text(
+            //     AppLocalizations.of(context)!.report,
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            //   subtitle: Text(
+            //     AppLocalizations.of(context)!.reportsub,
+            //   ),
+            // ),
             Spacer(),
           ],
         ),

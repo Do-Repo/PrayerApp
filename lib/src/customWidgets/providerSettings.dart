@@ -90,30 +90,128 @@ class Styles {
       appBarTheme: AppBarTheme(
           systemOverlayStyle: (isDarkTheme)
               ? SystemUiOverlayStyle(
+                  statusBarColor: Colors.black,
                   statusBarBrightness: Brightness.dark,
                   statusBarIconBrightness: Brightness.dark)
               : SystemUiOverlayStyle(
                   statusBarBrightness: Brightness.light,
                   statusBarIconBrightness: Brightness.light),
-          color: (isDarkTheme) ? Color(0xFF121212) : Color(0xFFFFFFFA)),
+          color: (isDarkTheme) ? Color(0xFF191716) : Color(0xFFFFFFFA)),
       backgroundColor: (isDarkTheme) ? Colors.grey[900] : Colors.grey[200],
       scaffoldBackgroundColor:
-          (isDarkTheme) ? Color(0xFF121212) : Color(0xFFFFFFFA),
+          (isDarkTheme) ? Color(0xFF191716) : Color(0xFFFFFFFA),
       primaryColor: (isDarkTheme) ? Colors.white : Colors.black,
-      toggleableActiveColor:
-          (isDarkTheme) ? Colors.green : Colors.green, //Colors.greenAccent[400]
+      toggleableActiveColor: Colors.green,
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: (isDarkTheme)
-            ? Colors.green
-            : Colors.green, //Colors.greenAccent[400]
+        primary: Colors.green,
         background: (isDarkTheme) ? Colors.grey[900] : Colors.grey[200],
         brightness: (isDarkTheme) ? Brightness.dark : Brightness.light,
-        secondary: (isDarkTheme)
-            ? Colors.green
-            : Colors.green, //Colors.greenAccent[400]
+        secondary: Colors.green, //Color(0xFFE6AF2E)
       ),
       splashColor: Colors.transparent,
     );
+  }
+}
+
+class SavedNotificationPref {
+  static const SAVEDFAJR = "FAJR";
+  static const SAVEDDHUHR = "DHUHR";
+  static const SAVEDAASR = "AASR";
+  static const SAVEDMAGHRIB = "MAGHRIB";
+  static const SAVEDISHAA = "ISHAA";
+
+  setFajrNotification(bool value) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool(SAVEDFAJR, value);
+  }
+
+  Future<bool> getFajr() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getBool(SAVEDFAJR) ?? false;
+  }
+
+  setDhuhrNotification(bool value) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool(SAVEDDHUHR, value);
+  }
+
+  Future<bool> getDhuhr() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getBool(SAVEDDHUHR) ?? true;
+  }
+
+  setAasrNotification(bool value) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool(SAVEDAASR, value);
+  }
+
+  Future<bool> getAasr() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getBool(SAVEDAASR) ?? true;
+  }
+
+  setMaghribNotification(bool value) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool(SAVEDMAGHRIB, value);
+  }
+
+  Future<bool> getMaghrib() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getBool(SAVEDMAGHRIB) ?? true;
+  }
+
+  setIshaaNotification(bool value) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool(SAVEDISHAA, value);
+  }
+
+  Future<bool> getIshaa() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getBool(SAVEDISHAA) ?? true;
+  }
+}
+
+class SavedNotificationProvider with ChangeNotifier {
+  SavedNotificationPref savedNotificationPref = SavedNotificationPref();
+  bool _fajr = false,
+      _dhuhr = true,
+      _aasr = true,
+      _maghrib = true,
+      _ishaa = true;
+  bool get savedFajr => _fajr;
+  bool get savedDhuhr => _dhuhr;
+  bool get savedAasr => _aasr;
+  bool get savedIshaa => _ishaa;
+  bool get savedMaghrib => _maghrib;
+
+  set savedFajr(bool value) {
+    _fajr = value;
+    savedNotificationPref.setFajrNotification(value);
+    notifyListeners();
+  }
+
+  set savedDhuhr(bool value) {
+    _dhuhr = value;
+    savedNotificationPref.setDhuhrNotification(value);
+    notifyListeners();
+  }
+
+  set savedAasr(bool value) {
+    _aasr = value;
+    savedNotificationPref.setAasrNotification(value);
+    notifyListeners();
+  }
+
+  set savedMaghrib(bool value) {
+    _maghrib = value;
+    savedNotificationPref.setMaghribNotification(value);
+    notifyListeners();
+  }
+
+  set savedIshaa(bool value) {
+    _ishaa = value;
+    savedNotificationPref.setIshaaNotification(value);
+    notifyListeners();
   }
 }
 
@@ -192,6 +290,16 @@ class PrayertimesProvider with ChangeNotifier {
 
 class AdvancedSettingsPref {
   static const ADVANCEDSETTINGS = "ADVANCEDSETTINGS";
+  static const LANGUAGE = "LANGUAGE";
+  setLanguage(int value) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setInt(LANGUAGE, value);
+  }
+
+  Future<int> getLanguage() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getInt(LANGUAGE) ?? 0;
+  }
 
   setLocationOption(int value) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -205,13 +313,21 @@ class AdvancedSettingsPref {
 }
 
 class AdvancedSettingsProvider extends ChangeNotifier {
-  AdvancedSettingsPref savedLocationPref = AdvancedSettingsPref();
+  AdvancedSettingsPref advancedSettingsPref = AdvancedSettingsPref();
   int _locOption = 0;
+  int _language = 0;
   int get locationOption => _locOption;
+  int get languageOption => _language;
+
+  set languageOption(int value) {
+    _language = value;
+    advancedSettingsPref.setLanguage(value);
+    notifyListeners();
+  }
 
   set locationOption(int value) {
     _locOption = value;
-    savedLocationPref.setLocationOption(value);
+    advancedSettingsPref.setLocationOption(value);
     notifyListeners();
   }
 }

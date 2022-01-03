@@ -3,6 +3,7 @@ import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ThemeScreen extends StatefulWidget {
   const ThemeScreen({Key? key}) : super(key: key);
@@ -16,7 +17,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      appBar: customAppbar(context, false, "Theme", false),
+      appBar: customAppbar(
+          context, false, AppLocalizations.of(context)!.theme, false),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -33,7 +35,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
               },
             ),
             title: Text(
-              "Dark Mode",
+              AppLocalizations.of(context)!.darkMode,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),

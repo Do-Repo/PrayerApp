@@ -67,4 +67,5 @@ class MyFlutterApp {
   static const IconData no_wifi = IconData(0xe82c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData warning = IconData(0xe82d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData miscellaneous = IconData(0xe82e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData allah = IconData(0xe82f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

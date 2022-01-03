@@ -1,14 +1,15 @@
 import 'package:application_1/screens/Settings/Recitation.dart';
 import 'package:application_1/src/customWidgets/API.dart';
+import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:quran/quran.dart';
 
 class QuranPage extends StatefulWidget {
@@ -139,7 +140,6 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                                         snapshot.data!.forEach((element) {
                                           reasonList.add(element.audio);
                                         });
-
                                         return playing
                                             ? InkWell(
                                                 onTap: () {
@@ -180,15 +180,10 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    showMaterialModalBottomSheet(
-                                        context: context,
-                                        builder: (context) => (bookmarkIndex !=
-                                                    0 &&
-                                                selectedAyah.isNotEmpty)
-                                            ? HighlightedAyahSettings(
-                                                vs: widget.vs,
-                                                ayah: selectedAyah)
-                                            : Container(
+                                    if (bookmarkIndex == 0)
+                                      showMaterialModalBottomSheet(
+                                          context: context,
+                                          builder: (context) => Container(
                                                 padding: EdgeInsets.all(20.sp),
                                                 child: Column(
                                                   mainAxisSize:
@@ -204,7 +199,9 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "Tap and hold on any ayah to highlight and bookmark",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .highlightInfo,
                                                       textAlign:
                                                           TextAlign.center,
                                                     )
@@ -375,11 +372,12 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                         color: Theme.of(context).colorScheme.secondary,
                       );
                     } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          "connection failed",
-                          style: TextStyle(color: Colors.red),
-                        ),
+                      return NoConnectionWidget(
+                        function: () {
+                          widget.iA
+                              ? getAyahAR(widget.vs, rec.recitation)
+                              : getAyahEN(widget.vs);
+                        },
                       );
                     } else {
                       List<TextSpan> reasonList = [];
@@ -402,12 +400,6 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                                         .setBookmark(widget.vs, bookmarkIndex);
                                     selectedAyah =
                                         snapshot.data![bookmarkIndex - 1].ayah;
-                                    showMaterialModalBottomSheet(
-                                        context: context,
-                                        builder: (context) =>
-                                            HighlightedAyahSettings(
-                                                vs: widget.vs,
-                                                ayah: element.ayah));
                                   }
                                 });
                               },
@@ -436,11 +428,10 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                                     '${getVerseEndSymbol(reasonList.length + 1)} '
                                 : element.ayah + '\n\n'));
                       });
-                      return Container(
-                          child: RichText(
-                              text: TextSpan(
+                      return RichText(
+                          text: TextSpan(
                         children: reasonList,
-                      )));
+                      ));
                     }
                   },
                 )),
@@ -507,7 +498,7 @@ class EnglishInfo extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Translator: ',
+                AppLocalizations.of(context)!.translator + ': ',
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
                     fontWeight: FontWeight.bold,
@@ -528,121 +519,78 @@ class EnglishInfo extends StatelessWidget {
   }
 }
 
-// to do with provider
-class HighlightedAyahSettings extends StatefulWidget {
-  const HighlightedAyahSettings(
-      {Key? key, required this.ayah, required this.vs})
-      : super(key: key);
-  final String ayah;
-  final int vs;
-  @override
-  _HighlightedAyahSettingsState createState() =>
-      _HighlightedAyahSettingsState();
-}
+// // to do with provider
+// class HighlightedAyahSettings extends StatefulWidget {
+//   const HighlightedAyahSettings(
+//       {Key? key, required this.ayah, required this.vs})
+//       : super(key: key);
+//   final String ayah;
+//   final int vs;
+//   @override
+//   _HighlightedAyahSettingsState createState() =>
+//       _HighlightedAyahSettingsState();
+// }
 
-class _HighlightedAyahSettingsState extends State<HighlightedAyahSettings> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: 1.sw,
-        padding: EdgeInsets.all(20.sp),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.ayah,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 50.sp),
-            ),
-            Container(
-              width: 1.sw,
-              height: 2.sp,
-              color: Theme.of(context).dividerColor,
-            ),
-            SizedBox(
-              height: 20.sp,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                    padding: EdgeInsets.all(10.sp),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                        border: Border.all(
-                            style: BorderStyle.solid,
-                            color: Theme.of(context).primaryColor)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.translate_outlined,
-                          size: 50.sp,
-                        ),
-                        Text(" Translate")
-                      ],
-                    )),
-                InkWell(
-                  onTap: () {
-                    Clipboard.setData(new ClipboardData(text: widget.ayah));
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(10.sp),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          border: Border.all(
-                              style: BorderStyle.solid,
-                              color: Theme.of(context).primaryColor)),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.copy_all,
-                            size: 50.sp,
-                          ),
-                          Flexible(
-                            child: Text(
-                              " Copy",
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        ],
-                      )),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      BookmarkPref().setBookmark(widget.vs, 0);
-                    });
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(10.sp),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          border: Border.all(
-                              style: BorderStyle.solid,
-                              color: Theme.of(context).primaryColor)),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.bookmark_remove_outlined,
-                            size: 50.sp,
-                          ),
-                          Flexible(
-                            child: Text(
-                              " Remove",
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        ],
-                      )),
-                ),
-              ],
-            ),
-          ],
-        ));
-  }
-}
+// class _HighlightedAyahSettingsState extends State<HighlightedAyahSettings> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//         width: 1.sw,
+//         padding: EdgeInsets.all(20.sp),
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Text(
+//               widget.ayah,
+//               textAlign: TextAlign.center,
+//               style: TextStyle(fontSize: 50.sp),
+//             ),
+//             Container(
+//               width: 1.sw,
+//               height: 2.sp,
+//               color: Theme.of(context).dividerColor,
+//             ),
+//             Container(
+//               width: 1.sw,
+//            child: Text(widget.)
+//             ),
+//             SizedBox(
+//               height: 20.sp,
+//             ),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 InkWell(
+//                   onTap: () {
+//                     Clipboard.setData(new ClipboardData(text: widget.ayah));
+//                     Navigator.pop(context);
+//                   },
+//                   child: Container(
+//                       padding: EdgeInsets.all(10.sp),
+//                       decoration: BoxDecoration(
+//                           borderRadius: BorderRadius.all(Radius.circular(5)),
+//                           border: Border.all(
+//                               style: BorderStyle.solid,
+//                               color: Theme.of(context).primaryColor)),
+//                       child: Row(
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           Icon(
+//                             Icons.copy_all,
+//                             size: 50.sp,
+//                           ),
+//                           Flexible(
+//                             child: Text(
+//                               " Copy",
+//                               overflow: TextOverflow.ellipsis,
+//                             ),
+//                           )
+//                         ],
+//                       )),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ));
+//   }
+// }

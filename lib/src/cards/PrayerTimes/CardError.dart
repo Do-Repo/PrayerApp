@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:application_1/src/customIcons/my_flutter_app_icons.dart'
     as customIcon;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CardError extends StatelessWidget {
   const CardError({
@@ -28,14 +29,16 @@ class CardError extends StatelessWidget {
             ListTile(
               isThreeLine: true,
               title: Text(
-                "Failed to look up your location",
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 50.sp),
+                AppLocalizations.of(context)!.errortitleloc,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 45.sp,
+                    color: Colors.white),
               ),
               subtitle: RichText(
                 text: TextSpan(
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                    text:
-                        "Make sure you're connected to the Internet and press retry.",
+                    style: TextStyle(color: Colors.white),
+                    text: AppLocalizations.of(context)!.errorsubloc,
                     children: <TextSpan>[
                       TextSpan(
                           recognizer: TapGestureRecognizer()
@@ -50,7 +53,8 @@ class CardError extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "Why do I have to be connected to the internet?",
+                                              AppLocalizations.of(context)!
+                                                  .errorsubloctwo,
                                               style: TextStyle(
                                                   fontSize: 50.sp,
                                                   color: Theme.of(context)
@@ -59,22 +63,24 @@ class CardError extends StatelessWidget {
                                                   fontWeight: FontWeight.w500),
                                             ),
                                             Text(
-                                              "\nAll the data in the app like Quran, Hadith, Audio files and Country names are stored online in order to keep the application size reasonable. \n \nThere's nothing to worry about since none of your data is being stored online.",
-                                              style: TextStyle(fontSize: 40.sp),
+                                              "\n" +
+                                                  AppLocalizations.of(context)!
+                                                      .errorsublocthree,
+                                              style: TextStyle(fontSize: 45.sp),
                                             )
                                           ],
                                         ),
                                       ));
                             },
                           style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.w700),
-                          text:
-                              "\nWhy do I need to be connected to the internet?")
+                              color: Colors.white, fontWeight: FontWeight.w700),
+                          text: "\n" +
+                              AppLocalizations.of(context)!.errorsubloctwo)
                     ]),
               ),
               leading: Icon(
                 customIcon.MyFlutterApp.no_wifi,
+                color: Colors.white,
                 size: 200.sp,
               ),
             ),
@@ -90,14 +96,14 @@ class CardError extends StatelessWidget {
                               builder: (context) => AdvancedSettings()));
                     },
                     child: Text(
-                      "Location Settings",
+                      AppLocalizations.of(context)!.locset,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
                     )),
                 TextButton(
                     onPressed: func,
                     child: Text(
-                      "Retry",
+                      AppLocalizations.of(context)!.retry,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
                     )),

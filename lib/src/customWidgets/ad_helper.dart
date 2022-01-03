@@ -8,6 +8,7 @@ class AdState {
   String get homeBannerAd => Platform.isAndroid
       ? "ca-app-pub-3940256099942544/6300978111"
       : "To implement for ios";
+
   String interstitialAdUnitId = Platform.isAndroid
       ? "ca-app-pub-3940256099942544/1033173712"
       : "To implement for ios";

@@ -1,3 +1,4 @@
+import 'package:application_1/screens/Settings/NotificationSettings.dart';
 import 'package:application_1/src/customWidgets/API.dart';
 import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:application_1/src/customWidgets/providerSettings.dart';
@@ -8,6 +9,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AdvancedSettings extends StatefulWidget {
   const AdvancedSettings({
@@ -21,37 +23,127 @@ class AdvancedSettings extends StatefulWidget {
 class _AdvancedSettingsState extends State<AdvancedSettings> {
   @override
   Widget build(BuildContext context) {
-    final prayerTimeCalcul = Provider.of<PrayertimesProvider>(context);
-
+    final prayerTimeCalcul =
+        Provider.of<PrayertimesProvider>(context, listen: false);
     return Consumer<SavedLocationProvider>(
       builder: (context, value, child) => Scaffold(
-        appBar: customAppbar(context, false, "Advanced Settings", false),
+        appBar: customAppbar(
+            context, false, AppLocalizations.of(context)!.advancedset, false),
         body: SingleChildScrollView(
           child: Column(
             children: [
               ListTile(
                 dense: true,
                 title: Text(
-                  "Prayer times",
+                  AppLocalizations.of(context)!.prayerTimes,
                   style: TextStyle(fontSize: 50.sp),
                 ),
                 tileColor: Theme.of(context).backgroundColor,
               ),
               PickTimeMethod(index: prayerTimeCalcul.timeSettings),
               ListTile(
+                title: Text(AppLocalizations.of(context)!.notifset),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NotificationSettings()));
+                },
+                trailing: Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              ListTile(
                 dense: true,
                 title: Text(
-                  "Location settings",
+                  AppLocalizations.of(context)!.locset,
                   style: TextStyle(fontSize: 50.sp),
                 ),
                 tileColor: Theme.of(context).backgroundColor,
               ),
-              PickLocationMethod()
+              PickLocationMethod(),
+              ListTile(
+                title: Text(
+                  AppLocalizations.of(context)!.langset,
+                  style: TextStyle(fontSize: 50.sp),
+                ),
+                tileColor: Theme.of(context).backgroundColor,
+              ),
+              LanguageSettin()
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+List languageList = ["en", "nl", "fr", "de"];
+
+enum LanguageGroup {
+  zero, // english
+  one, // dutch
+  two, // french
+  three, // german
+}
+
+class LanguageSettin extends StatefulWidget {
+  const LanguageSettin({Key? key}) : super(key: key);
+
+  @override
+  State<LanguageSettin> createState() => _LanguageSettinState();
+}
+
+class _LanguageSettinState extends State<LanguageSettin> {
+  LanguageGroup? _character = LanguageGroup.zero;
+  @override
+  void initState() {
+    var option = Provider.of<AdvancedSettingsProvider>(context, listen: false);
+    _character = LanguageGroup.values[option.languageOption];
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var option = Provider.of<AdvancedSettingsProvider>(context, listen: true);
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      RadioListTile(
+        groupValue: _character,
+        onChanged: (LanguageGroup? value) {
+          option.languageOption = value!.index;
+          _character = value;
+        },
+        value: LanguageGroup.zero,
+        title: Text("English"),
+        subtitle: Text("English US"),
+      ),
+      RadioListTile(
+        groupValue: _character,
+        onChanged: (LanguageGroup? value) {
+          option.languageOption = value!.index;
+          _character = value;
+        },
+        value: LanguageGroup.one,
+        title: Text("Nederlands"),
+        subtitle: Text("Nederlands NL"),
+      ),
+      RadioListTile(
+        groupValue: _character,
+        onChanged: (LanguageGroup? value) {
+          option.languageOption = value!.index;
+          _character = value;
+        },
+        value: LanguageGroup.two,
+        title: Text("Français "),
+        subtitle: Text("Français FR"),
+      ),
+      RadioListTile(
+        groupValue: _character,
+        onChanged: (LanguageGroup? value) {
+          option.languageOption = value!.index;
+          _character = value;
+        },
+        value: LanguageGroup.three,
+        title: Text("Deutsch "),
+        subtitle: Text("Deutsch DE"),
+      ),
+    ]);
   }
 }
 
@@ -90,8 +182,8 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
       mainAxisSize: MainAxisSize.min,
       children: [
         RadioListTile(
-            title: Text("Automatically"),
-            subtitle: Text("Checks live location on startup using GPS"),
+            title: Text(AppLocalizations.of(context)!.automatically),
+            subtitle: Text(AppLocalizations.of(context)!.autosub),
             value: LocationMethodGroup.zero,
             groupValue: _character,
             onChanged: (LocationMethodGroup? value) {
@@ -99,15 +191,14 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
               _character = value;
             }),
         RadioListTile(
-          title: Text("Last known location "),
+          title: Text(AppLocalizations.of(context)!.lastknown),
           value: LocationMethodGroup.one,
           groupValue: _character,
           onChanged: (LocationMethodGroup? value) {
             _character = value;
             option.locationOption = value!.index;
           },
-          subtitle:
-              Text("Checks last known location, usually faster on startup"),
+          subtitle: Text(AppLocalizations.of(context)!.lastknownsub),
           tileColor: (_character == LocationMethodGroup.one)
               ? Theme.of(context).colorScheme.secondary.withOpacity(0.05)
               : Colors.transparent,
@@ -139,11 +230,11 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                                 : Colors.transparent,
                             leading: SizedBox(),
                             title: Text(
-                              "Failed to get location",
+                              AppLocalizations.of(context)!.locfailure,
                               style: TextStyle(color: Colors.red[500]),
                             ),
                             subtitle: Text(
-                                "Your device might not support this feature"),
+                                AppLocalizations.of(context)!.locfailuresub),
                           )
                         : FutureBuilder(
                             future: placemarkFromCoordinates(
@@ -175,11 +266,11 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                                           : Colors.transparent,
                                   leading: SizedBox(),
                                   title: Text(
-                                    "Failed to get location",
+                                    AppLocalizations.of(context)!.locfailure,
                                     style: TextStyle(color: Colors.red[500]),
                                   ),
-                                  subtitle: Text(
-                                      "Your device might not support this feature"),
+                                  subtitle: Text(AppLocalizations.of(context)!
+                                      .locfailuresub),
                                 );
                               } else {
                                 title = snap.data!.first.locality.toString();
@@ -209,11 +300,11 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                 : CrossFadeState.showFirst,
             duration: Duration(milliseconds: 300)),
         RadioListTile(
-            title: Text("Manually"),
+            title: Text(AppLocalizations.of(context)!.manually),
             tileColor: (_character == LocationMethodGroup.two)
                 ? Theme.of(context).colorScheme.secondary.withOpacity(0.05)
                 : Theme.of(context).scaffoldBackgroundColor,
-            subtitle: Text("Set your location manually"),
+            subtitle: Text(AppLocalizations.of(context)!.manuallysub),
             value: LocationMethodGroup.two,
             groupValue: _character,
             onChanged: (LocationMethodGroup? value) {
@@ -231,18 +322,18 @@ class _PickLocationMethodState extends State<PickLocationMethod> {
                     ? Theme.of(context).colorScheme.secondary.withOpacity(0.05)
                     : Colors.transparent,
                 leading: SizedBox(),
-                title: Text("Set location"),
+                title: Text(AppLocalizations.of(context)!.setloc),
                 subtitle: FutureBuilder(
                   future: placemarkFromCoordinates(loc.savedLat, loc.savedLong),
                   builder: (context, AsyncSnapshot<List<Placemark>> snapnap) {
                     if (snapnap.connectionState != ConnectionState.done) {
                       return Text(
-                        "Loading location...",
+                        AppLocalizations.of(context)!.loadingloc + "...",
                         overflow: TextOverflow.ellipsis,
                       );
                     } else if (snapnap.hasError) {
                       return Text(
-                        "No location is set yet",
+                        AppLocalizations.of(context)!.noloc,
                         style: TextStyle(color: Colors.red[300]),
                         overflow: TextOverflow.ellipsis,
                       );
@@ -288,7 +379,7 @@ class _MapInterfaceState extends State<MapInterface> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          "Set Location",
+          AppLocalizations.of(context)!.setloc,
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
         actions: [
@@ -376,14 +467,23 @@ class _MapInterfaceState extends State<MapInterface> {
                           backgroundColor: Colors.transparent,
                           color: Theme.of(context).colorScheme.secondary,
                         ),
-                        Text(
-                          "Oops... Something went wrong",
-                          style: TextStyle(
-                              fontSize: 60.sp, color: Colors.red[300]),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: Text(
+                              AppLocalizations.of(context)!.somethingwrong,
+                              style: TextStyle(
+                                  fontSize: 60.sp, color: Colors.red[300]),
+                            ),
+                          ),
                         ),
-                        Text(
-                          "Failed to connect... Try again",
-                          style: TextStyle(fontSize: 50.sp),
+                        FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: Text(
+                            AppLocalizations.of(context)!.sometingwrongsub,
+                            style: TextStyle(fontSize: 50.sp),
+                          ),
                         )
                       ],
                     ),
@@ -505,7 +605,7 @@ class _PickTimeMethodState extends State<PickTimeMethod> {
   Widget build(BuildContext context) {
     final prayerTimeCalcul = Provider.of<PrayertimesProvider>(context);
     return ExpansionTile(
-      title: Text("Calculation method"),
+      title: Text(AppLocalizations.of(context)!.calculmeth),
       backgroundColor:
           Theme.of(context).colorScheme.secondary.withOpacity(0.05),
       children: [
