@@ -1,3 +1,4 @@
+import 'package:application_1/screens/Settings/Theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,26 +67,45 @@ class DarkThemePref {
     prefs.setBool(THEME_STATUS, val);
   }
 
+  setColor(int index) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setInt("COLOR", index);
+  }
+
   Future<bool> getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(THEME_STATUS) ?? false;
+  }
+
+  Future<int> getColor() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getInt("COLOR") ?? 0;
   }
 }
 
 class DarkThemeProvider with ChangeNotifier {
   DarkThemePref darkThemePref = DarkThemePref();
   bool _darkTheme = false;
+  int _colorIndex = 0;
   bool get darkTheme => _darkTheme;
+  int get color => _colorIndex;
 
   set darkTheme(bool value) {
     _darkTheme = value;
     darkThemePref.setDarkTheme(value);
     notifyListeners();
   }
+
+  set color(int index) {
+    _colorIndex = index;
+    darkThemePref.setColor(index);
+    notifyListeners();
+  }
 }
 
 class Styles {
-  static ThemeData themeData(bool isDarkTheme, BuildContext context) {
+  static ThemeData themeData(
+      bool isDarkTheme, BuildContext context, int colorIndex) {
     return ThemeData(
       appBarTheme: AppBarTheme(
           systemOverlayStyle: (isDarkTheme)
@@ -101,12 +121,12 @@ class Styles {
       scaffoldBackgroundColor:
           (isDarkTheme) ? Color(0xFF191716) : Color(0xFFFFFFFA),
       primaryColor: (isDarkTheme) ? Colors.white : Colors.black,
-      toggleableActiveColor: Colors.green,
+      toggleableActiveColor: colorsList[colorIndex],
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.green,
+        primary: colorsList[colorIndex],
         background: (isDarkTheme) ? Colors.grey[900] : Colors.grey[200],
         brightness: (isDarkTheme) ? Brightness.dark : Brightness.light,
-        secondary: Colors.green, //Color(0xFFE6AF2E)
+        secondary: colorsList[colorIndex], //Color(0xFFE6AF2E)
       ),
       splashColor: Colors.transparent,
     );

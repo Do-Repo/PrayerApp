@@ -1,3 +1,4 @@
+import 'package:application_1/screens/Settings/AdsSettingsPage.dart';
 import 'package:application_1/screens/Settings/NotificationSettings.dart';
 import 'package:application_1/screens/Settings/Settings.dart';
 import 'package:flutter/material.dart';
@@ -138,6 +139,61 @@ class NoConnectionWidget extends StatelessWidget {
         customIcon.MyFlutterApp.no_wifi,
         size: 200.sp,
       ),
+    );
+  }
+}
+
+class ReqSubscription extends StatelessWidget {
+  const ReqSubscription({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Container(
+        padding: EdgeInsets.all(20.sp),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                title: Text(
+                  AppLocalizations.of(context)!.requiressubtitle,
+                  style: TextStyle(
+                      fontSize: 50.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary),
+                ),
+                subtitle: Text(AppLocalizations.of(context)!.requiressub),
+                leading: Icon(
+                  Icons.app_blocking_outlined,
+                  size: 150.sp,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => AdsSettingsPage()));
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.subscribe,
+                  style: TextStyle(fontSize: 50.sp),
+                ))
+          ],
+        ),
+        decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+      ),
+      height: double.infinity,
+      width: double.infinity,
     );
   }
 }

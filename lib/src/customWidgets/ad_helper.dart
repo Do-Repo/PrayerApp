@@ -6,11 +6,11 @@ class AdState {
   Future<InitializationStatus> initialization;
   AdState(this.initialization);
   String get homeBannerAd => Platform.isAndroid
-      ? "ca-app-pub-3940256099942544/6300978111"
+      ? "ca-app-pub-1433006549087304/2896318627"
       : "To implement for ios";
 
   String interstitialAdUnitId = Platform.isAndroid
-      ? "ca-app-pub-3940256099942544/1033173712"
+      ? "ca-app-pub-1433006549087304/8449766315"
       : "To implement for ios";
 
   BannerAdListener get bannerAdListener => _bannerAdListener;

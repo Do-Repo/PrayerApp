@@ -85,6 +85,7 @@ Future<void> getCurrentPrayerTimeSettings() async {
 
 Future<void> getCurrentAppTheme() async {
   themeChanger.darkTheme = await themeChanger.darkThemePref.getTheme();
+  themeChanger.color = await themeChanger.darkThemePref.getColor();
 }
 
 class MyApp extends StatefulWidget {
@@ -170,7 +171,8 @@ class _MyAppState extends State<MyApp> {
                       localizationsDelegates:
                           AppLocalizations.localizationsDelegates,
                       supportedLocales: AppLocalizations.supportedLocales,
-                      theme: Styles.themeData(themeChanger.darkTheme, context),
+                      theme: Styles.themeData(
+                          themeChanger.darkTheme, context, themeChanger.color),
                       debugShowCheckedModeBanner: false,
                       locale: Locale.fromSubtags(
                           languageCode: languageList[value4.languageOption]),

@@ -84,5 +84,8 @@
     "asmaAlHusna":"De 99 namen van Allah heten 'Asma Ul Husna' wat in het Arabisch 'De Mooiste Namen' betekent",
     "thankyou":"Bedankt voor je ondersteuning",
     "subscribed":"Geabonneerd",
-    "langset": "Taal instellingen"
+    "langset": "Taal instellingen",
+    "subscribe":"Abonneren",
+    "requiressub":"Deze functie is alleen beschikbaar voor geabonneerde gebruikers, abonneer u nu!",
+    "requiressubtitle":"Vereist abonnement"
 }

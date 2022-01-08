@@ -118,14 +118,18 @@ class _SibhahState extends State<Sibhah> with TickerProviderStateMixin {
                                         padding: EdgeInsets.all(10.sp),
                                         child: Center(
                                           child: (variable == 0)
-                                              ? Text(
-                                                  ap.AppLocalizations.of(
-                                                          context)!
-                                                      .start,
-                                                  style: (TextStyle(
-                                                      color: Colors.green[900],
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                              ? FittedBox(
+                                                  fit: BoxFit.fitWidth,
+                                                  child: Text(
+                                                    ap.AppLocalizations.of(
+                                                            context)!
+                                                        .start,
+                                                    style: (TextStyle(
+                                                        color:
+                                                            Colors.green[900],
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                  ),
                                                 )
                                               : (variable == 100)
                                                   ? Icon(
