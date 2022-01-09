@@ -15,16 +15,19 @@ typedef Future<CardModel> FutureGenerator();
 class PrayertimesCard extends StatefulWidget {
   const PrayertimesCard(
       {Key? key,
+      required int timeSettings,
       required double latitude,
       required int timestamp,
       required double longitude})
       : lt = latitude,
         ts = timestamp,
+        settings = timeSettings,
         lot = longitude,
         super(key: key);
   final double lt;
   final int ts;
   final double lot;
+  final int settings;
 
   @override
   _PrayertimesCardState createState() => _PrayertimesCardState();
@@ -33,17 +36,14 @@ class PrayertimesCard extends StatefulWidget {
 class _PrayertimesCardState extends State<PrayertimesCard> {
   String? _timeString;
   late Timer t;
-  late PrayertimesProvider prayerTimeCalcul;
+
   Future<CardModel?>? cardmodel;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      prayerTimeCalcul =
-          Provider.of<PrayertimesProvider>(context, listen: false);
-      cardmodel = getCardReady(
-          widget.ts, widget.lt, widget.lot, prayerTimeCalcul.timeSettings);
-    });
+
+    cardmodel = getCardReady(widget.ts, widget.lt, widget.lot, widget.settings);
+
     _timeString = _formatDateTimeSeconds(DateTime.now());
     t = new Timer.periodic(Duration(seconds: 1), (Timer timer) => _getTime());
   }
@@ -84,8 +84,8 @@ class _PrayertimesCardState extends State<PrayertimesCard> {
                   snap: snapshot,
                   onPressed: () {
                     setState(() {
-                      cardmodel = getCardReady(widget.ts, widget.lt, widget.lot,
-                          prayerTimeCalcul.timeSettings);
+                      cardmodel = getCardReady(
+                          widget.ts, widget.lt, widget.lot, widget.settings);
                     });
                   },
                 );

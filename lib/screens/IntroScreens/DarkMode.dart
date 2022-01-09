@@ -7,10 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DarkModePage extends StatefulWidget {
-  const DarkModePage(
-      {Key? key, required this.pageController, required this.optionIndex})
+  const DarkModePage({Key? key, required this.pageController})
       : super(key: key);
-  final int optionIndex;
   final PageController pageController;
   @override
   _DarkModePageState createState() => _DarkModePageState();
@@ -76,9 +74,8 @@ class _DarkModePageState extends State<DarkModePage> {
             TextButton(
                 onPressed: () async {
                   await checkIfFirstTime(true);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) =>
-                          HomePage(optionIndex: widget.optionIndex)));
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => HomePage()));
                 },
                 child: Container(
                   padding: EdgeInsets.all(20.sp),

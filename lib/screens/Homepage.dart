@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:application_1/screens/AsmaHosna.dart';
 import 'package:application_1/screens/DuasAndAzkar/Duas.dart';
 import 'package:application_1/screens/HadithPage/HadithList.dart';
@@ -24,8 +26,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.optionIndex}) : super(key: key);
-  final int optionIndex;
+  const HomePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -46,6 +49,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var calculMethod = Provider.of<PrayertimesProvider>(context);
+    var timeSettings =
+        context.select((AdvancedSettingsProvider asp) => asp.locationOption);
     return ChangeNotifierProvider(
       create: (_) {
         return effects;
@@ -67,33 +73,13 @@ class _HomePageState extends State<HomePage> {
                         : CrossFadeState.showSecond,
                     duration: Duration(milliseconds: 300),
                     sizeCurve: Curves.easeInOut,
-                    secondChild: Container(),
-                    firstChild: AnimatedSize(
+                    secondChild: AnimatedSize(
                       duration: Duration(milliseconds: 300),
-                      child: FutureBuilder(
-                          future: getLocation(widget.optionIndex, context),
-                          builder: (context, AsyncSnapshot<Position> snapshot) {
-                            if (snapshot.hasError) {
-                              return Container();
-                            } else if (snapshot.connectionState !=
-                                ConnectionState.done) {
-                              return Center(
-                                  child: pt.CardLoading(
-                                      message: AppLocalizations.of(context)!
-                                          .loadingloc));
-                            } else {
-                              return (snapshot.data!.latitude == 0 &&
-                                      snapshot.data!.longitude == 0)
-                                  ? Container()
-                                  : Center(
-                                      child: PrayertimesCard(
-                                          latitude: snapshot.data!.latitude,
-                                          timestamp: DateTime.now()
-                                              .millisecondsSinceEpoch,
-                                          longitude: snapshot.data!.longitude),
-                                    );
-                            }
-                          }),
+                      child: Container(),
+                    ),
+                    firstChild: Test(
+                      timeSettings: timeSettings,
+                      calculMethod: calculMethod.timeSettings,
                     ),
                   ),
                 ),
@@ -131,6 +117,44 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+class Test extends StatefulWidget {
+  const Test({Key? key, required this.timeSettings, required this.calculMethod})
+      : super(key: key);
+  final int timeSettings;
+  final int calculMethod;
+  @override
+  State<Test> createState() => _TestState();
+}
+
+class _TestState extends State<Test> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: getLocation(widget.timeSettings, context),
+        builder: (context, AsyncSnapshot<Position> snapshot) {
+          if (snapshot.hasError) {
+            print(snapshot.error);
+            return Container();
+          } else if (snapshot.connectionState != ConnectionState.done) {
+            return Center(
+                child: pt.CardLoading(
+                    message: AppLocalizations.of(context)!.loadingloc));
+          } else {
+            return (snapshot.data!.latitude == 0 &&
+                    snapshot.data!.longitude == 0)
+                ? Container()
+                : Center(
+                    child: PrayertimesCard(
+                        timeSettings: widget.calculMethod,
+                        latitude: snapshot.data!.latitude,
+                        timestamp: DateTime.now().millisecondsSinceEpoch,
+                        longitude: snapshot.data!.longitude),
+                  );
+          }
+        });
   }
 }
 

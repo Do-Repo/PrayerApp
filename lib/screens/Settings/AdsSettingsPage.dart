@@ -92,8 +92,7 @@ class _AdsSettingsPageState extends State<AdsSettingsPage> {
                                   number: 1,
                                   offer: AppLocalizations.of(context)!.noAds,
                                   price: offerings
-                                      .current!.monthly!.product.price
-                                      .toString(),
+                                      .current!.monthly!.product.priceString,
                                   onClicked: () {
                                     purchase(
                                         offerings.current!.monthly!, "1mNoAds");
@@ -108,8 +107,7 @@ class _AdsSettingsPageState extends State<AdsSettingsPage> {
                                   number: 3,
                                   offer: AppLocalizations.of(context)!.noAds,
                                   price: offerings
-                                      .current!.threeMonth!.product.price
-                                      .toString(),
+                                      .current!.threeMonth!.product.priceString,
                                   onClicked: () {
                                     purchase(offerings.current!.threeMonth!,
                                         "3mNoAds");
@@ -124,8 +122,7 @@ class _AdsSettingsPageState extends State<AdsSettingsPage> {
                                   number: 12,
                                   offer: AppLocalizations.of(context)!.noAds,
                                   price: offerings
-                                      .current!.annual!.product.price
-                                      .toString(),
+                                      .current!.annual!.product.priceString,
                                   onClicked: () {
                                     purchase(
                                         offerings.current!.annual!, "12mNoAds");
@@ -242,7 +239,7 @@ class _PriceCardState extends State<PriceCard> {
             Spacer(),
             Container(
                 child: Text(
-              r"$" + "${widget.price}",
+              "${widget.price}",
               style: TextStyle(
                 fontSize: 80.sp,
               ),

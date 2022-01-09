@@ -176,9 +176,7 @@ class _MyAppState extends State<MyApp> {
                       debugShowCheckedModeBanner: false,
                       locale: Locale.fromSubtags(
                           languageCode: languageList[value4.languageOption]),
-                      home: Wrapper(
-                        optionIndex: value4.locationOption,
-                      )),
+                      home: Wrapper()),
                 ),
                 (banner != null && !appData.isPro)
                     ? Container(
@@ -199,8 +197,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Wrapper extends StatefulWidget {
-  const Wrapper({Key? key, required this.optionIndex}) : super(key: key);
-  final int optionIndex;
+  const Wrapper({Key? key}) : super(key: key);
   @override
   State<Wrapper> createState() => _WrapperState();
 }
@@ -220,10 +217,9 @@ class _WrapperState extends State<Wrapper> {
           if (snapshot.data!) {
             return Intro(
               advancedSettingsProvider: advancedSettingsProvider,
-              optionIndex: widget.optionIndex,
             );
           } else {
-            return HomePage(optionIndex: widget.optionIndex);
+            return HomePage();
           }
         }
       },
@@ -232,12 +228,8 @@ class _WrapperState extends State<Wrapper> {
 }
 
 class Intro extends StatefulWidget {
-  const Intro(
-      {Key? key,
-      required this.optionIndex,
-      required this.advancedSettingsProvider})
+  const Intro({Key? key, required this.advancedSettingsProvider})
       : super(key: key);
-  final int optionIndex;
   final AdvancedSettingsProvider advancedSettingsProvider;
 
   @override
@@ -264,7 +256,6 @@ class _IntroState extends State<Intro> {
               LocationPage(pageController: pageController),
               DarkModePage(
                 pageController: pageController,
-                optionIndex: widget.optionIndex,
               )
             ],
           ),
