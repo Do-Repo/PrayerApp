@@ -1,25 +1,24 @@
-import 'package:application_1/screens/Homepage.dart';
-import 'package:application_1/screens/IntroScreens/DarkMode.dart';
-import 'package:application_1/screens/IntroScreens/Language.dart';
-import 'package:application_1/screens/IntroScreens/Location.dart';
-import 'package:application_1/screens/Settings/AdvancedSettings.dart';
-import 'package:application_1/src/customWidgets/ad_helper.dart';
-import 'package:application_1/src/customWidgets/notificationService.dart';
-import 'package:application_1/src/customWidgets/payment_service.dart';
-import 'package:application_1/src/customWidgets/providerSettings.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:application_1/screens/AsmaHusna/Asma.dart';
+import 'package:application_1/screens/HadithPage/HadithList.dart';
+import 'package:application_1/screens/HomePage/HomePageLayout.dart';
+import 'package:application_1/screens/QuranPage/QuranList.dart';
+import 'package:application_1/screens/SettingsPage/Settingspage.dart';
+import 'package:application_1/screens/SibhahPage/Sibhah.dart';
+import 'package:application_1/screens/SupportScreen/paymentService.dart';
+import 'package:application_1/src/advancedSettings.dart';
+import 'package:application_1/src/themeData.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:application_1/src/customIcons/my_flutter_app_icons.dart'
+    as customIcon;
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final initFuture = MobileAds.instance.initialize();
-  final adState = AdState(initFuture);
-  NotificationService().initNotification();
+  MobileAds.instance.initialize();
   await getCurrentAppTheme();
   await getCurrentRecitation();
   await getCurrentPrayerTimeSettings();
@@ -28,59 +27,49 @@ Future<void> main() async {
   await getSavedLong();
   await getSavedNotification();
   await initPlatformState();
-  await getLanguageOption();
-  runApp(Provider.value(value: adState, builder: (context, child) => MyApp()));
+  runApp(MyApp());
 }
 
 DarkThemeProvider themeChanger = DarkThemeProvider();
-RecitationProvider recitationChanger = RecitationProvider();
-PrayertimesProvider prayertimesChanger = PrayertimesProvider();
-SavedLocationProvider savedLocationChanger = SavedLocationProvider();
-AdvancedSettingsProvider advancedSettingsChanger = AdvancedSettingsProvider();
-SavedNotificationProvider savedNotificationChanger =
-    SavedNotificationProvider();
+AdvancedSettingsProvider settingChanger = AdvancedSettingsProvider();
+SavedLocationProvider locationChanger = SavedLocationProvider();
 
 Future<void> getSavedNotification() async {
-  savedNotificationChanger.savedFajr =
-      await savedNotificationChanger.savedNotificationPref.getFajr();
-  savedNotificationChanger.savedDhuhr =
-      await savedNotificationChanger.savedNotificationPref.getDhuhr();
-  savedNotificationChanger.savedAasr =
-      await savedNotificationChanger.savedNotificationPref.getAasr();
-  savedNotificationChanger.savedMaghrib =
-      await savedNotificationChanger.savedNotificationPref.getMaghrib();
-  savedNotificationChanger.savedIshaa =
-      await savedNotificationChanger.savedNotificationPref.getIshaa();
-}
-
-Future<void> getLanguageOption() async {
-  advancedSettingsChanger.languageOption =
-      await advancedSettingsChanger.advancedSettingsPref.getLanguage();
+  settingChanger.savedFajr =
+      await settingChanger.advancedSettingsPref.getFajr();
+  settingChanger.savedDhuhr =
+      await settingChanger.advancedSettingsPref.getDhuhr();
+  settingChanger.savedAasr =
+      await settingChanger.advancedSettingsPref.getAasr();
+  settingChanger.savedMaghrib =
+      await settingChanger.advancedSettingsPref.getMaghrib();
+  settingChanger.savedIshaa =
+      await settingChanger.advancedSettingsPref.getIshaa();
 }
 
 Future<void> getLocationOption() async {
-  advancedSettingsChanger.locationOption =
-      await advancedSettingsChanger.advancedSettingsPref.getLocationOption();
+  settingChanger.locationOption =
+      await settingChanger.advancedSettingsPref.getLocationOption();
 }
 
 Future<void> getCurrentRecitation() async {
-  recitationChanger.recitation =
-      await recitationChanger.recitationPref.getRecitation();
+  settingChanger.recitation =
+      await settingChanger.advancedSettingsPref.getRecitation();
 }
 
 Future<void> getSavedLat() async {
-  savedLocationChanger.savedLat =
-      await savedLocationChanger.savedLocationPref.getSavedLat();
+  locationChanger.savedLat =
+      await locationChanger.savedLocationPref.getSavedLat();
 }
 
 Future<void> getSavedLong() async {
-  savedLocationChanger.savedLong =
-      await savedLocationChanger.savedLocationPref.getSavedLong();
+  locationChanger.savedLong =
+      await locationChanger.savedLocationPref.getSavedLong();
 }
 
 Future<void> getCurrentPrayerTimeSettings() async {
-  prayertimesChanger.timeSettings =
-      await prayertimesChanger.prayertimesPref.getPrayertimeSettings();
+  settingChanger.timeSettings =
+      await settingChanger.advancedSettingsPref.getPrayertimeSettings();
 }
 
 Future<void> getCurrentAppTheme() async {
@@ -88,46 +77,8 @@ Future<void> getCurrentAppTheme() async {
   themeChanger.color = await themeChanger.darkThemePref.getColor();
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late BannerAd? banner;
-
-  @override
-  void initState() {
-    super.initState();
-
-    banner = null;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final adState = Provider.of<AdState>(context);
-    if (!appData.isPro) {
-      adState.initialization.then((value) {
-        setState(() {
-          banner = BannerAd(
-              size: AdSize.banner,
-              adUnitId: adState.homeBannerAd,
-              listener: adState.bannerAdListener,
-              request: AdRequest())
-            ..load();
-        });
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    banner!.dispose();
-
-    super.dispose();
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -138,140 +89,125 @@ class _MyAppState extends State<MyApp> {
             return themeChanger;
           },
         ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return settingChanger;
+          },
+        ),
         ChangeNotifierProvider(create: (_) {
-          return savedNotificationChanger;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          return prayertimesChanger;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          return recitationChanger;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          return advancedSettingsChanger;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          return savedLocationChanger;
+          return locationChanger;
         })
       ],
-      child: Consumer5<
-          DarkThemeProvider,
-          RecitationProvider,
-          PrayertimesProvider,
-          AdvancedSettingsProvider,
-          SavedNotificationProvider>(
-        builder: (BuildContext context, value, value2, value3, value4, value5,
-            child) {
-          return ScreenUtilInit(
+      child: Consumer2<DarkThemeProvider, AdvancedSettingsProvider>(
+          builder: (context, value1, value2, child) {
+        return ScreenUtilInit(
             designSize: Size(1080, 2160),
-            builder: () => Column(
-              children: [
-                Expanded(
-                  child: MaterialApp(
-                      localizationsDelegates:
-                          AppLocalizations.localizationsDelegates,
-                      supportedLocales: AppLocalizations.supportedLocales,
-                      theme: Styles.themeData(
-                          themeChanger.darkTheme, context, themeChanger.color),
-                      debugShowCheckedModeBanner: false,
-                      locale: Locale.fromSubtags(
-                          languageCode: languageList[value4.languageOption]),
-                      home: Wrapper()),
-                ),
-                (banner != null && !appData.isPro)
-                    ? Container(
-                        color: Colors.white,
-                        child: AdWidget(
-                          ad: banner!,
-                        ),
-                        height: banner!.size.height.toDouble(),
-                      )
-                    : Container(),
+            builder: () => MaterialApp(
+                  builder: (context, widget) {
+                    ScreenUtil.setContext(context);
+                    return MediaQuery(
+                        data:
+                            MediaQuery.of(context).copyWith(textScaleFactor: 1),
+                        child: widget!);
+                  },
+                  theme: Styles.themeData(
+                      themeChanger.darkTheme, context, themeChanger.color),
+                  debugShowCheckedModeBanner: false,
+                  home: Skeleton(),
+                ));
+      }),
+    );
+  }
+}
+
+class Skeleton extends StatefulWidget {
+  const Skeleton({Key? key}) : super(key: key);
+
+  @override
+  State<Skeleton> createState() => _SkeletonState();
+}
+
+class _SkeletonState extends State<Skeleton> {
+  late PageController tabController;
+  int currentIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    tabController = PageController(initialPage: 0, keepPage: true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: tabController,
+              children: const [
+                Homepage(),
+                QuranList(),
+                HadithList(),
+                Sibhah(),
+                AsmaHosna(),
+                SettingsScreen(),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class Wrapper extends StatefulWidget {
-  const Wrapper({Key? key}) : super(key: key);
-  @override
-  State<Wrapper> createState() => _WrapperState();
-}
-
-class _WrapperState extends State<Wrapper> {
-  @override
-  Widget build(BuildContext context) {
-    var advancedSettingsProvider =
-        Provider.of<AdvancedSettingsProvider>(context, listen: false);
-    return FutureBuilder(
-      future: checkIfFirstTime(false),
-      builder: (context, AsyncSnapshot<bool> snapshot) {
-        if (!snapshot.hasData) return Container();
-        if (snapshot.hasError)
-          return Container();
-        else {
-          if (snapshot.data!) {
-            return Intro(
-              advancedSettingsProvider: advancedSettingsProvider,
-            );
-          } else {
-            return HomePage();
-          }
-        }
-      },
-    );
-  }
-}
-
-class Intro extends StatefulWidget {
-  const Intro({Key? key, required this.advancedSettingsProvider})
-      : super(key: key);
-  final AdvancedSettingsProvider advancedSettingsProvider;
-
-  @override
-  State<Intro> createState() => _IntroState();
-}
-
-class _IntroState extends State<Intro> {
-  @override
-  Widget build(BuildContext context) {
-    var pageController = PageController(initialPage: 0, keepPage: true);
-    return WillPopScope(
-      onWillPop: () {
-        pageController.previousPage(
-            duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-        return Future.value(false);
-      },
-      child: Scaffold(
-        body: Container(
-          child: PageView(
-            controller: pageController,
-            physics: NeverScrollableScrollPhysics(),
-            children: [
-              LanguagePage(pageController: pageController),
-              LocationPage(pageController: pageController),
-              DarkModePage(
-                pageController: pageController,
-              )
-            ],
           ),
-        ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (value) => setState(() {
+          tabController.jumpToPage(value);
+          currentIndex = value;
+        }),
+        selectedItemColor: Theme.of(context).colorScheme.secondary,
+        unselectedItemColor: Colors.grey,
+        items: [
+          BottomNavigationBarItem(
+            label: "Timings",
+            icon: Icon(Icons.timer_sharp),
+          ),
+          BottomNavigationBarItem(
+            label: "Qur'an",
+            icon: Icon(
+              customIcon.MyFlutterApp.quran_1,
+              size: 70.sp,
+            ),
+          ),
+          BottomNavigationBarItem(
+            label: "Hadith",
+            icon: Icon(
+              customIcon.MyFlutterApp.prophet,
+              size: 70.sp,
+            ),
+          ),
+          BottomNavigationBarItem(
+            label: "Tasbeeh",
+            icon: Icon(
+              customIcon.MyFlutterApp.beads_1,
+              size: 70.sp,
+            ),
+          ),
+          BottomNavigationBarItem(
+            label: "Asma Husna",
+            icon: Icon(
+              customIcon.MyFlutterApp.allah,
+              size: 70.sp,
+            ),
+          ),
+          BottomNavigationBarItem(
+            label: "Settings",
+            icon: Icon(
+              Icons.settings_outlined,
+              size: 70.sp,
+            ),
+          )
+        ],
       ),
     );
-  }
-}
-
-Future<bool> checkIfFirstTime(bool end) async {
-  SharedPreferences pref = await SharedPreferences.getInstance();
-  if (!end) {
-    return pref.getBool("Firsttime") ?? true;
-  } else {
-    pref.setBool("Firsttime", false);
-    return false;
   }
 }
 

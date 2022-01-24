@@ -1,10 +1,9 @@
-import 'package:application_1/src/customWidgets/API.dart';
-import 'package:application_1/src/customWidgets/animator.dart';
-import 'package:application_1/src/customWidgets/customWidgets.dart';
 import 'package:flutter/material.dart';
+import 'package:application_1/screens/QuranPage/QuranPage.dart';
+import 'package:application_1/src/apiCalls.dart';
+import 'package:application_1/src/widgetAnimator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:ui' as ui;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HadithPage extends StatefulWidget {
   const HadithPage(
@@ -41,8 +40,10 @@ class _HadithPageState extends State<HadithPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: customAppbar(
-            context, false, AppLocalizations.of(context)!.hadith, true),
+        appBar: AppBar(
+          title: Text("Hadith"),
+          elevation: 0,
+        ),
         body: Column(
           children: [
             Directionality(

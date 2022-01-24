@@ -1,15 +1,17 @@
-import 'package:application_1/screens/Settings/Recitation.dart';
-import 'package:application_1/src/customWidgets/API.dart';
-import 'package:application_1/src/customWidgets/customWidgets.dart';
-import 'package:application_1/src/customWidgets/providerSettings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:application_1/models/quran.dart';
+import 'package:application_1/screens/SettingsPage/Recitation.dart';
+import 'package:application_1/src/advancedSettings.dart';
+import 'package:application_1/src/apiCalls.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:application_1/src/customIcons/my_flutter_app_icons.dart'
+    as customIcon;
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:quran/quran.dart';
 
 class QuranPage extends StatefulWidget {
@@ -32,7 +34,8 @@ class QuranPage extends StatefulWidget {
   _QuranPageState createState() => _QuranPageState();
 }
 
-class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
+class _QuranPageState extends State<QuranPage>
+    with SingleTickerProviderStateMixin {
   int counter = 0;
   bool isOn = false;
   int currentposition = 0;
@@ -40,11 +43,15 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
   int duration = 0;
   int bookmarkIndex = 0;
   String selectedAyah = "";
+  double fontsize = 50.sp;
+  String font = "Tajawal";
   bool playing = true;
+  late TabController tabController;
 
   @override
   void initState() {
     super.initState();
+    tabController = TabController(length: 2, vsync: this);
     BookmarkPref().getBookmark(widget.vs).then((value) {
       setState(() {
         bookmarkIndex = value;
@@ -61,386 +68,456 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final rec = Provider.of<RecitationProvider>(context);
-    return SafeArea(
-        child: Scaffold(
-      body: Directionality(
-        textDirection: widget.iA ? TextDirection.rtl : TextDirection.ltr,
-        child: Container(
-          margin: EdgeInsets.all(30.sp),
-          width: 1.sw,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ExpansionTile(
-                iconColor: Theme.of(context).colorScheme.secondary,
-                leading: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      size: 30,
+    var rec = Provider.of<AdvancedSettingsProvider>(context);
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (widget.iA)
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (font == "Tajawal") {
+                        font = "Scheherazade New";
+                      } else if (font == "Scheherazade New") {
+                        font = "Noto Nastaliq Urdu";
+                      } else {
+                        font = "Tajawal";
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.font_download_outlined)),
+            if (widget.iA)
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (fontsize == 50.sp) {
+                        fontsize = 70.sp;
+                      } else if (fontsize == 70.sp) {
+                        fontsize = 90.sp;
+                      } else {
+                        fontsize = 50.sp;
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.format_size_rounded)),
+            Spacer(),
+            Text(
+              widget.t,
+              style: TextStyle(fontSize: 80.sp),
+            )
+          ],
+        ),
+        bottom: (widget.iA)
+            ? TabBar(
+                controller: tabController,
+                labelColor: Colors.white,
+                indicatorColor: Colors.white,
+                tabs: const [
+                    Tab(
+                      text: "FULL SURAH",
                     ),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    }),
-                collapsedTextColor: Theme.of(context).colorScheme.secondary,
-                textColor: Theme.of(context).primaryColor,
-                title: Text(
-                  widget.t,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      TextStyle(fontSize: 90.sp, fontWeight: FontWeight.bold),
-                ),
-                children: [
-                  widget.iA
-                      ? SizedBox(
-                          width: 1.sw,
-                          child: Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  child: FutureBuilder(
-                                    future:
-                                        getAyahAR(widget.vs, rec.recitation),
-                                    builder: (context,
-                                        AsyncSnapshot<List> snapshot) {
-                                      if (snapshot.connectionState !=
-                                          ConnectionState.done) {
-                                        return Container(
-                                          padding: EdgeInsets.all(30.sp),
-                                          height: 200.sp,
-                                          width: 200.sp,
-                                          child: CircularProgressIndicator(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            strokeWidth: 17.sp,
-                                          ),
-                                        );
-                                      } else if (snapshot.hasError) {
-                                        return InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              getAyahAR(
-                                                  widget.vs, rec.recitation);
-                                            });
-                                          },
-                                          child: Icon(
-                                            Icons.refresh,
-                                            size: 200.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                          ),
-                                        );
-                                      } else {
-                                        List<String> reasonList = [];
-                                        snapshot.data!.forEach((element) {
-                                          reasonList.add(element.audio);
-                                        });
-                                        return playing
-                                            ? InkWell(
-                                                onTap: () {
-                                                  playing = false;
-                                                  isOn
-                                                      ? resumeQuran(audio)
-                                                      : playQuran(
-                                                          reasonList, audio);
-                                                },
-                                                child: Icon(
-                                                  Icons
-                                                      .play_circle_outline_outlined,
-                                                  size: 200.sp,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                              )
-                                            : InkWell(
-                                                child: Icon(
-                                                  Icons
-                                                      .pause_circle_outline_outlined,
-                                                  size: 200.sp,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                                onTap: () {
-                                                  audio.pause();
-                                                  setState(() {
-                                                    playing = true;
-                                                  });
-                                                },
-                                              );
-                                      }
-                                    },
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    if (bookmarkIndex == 0)
-                                      showMaterialModalBottomSheet(
-                                          context: context,
-                                          builder: (context) => Container(
-                                                padding: EdgeInsets.all(20.sp),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 200.sp,
-                                                      width: 200.sp,
-                                                      child:
-                                                          LottieBuilder.asset(
-                                                        "assets/images/longtap.json",
-                                                        reverse: true,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .highlightInfo,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    )
-                                                  ],
-                                                ),
-                                              ));
-                                  },
-                                  child: AnimatedSize(
-                                    duration: Duration(milliseconds: 500),
-                                    child: Container(
-                                      padding: EdgeInsets.all(18.sp),
-                                      child: Container(
-                                        padding: EdgeInsets.all(15.sp),
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                              height: 1.sw,
-                                              padding: EdgeInsets.all(20.sp),
-                                              child: Center(
-                                                  child: Row(
-                                                children: [
-                                                  Icon((bookmarkIndex == 0)
-                                                      ? Icons
-                                                          .bookmark_add_outlined
-                                                      : Icons
-                                                          .bookmark_border_outlined),
-                                                  Text(
-                                                      " $bookmarkIndex/${widget.na.toString()}")
-                                                ],
-                                              )),
-                                              decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .scaffoldBackgroundColor,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              100))),
-                                            ),
-                                          ],
-                                        ),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(100))),
-                                      ),
-                                      height: 200.sp,
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  fit: FlexFit.loose,
-                                  child: InkWell(
+                    Tab(
+                      text: "AYAH BY AYAH",
+                    ),
+                  ])
+            : PreferredSize(child: Container(), preferredSize: Size(0, 0)),
+      ),
+      body: Column(
+        children: [
+          Directionality(
+            textDirection: (widget.iA) ? TextDirection.rtl : TextDirection.ltr,
+            child: Expanded(
+                child: FutureBuilder(
+                    future: Future.wait([
+                      getAyahAR(widget.vs, rec.recitation),
+                      getAyahEN(widget.vs)
+                    ]),
+                    builder: (context, AsyncSnapshot<List> snapshot) {
+                      if (!snapshot.hasData) {
+                        return Column(
+                          children: [
+                            LinearProgressIndicator(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return NoConnectionWidget(
+                          function: () {
+                            widget.iA
+                                ? getAyahAR(widget.vs, rec.recitation)
+                                : getAyahEN(widget.vs);
+                          },
+                        );
+                      } else {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: (widget.iA)
+                              ? TabBarView(
+                                  controller: tabController,
+                                  children: [
+                                      fullSurah(rec, snapshot.data![0],
+                                          snapshot.data![1], fontsize),
+                                      ayahByAyah(rec, snapshot.data![0],
+                                          snapshot.data![1], fontsize),
+                                    ])
+                              : fullSurah(rec, snapshot.data![1],
+                                  snapshot.data![0], fontsize),
+                        );
+                      }
+                    })),
+          ),
+          (widget.iA)
+              ? Container(
+                  width: 1.sw,
+                  color: Theme.of(context).colorScheme.secondary,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FutureBuilder(
+                        future: getAyahAR(widget.vs, rec.recitation),
+                        builder: (context, AsyncSnapshot<List> snapshot) {
+                          if (snapshot.connectionState !=
+                              ConnectionState.done) {
+                            return Container(
+                              padding: EdgeInsets.all(30.sp),
+                              height: 200.sp,
+                              width: 200.sp,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 17.sp,
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  getAyahAR(widget.vs, rec.recitation);
+                                });
+                              },
+                              child: Icon(
+                                Icons.refresh,
+                                size: 200.sp,
+                                color: Colors.white,
+                              ),
+                            );
+                          } else {
+                            List<String> reasonList = [];
+                            for (var element in snapshot.data!) {
+                              reasonList.add(element.audio);
+                            }
+                            return playing
+                                ? InkWell(
                                     onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                RecitationScreen(
-                                              recitation: rec.recitation,
-                                            ),
-                                          ));
+                                      playing = false;
+                                      isOn
+                                          ? resumeQuran(audio)
+                                          : playQuran(reasonList, audio);
                                     },
-                                    child: Container(
-                                      margin: EdgeInsets.all(18.sp),
-                                      padding: EdgeInsets.all(15.sp),
-                                      child: Row(
+                                    child: Icon(
+                                      Icons.play_circle_outline_outlined,
+                                      size: 200.sp,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : InkWell(
+                                    child: Icon(
+                                      Icons.pause_circle_outline_outlined,
+                                      size: 200.sp,
+                                      color: Colors.white,
+                                    ),
+                                    onTap: () {
+                                      audio.pause();
+                                      setState(() {
+                                        playing = true;
+                                      });
+                                    },
+                                  );
+                          }
+                        },
+                      ),
+                      InkWell(
+                        onTap: () {
+                          if (bookmarkIndex == 0) {
+                            showMaterialModalBottomSheet(
+                                context: context,
+                                builder: (context) => Container(
+                                      padding: EdgeInsets.all(20.sp),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Flexible(
-                                            fit: FlexFit.tight,
-                                            child: Container(
-                                              padding: EdgeInsets.all(10.sp),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                        Theme.of(context)
-                                                            .backgroundColor,
-                                                    backgroundImage: AssetImage(
-                                                        imageUrls[identifiers
-                                                            .indexOf(rec
-                                                                .recitation)]),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 20.sp,
-                                                  ),
-                                                  Flexible(
-                                                    fit: FlexFit.loose,
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Flexible(
-                                                          fit: FlexFit.loose,
-                                                          child: Text(
-                                                            nameEn[identifiers
-                                                                    .indexOf(rec
-                                                                        .recitation)]
-                                                                .toString(),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                        Flexible(
-                                                          fit: FlexFit.loose,
-                                                          child: Text(
-                                                            nameAr[identifiers
-                                                                    .indexOf(rec
-                                                                        .recitation)]
-                                                                .toString(),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .scaffoldBackgroundColor,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              100))),
+                                          SizedBox(
+                                            height: 200.sp,
+                                            width: 200.sp,
+                                            child: LottieBuilder.asset(
+                                              "assets/images/longtap.json",
+                                              reverse: true,
                                             ),
                                           ),
+                                          Text(
+                                            "Tap and hold on any Ayah to highlight and bookmark",
+                                            textAlign: TextAlign.center,
+                                          )
                                         ],
                                       ),
-                                      decoration: BoxDecoration(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(100))),
+                                    ));
+                          }
+                        },
+                        child: AnimatedSize(
+                          duration: Duration(milliseconds: 500),
+                          child: Container(
+                            padding: EdgeInsets.all(18.sp),
+                            child: Container(
+                              padding: EdgeInsets.all(15.sp),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 1.sw,
+                                    padding: EdgeInsets.all(20.sp),
+                                    child: Center(
+                                        child: Row(
+                                      children: [
+                                        Icon((bookmarkIndex == 0)
+                                            ? Icons.bookmark_add_outlined
+                                            : Icons.bookmark_border_outlined),
+                                        Text(
+                                            " $bookmarkIndex/${widget.na.toString()}")
+                                      ],
+                                    )),
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                            .withOpacity(0.5),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5))),
+                                  ),
+                                ],
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                            ),
+                            height: 200.sp,
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RecitationScreen(
+                                    recitation: rec.recitation,
+                                  ),
+                                ));
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(18.sp),
+                            padding: EdgeInsets.all(15.sp),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  fit: FlexFit.tight,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10.sp),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor:
+                                              Theme.of(context).backgroundColor,
+                                          backgroundImage: AssetImage(imageUrls[
+                                              identifiers
+                                                  .indexOf(rec.recitation)]),
+                                        ),
+                                        SizedBox(
+                                          width: 20.sp,
+                                        ),
+                                        Flexible(
+                                          fit: FlexFit.loose,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Flexible(
+                                                fit: FlexFit.loose,
+                                                child: Text(
+                                                  nameEn[identifiers.indexOf(
+                                                          rec.recitation)]
+                                                      .toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              Flexible(
+                                                fit: FlexFit.loose,
+                                                child: Text(
+                                                  nameAr[identifiers.indexOf(
+                                                          rec.recitation)]
+                                                      .toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                            .withOpacity(0.5),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5))),
                                   ),
                                 ),
                               ],
                             ),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
                           ),
-                        )
-                      : EnglishInfo()
-                ],
-              ),
-              Container(
-                color: Theme.of(context).colorScheme.secondary,
-                width: 1.sw,
-                height: 3.sp,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                    child: FutureBuilder(
-                  future: widget.iA
-                      ? getAyahAR(widget.vs, rec.recitation)
-                      : getAyahEN(widget.vs),
-                  builder: (context, AsyncSnapshot<List> snapshot) {
-                    if (!snapshot.hasData) {
-                      return LinearProgressIndicator(
-                        color: Theme.of(context).colorScheme.secondary,
-                      );
-                    } else if (snapshot.hasError) {
-                      return NoConnectionWidget(
-                        function: () {
-                          widget.iA
-                              ? getAyahAR(widget.vs, rec.recitation)
-                              : getAyahEN(widget.vs);
-                        },
-                      );
-                    } else {
-                      List<TextSpan> reasonList = [];
-                      if (bookmarkIndex != 0)
-                        selectedAyah = snapshot.data![bookmarkIndex - 1].ayah;
-                      snapshot.data!.forEach((element) {
-                        reasonList.add(TextSpan(
-                            recognizer: LongPressGestureRecognizer()
-                              ..onLongPress = () {
-                                setState(() {
-                                  if (bookmarkIndex ==
-                                      snapshot.data!.indexOf(element) + 1) {
-                                    bookmarkIndex = 0;
-                                    BookmarkPref()
-                                        .setBookmark(widget.vs, bookmarkIndex);
-                                  } else {
-                                    bookmarkIndex =
-                                        snapshot.data!.indexOf(element) + 1;
-                                    BookmarkPref()
-                                        .setBookmark(widget.vs, bookmarkIndex);
-                                    selectedAyah =
-                                        snapshot.data![bookmarkIndex - 1].ayah;
-                                  }
-                                });
-                              },
-                            style: widget.iA
-                                ? reasonList.length + 1 == counter
-                                    ? TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        fontSize: 70.sp)
-                                    : (bookmarkIndex - 1 == reasonList.length)
-                                        ? TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            fontSize: 70.sp)
-                                        : TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 70.sp)
-                                : TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 60.sp),
-                            text: widget.iA
-                                ? element.ayah +
-                                    '${getVerseEndSymbol(reasonList.length + 1)} '
-                                : element.ayah + '\n\n'));
-                      });
-                      return RichText(
-                          text: TextSpan(
-                        children: reasonList,
-                      ));
-                    }
-                  },
-                )),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container()
+        ],
+      ),
+    );
+  }
+
+  Widget ayahByAyah(AdvancedSettingsProvider rec, List<dynamic> quranInit,
+      List<dynamic> quranTranslated, double fontsize) {
+    List<Widget> reasonList = [];
+
+    if (bookmarkIndex != 0) {
+      selectedAyah = quranInit[bookmarkIndex - 1].ayah;
+    }
+    for (var element in quranInit) {
+      reasonList.add(InkWell(
+        onLongPress: () {
+          setState(() {
+            if (bookmarkIndex == quranInit.indexOf(element) + 1) {
+              bookmarkIndex = 0;
+              BookmarkPref().setBookmark(widget.vs, bookmarkIndex);
+            } else {
+              bookmarkIndex = quranInit.indexOf(element) + 1;
+              BookmarkPref().setBookmark(widget.vs, bookmarkIndex);
+              selectedAyah = quranInit[bookmarkIndex - 1].ayah;
+            }
+          });
+        },
+        child: Container(
+          width: double.infinity,
+          margin: EdgeInsets.all(10.sp),
+          padding: EdgeInsets.all(20.sp),
+          decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1)),
+          child: Column(
+            children: [
+              Text(element.ayah + getVerseEndSymbol(reasonList.length + 1),
+                  style: GoogleFonts.getFont(font,
+                      textStyle: reasonList.length + 1 == counter
+                          ? TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: fontsize,
+                            )
+                          : (bookmarkIndex - 1 == reasonList.length)
+                              ? TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  fontSize: fontsize,
+                                )
+                              : TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: fontsize,
+                                ))),
+              Divider(),
+              Text(
+                quranTranslated[quranInit.indexOf(element)].ayah,
+                textDirection: TextDirection.ltr,
               ),
             ],
           ),
         ),
-      ),
-    ));
+      ));
+    }
+    return ListView.builder(
+      itemCount: reasonList.length,
+      itemBuilder: (context, index) {
+        return Container(
+          child: reasonList[index],
+        );
+      },
+    );
+  }
+
+  Widget fullSurah(AdvancedSettingsProvider rec, List<dynamic> quranInit,
+      List<dynamic> quranTranslated, double fontsize) {
+    List<TextSpan> reasonList = [];
+    if (bookmarkIndex != 0) {
+      selectedAyah = quranInit[bookmarkIndex - 1].ayah;
+    }
+    for (var element in quranInit) {
+      reasonList.add(TextSpan(
+          recognizer: LongPressGestureRecognizer()
+            ..onLongPress = () {
+              setState(() {
+                if (bookmarkIndex == quranInit.indexOf(element) + 1) {
+                  bookmarkIndex = 0;
+                  BookmarkPref().setBookmark(widget.vs, bookmarkIndex);
+                } else {
+                  bookmarkIndex = quranInit.indexOf(element) + 1;
+                  BookmarkPref().setBookmark(widget.vs, bookmarkIndex);
+                  selectedAyah = quranInit[bookmarkIndex - 1].ayah;
+                }
+              });
+            },
+          style: GoogleFonts.getFont(
+            font,
+            textStyle: widget.iA
+                ? reasonList.length + 1 == counter
+                    ? TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: fontsize,
+                      )
+                    : (bookmarkIndex - 1 == reasonList.length)
+                        ? TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontSize: fontsize,
+                          )
+                        : TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: fontsize,
+                          )
+                : TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: fontsize,
+                  ),
+          ),
+          text: widget.iA
+              ? element.ayah + '${getVerseEndSymbol(reasonList.length + 1)} '
+              : element.ayah + '\n\n'));
+    }
+    return SingleChildScrollView(
+      child: RichText(
+          text: TextSpan(
+        children: reasonList,
+      )),
+    );
   }
 
   playQuran(List<String> list, AudioPlayer audioPlayer) async {
@@ -485,112 +562,25 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
   }
 }
 
-class EnglishInfo extends StatelessWidget {
-  const EnglishInfo({
-    Key? key,
-  }) : super(key: key);
-
+class NoConnectionWidget extends StatelessWidget {
+  const NoConnectionWidget({Key? key, required this.function})
+      : super(key: key);
+  final VoidCallback function;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                AppLocalizations.of(context)!.translator + ': ',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 50.sp),
-              ),
-              Flexible(
-                fit: FlexFit.tight,
-                child: Text(
-                  'Muhammad Asad',
-                  style: TextStyle(fontSize: 50.sp),
-                ),
-              ),
-            ],
-          ),
-        ],
+    return ListTile(
+      isThreeLine: true,
+      onTap: function,
+      title: Text(
+        "Failed to connect",
+        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 50.sp),
+      ),
+      subtitle: Text(
+          'For the first time you need to be connected to the Internet, next time you can come back offline. Connect to the Internet and tap here to retry'),
+      leading: Icon(
+        customIcon.MyFlutterApp.no_wifi,
+        size: 200.sp,
       ),
     );
   }
 }
-
-// // to do with provider
-// class HighlightedAyahSettings extends StatefulWidget {
-//   const HighlightedAyahSettings(
-//       {Key? key, required this.ayah, required this.vs})
-//       : super(key: key);
-//   final String ayah;
-//   final int vs;
-//   @override
-//   _HighlightedAyahSettingsState createState() =>
-//       _HighlightedAyahSettingsState();
-// }
-
-// class _HighlightedAyahSettingsState extends State<HighlightedAyahSettings> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//         width: 1.sw,
-//         padding: EdgeInsets.all(20.sp),
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Text(
-//               widget.ayah,
-//               textAlign: TextAlign.center,
-//               style: TextStyle(fontSize: 50.sp),
-//             ),
-//             Container(
-//               width: 1.sw,
-//               height: 2.sp,
-//               color: Theme.of(context).dividerColor,
-//             ),
-//             Container(
-//               width: 1.sw,
-//            child: Text(widget.)
-//             ),
-//             SizedBox(
-//               height: 20.sp,
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.end,
-//               children: [
-//                 InkWell(
-//                   onTap: () {
-//                     Clipboard.setData(new ClipboardData(text: widget.ayah));
-//                     Navigator.pop(context);
-//                   },
-//                   child: Container(
-//                       padding: EdgeInsets.all(10.sp),
-//                       decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.all(Radius.circular(5)),
-//                           border: Border.all(
-//                               style: BorderStyle.solid,
-//                               color: Theme.of(context).primaryColor)),
-//                       child: Row(
-//                         mainAxisSize: MainAxisSize.min,
-//                         children: [
-//                           Icon(
-//                             Icons.copy_all,
-//                             size: 50.sp,
-//                           ),
-//                           Flexible(
-//                             child: Text(
-//                               " Copy",
-//                               overflow: TextOverflow.ellipsis,
-//                             ),
-//                           )
-//                         ],
-//                       )),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ));
-//   }
-// }
