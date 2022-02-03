@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -32,7 +31,7 @@ class _SupportPageState extends State<SupportPage> {
           loading = false;
         });
       }
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       setState(() {
         loading = false;
         error = true;
@@ -119,6 +118,11 @@ class _SupportPageState extends State<SupportPage> {
                             title: Text('Duas and Azkar'),
                             subtitle:
                                 Text("Duas and Azkar will be back very soon"),
+                          ),
+                          ListTile(
+                            title: Text('Islamic Holidays'),
+                            subtitle: Text(
+                                "Adding holidays and events to the calendar"),
                           ),
                           ListTile(
                             title: Text('App customization'),

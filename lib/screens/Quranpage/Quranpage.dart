@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:application_1/models/quran.dart';
 import 'package:application_1/screens/SettingsPage/Recitation.dart';
 import 'package:application_1/src/advancedSettings.dart';
 import 'package:application_1/src/apiCalls.dart';

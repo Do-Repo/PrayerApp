@@ -1,3 +1,4 @@
+import 'package:application_1/screens/SettingsPage/NotificationSettings.dart';
 import 'package:application_1/screens/SupportScreen/paymentService.dart';
 import 'package:flutter/material.dart';
 import 'package:application_1/screens/SettingsPage/AdvancedSettings.dart';
@@ -85,6 +86,25 @@ class _SettingsScreenState extends State<SettingsScreen>
                       builder: (context) => RecitationScreen(
                         recitation: rec,
                       ),
+                    ));
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.notification_important_outlined,
+                size: 80.sp,
+              ),
+              title: Text(
+                "Notification Settings",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationSettings(),
                     ));
               },
             ),

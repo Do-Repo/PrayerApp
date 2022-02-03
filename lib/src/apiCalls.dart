@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:application_1/models/hadithModel.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:application_1/models/asma.dart';
-import 'package:application_1/models/hadithModel.dart';
+import 'package:application_1/models/asmaModel.dart';
 import 'package:application_1/models/prayerTimes.dart';
 import 'package:application_1/models/quran.dart';
 import 'package:application_1/src/advancedSettings.dart';
@@ -26,30 +24,6 @@ Future<RandomVerse?> getVerse(String r, int x, AudioPlayer audioPlayer) async {
     }
   } else
     return RandomVerse();
-}
-
-Future<List<PrayerTimesModel>> getCachedPrayertimes() async {
-  SharedPreferences pref;
-  pref = await SharedPreferences.getInstance();
-  String cachedResult = pref.getString("PRAYERTIMES") ?? "";
-  List<String> cachedLocation = pref.getStringList("CACHEDLOCATION") ?? [];
-  if (cachedResult.isNotEmpty) {
-    List cachedResponse = json.decode(cachedResult)['data'];
-    var result = cachedResponse
-        .map((e) => PrayerTimesModel.fromJson(
-            e, cachedLocation[0], cachedLocation[1], cachedLocation[2]))
-        .toList();
-    if (result.indexWhere((element) =>
-            DateFormat("DD-MM-yyyy").parse(element.fullgregoriandate!) ==
-            DateFormat("yyyy-MM-DD").parse(DateTime.now().toString())) ==
-        -1) {
-      throw Exception();
-    } else {
-      return result;
-    }
-  } else {
-    throw Exception();
-  }
 }
 
 Future<List<PrayerTimesModel>> getPrayerTimes(
@@ -84,6 +58,30 @@ Future<List<PrayerTimesModel>> getPrayerTimes(
   } catch (err) {
     print(err);
     return getCachedPrayertimes();
+  }
+}
+
+Future<List<PrayerTimesModel>> getCachedPrayertimes() async {
+  SharedPreferences pref;
+  pref = await SharedPreferences.getInstance();
+  String cachedResult = pref.getString("PRAYERTIMES") ?? "";
+  List<String> cachedLocation = pref.getStringList("CACHEDLOCATION") ?? [];
+  if (cachedResult.isNotEmpty) {
+    List cachedResponse = json.decode(cachedResult)['data'];
+    var result = cachedResponse
+        .map((e) => PrayerTimesModel.fromJson(
+            e, cachedLocation[0], cachedLocation[1], cachedLocation[2]))
+        .toList();
+    if (result.indexWhere((element) =>
+            DateFormat("DD-MM-yyyy").parse(element.fullgregoriandate!) ==
+            DateFormat("yyyy-MM-DD").parse(DateTime.now().toString())) ==
+        -1) {
+      throw Exception();
+    } else {
+      return result;
+    }
+  } else {
+    throw Exception();
   }
 }
 

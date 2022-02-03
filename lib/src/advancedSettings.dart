@@ -118,9 +118,7 @@ class AdvancedSettingsProvider extends ChangeNotifier {
       _dhuhr = true,
       _aasr = true,
       _maghrib = true,
-      _ishaa = true,
-      _imsak = false,
-      _shuruq = false;
+      _ishaa = true;
   bool get savedFajr => _fajr;
   bool get savedDhuhr => _dhuhr;
   bool get savedAasr => _aasr;

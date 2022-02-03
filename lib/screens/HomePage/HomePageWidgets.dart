@@ -174,52 +174,77 @@ Widget holidayWidgetLoading() {
   );
 }
 
-setPrayerNotifications(AsyncSnapshot snapshot, BuildContext context) {
+fajrNotification(BuildContext context, PrayerTimesModel snapshot) {
+  NotificationService().setNotification(
+      0,
+      "It's time for" + " Fajr",
+      "May Allah accept your prayers",
+      DateFormat('HH:mm').parse(snapshot.fajr!).hour,
+      DateFormat('HH:mm').parse(snapshot.fajr!).minute,
+      'Fajr',
+      context);
+}
+
+dhuhrNotification(BuildContext context, PrayerTimesModel snapshot) {
+  NotificationService().setNotification(
+      1,
+      "It's time for" + " Dhuhr",
+      "May Allah accept your prayers",
+      DateFormat('HH:mm').parse(snapshot.dhuhr!).hour,
+      DateFormat('HH:mm').parse(snapshot.dhuhr!).minute,
+      "Dhuhr",
+      context);
+}
+
+aasrNotification(BuildContext context, PrayerTimesModel snapshot) {
+  NotificationService().setNotification(
+      2,
+      "It's time for" + " Aasr",
+      "May Allah accept your prayers",
+      DateFormat('HH:mm').parse(snapshot.aasr!).hour,
+      DateFormat('HH:mm').parse(snapshot.aasr!).minute,
+      "Aasr",
+      context);
+}
+
+maghribNotification(BuildContext context, PrayerTimesModel snapshot) {
+  NotificationService().setNotification(
+      3,
+      "It's time for" + " Maghrib",
+      "May Allah accept your prayers",
+      DateFormat('HH:mm').parse(snapshot.maghrib!).hour,
+      DateFormat('HH:mm').parse(snapshot.maghrib!).minute,
+      "Maghrib",
+      context);
+}
+
+ishaaNotification(BuildContext context, PrayerTimesModel snapshot) {
+  NotificationService().setNotification(
+      4,
+      "It's time for" + " Ishaa",
+      "May Allah accept your prayers",
+      DateFormat('HH:mm').parse(snapshot.isha!).hour,
+      DateFormat('HH:mm').parse(snapshot.isha!).minute,
+      "Ishaa",
+      context);
+}
+
+setPrayerNotifications(PrayerTimesModel snapshot, BuildContext context) {
   var notif = Provider.of<AdvancedSettingsProvider>(context, listen: false);
   if (notif.savedFajr) {
-    NotificationService().setNotification(
-        0,
-        "It's time for" + " Fajr",
-        "\nMay Allah accept your prayers",
-        DateFormat('HH:mm').parse(snapshot.data!.fajr).hour,
-        DateFormat('HH:mm').parse(snapshot.data!.fajr).minute,
-        context);
+    fajrNotification(context, snapshot);
   }
   if (notif.savedDhuhr) {
-    NotificationService().setNotification(
-        1,
-        "It's time for" + " Dhuhr",
-        "\nMay Allah accept your prayers",
-        DateFormat('HH:mm').parse(snapshot.data!.dhuhr).hour,
-        DateFormat('HH:mm').parse(snapshot.data!.dhuhr).minute,
-        context);
+    dhuhrNotification(context, snapshot);
   }
   if (notif.savedAasr) {
-    NotificationService().setNotification(
-        2,
-        "It's time for" + " Aasr",
-        "\nMay Allah accept your prayers",
-        DateFormat('HH:mm').parse(snapshot.data!.aasr).hour,
-        DateFormat('HH:mm').parse(snapshot.data!.aasr).minute,
-        context);
+    aasrNotification(context, snapshot);
   }
   if (notif.savedMaghrib) {
-    NotificationService().setNotification(
-        3,
-        "It's time for" + " Maghrib",
-        "\nMay Allah accept your prayers",
-        DateFormat('HH:mm').parse(snapshot.data!.maghrib).hour,
-        DateFormat('HH:mm').parse(snapshot.data!.maghrib).minute,
-        context);
+    maghribNotification(context, snapshot);
   }
   if (notif.savedIshaa) {
-    NotificationService().setNotification(
-        4,
-        "It's time for" + " Ishaa",
-        "\nMay Allah accept your prayers",
-        DateFormat('HH:mm').parse(snapshot.data!.isha).hour,
-        DateFormat('HH:mm').parse(snapshot.data!.isha).minute,
-        context);
+    ishaaNotification(context, snapshot);
   }
 }
 
@@ -251,6 +276,7 @@ class _TimingWidgetState extends State<TimingWidget> {
   void initState() {
     super.initState();
     timeString = _formatDateTimeSeconds(DateTime.now());
+    setPrayerNotifications(widget.snapshot, context);
     t = Timer.periodic(Duration(seconds: 1), (Timer timer) => _getTime());
   }
 
@@ -347,6 +373,7 @@ class _TimingWidgetState extends State<TimingWidget> {
                           } else {
                             setState(() {
                               set.savedFajr = !set.savedFajr;
+                              fajrNotification(context, widget.snapshot);
                             });
                           }
                         },
@@ -423,6 +450,7 @@ class _TimingWidgetState extends State<TimingWidget> {
                           } else {
                             setState(() {
                               set.savedDhuhr = !set.savedDhuhr;
+                              dhuhrNotification(context, widget.snapshot);
                             });
                           }
                         },
@@ -471,6 +499,7 @@ class _TimingWidgetState extends State<TimingWidget> {
                               } else {
                                 setState(() {
                                   set.savedAasr = !set.savedAasr;
+                                  aasrNotification(context, widget.snapshot);
                                 });
                               }
                             },
@@ -519,6 +548,7 @@ class _TimingWidgetState extends State<TimingWidget> {
                               } else {
                                 setState(() {
                                   set.savedMaghrib = !set.savedMaghrib;
+                                  maghribNotification(context, widget.snapshot);
                                 });
                               }
                             },
@@ -567,6 +597,7 @@ class _TimingWidgetState extends State<TimingWidget> {
                               } else {
                                 setState(() {
                                   set.savedIshaa = !set.savedIshaa;
+                                  ishaaNotification(context, widget.snapshot);
                                 });
                               }
                             },
@@ -1054,7 +1085,7 @@ Container homePageHeaderLoading(BuildContext context) {
   );
 }
 
-Column homePageAppBar(AsyncSnapshot<List<PrayerTimesModel>> snapshot) {
+Widget homePageAppBar(AsyncSnapshot<List<PrayerTimesModel>> snapshot) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [

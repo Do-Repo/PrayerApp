@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:application_1/screens/SettingsPage/AdsService.dart';
 import 'package:flutter/material.dart';
 import 'package:application_1/screens/AsmaHusna/Asma.dart';
 import 'package:application_1/screens/HadithPage/HadithList.dart';
@@ -9,6 +10,8 @@ import 'package:application_1/screens/SibhahPage/Sibhah.dart';
 import 'package:application_1/screens/SupportScreen/paymentService.dart';
 import 'package:application_1/src/advancedSettings.dart';
 import 'package:application_1/src/themeData.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +21,24 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+  String selectedNotificationPayload = "";
+  final AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@drawable/muslim');
+
+  final IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings();
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails =
+      await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
+
+  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+    selectedNotificationPayload = notificationAppLaunchDetails!.payload ?? "";
+  }
+  final initFuture = MobileAds.instance.initialize();
+  final adState = AdState(initFuture);
   await getCurrentAppTheme();
   await getCurrentRecitation();
   await getCurrentPrayerTimeSettings();
@@ -27,7 +47,18 @@ Future<void> main() async {
   await getSavedLong();
   await getSavedNotification();
   await initPlatformState();
-  runApp(MyApp());
+  await FlutterLocalNotificationsPlugin().initialize(
+    initializationSettings,
+    onSelectNotification: (payload) {
+      print(payload);
+      selectedNotificationPayload = payload ?? "";
+    },
+  );
+  runApp(Provider.value(
+      value: adState,
+      builder: (context, child) => MyApp(
+            payload: selectedNotificationPayload,
+          )));
 }
 
 DarkThemeProvider themeChanger = DarkThemeProvider();
@@ -77,11 +108,26 @@ Future<void> getCurrentAppTheme() async {
   themeChanger.color = await themeChanger.darkThemePref.getColor();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key, required this.payload}) : super(key: key);
+  final String payload;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -113,9 +159,143 @@ class MyApp extends StatelessWidget {
                   theme: Styles.themeData(
                       themeChanger.darkTheme, context, themeChanger.color),
                   debugShowCheckedModeBanner: false,
-                  home: Skeleton(),
+                  home: (widget.payload.isEmpty)
+                      ? Skeleton()
+                      : AccessedByNotifPage(
+                          payload: widget.payload,
+                        ),
                 ));
       }),
+    );
+  }
+}
+
+class AccessedByNotifPage extends StatefulWidget {
+  const AccessedByNotifPage({Key? key, required this.payload})
+      : super(key: key);
+  final String payload;
+
+  @override
+  State<AccessedByNotifPage> createState() => _AccessedByNotifPageState();
+}
+
+class _AccessedByNotifPageState extends State<AccessedByNotifPage> {
+  late BannerAd? banner;
+
+  @override
+  void initState() {
+    super.initState();
+    banner = null;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final adState = Provider.of<AdState>(context);
+    if (!appData.isPro) {
+      adState.initialization.then((value) {
+        setState(() {
+          banner = BannerAd(
+              size: AdSize.banner,
+              adUnitId: adState.homeBannerAd,
+              listener: adState.bannerAdListener,
+              request: AdRequest())
+            ..load();
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    banner!.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.black,
+      ),
+      body: Column(children: [
+        (widget.payload == "Test notification")
+            ? Text(
+                "This is a test notification",
+                style: TextStyle(
+                    fontSize: 80.sp,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.white),
+              )
+            : Text(
+                "It's time to pray ${widget.payload}",
+                style: TextStyle(
+                    fontSize: 80.sp,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.white),
+              ),
+        Divider(
+          color: Colors.grey,
+        ),
+        (widget.payload == "Test notification")
+            ? Text(
+                "You can ignore this widget",
+                style: TextStyle(color: Colors.white),
+              )
+            : Text(
+                "Hayya 'ala-s-Salah - Hurry to the prayer",
+                style:
+                    TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+              ),
+        (widget.payload == "Fajr")
+            ? Text(
+                "Assalatu khairum-minan-naum - Prayer is better than sleep",
+                style:
+                    TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+              )
+            : Container(),
+        Spacer(),
+        (banner != null && !appData.isPro)
+            ? Container(
+                child: AdWidget(
+                  ad: banner!,
+                ),
+                height: banner!.size.height.toDouble(),
+              )
+            : Container(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+                onPressed: () {
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                },
+                child: Text(
+                  "Close",
+                  style: TextStyle(color: Colors.white),
+                )),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.sp),
+              margin: EdgeInsets.all(20.sp),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => Skeleton()));
+                  },
+                  child: Text(
+                    "Homepage",
+                    style: TextStyle(color: Colors.white),
+                  )),
+            )
+          ],
+        )
+      ]),
     );
   }
 }
@@ -138,74 +318,84 @@ class _SkeletonState extends State<Skeleton> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: tabController,
-              children: const [
-                Homepage(),
-                QuranList(),
-                HadithList(),
-                Sibhah(),
-                AsmaHosna(),
-                SettingsScreen(),
-              ],
+    return WillPopScope(
+      onWillPop: () {
+        setState(() {
+          tabController.jumpToPage(0);
+          currentIndex = 0;
+        });
+
+        return Future.value(false);
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                physics: NeverScrollableScrollPhysics(),
+                controller: tabController,
+                children: const [
+                  Homepage(),
+                  QuranList(),
+                  HadithList(),
+                  Sibhah(),
+                  AsmaHosna(),
+                  SettingsScreen(),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (value) => setState(() {
-          tabController.jumpToPage(value);
-          currentIndex = value;
-        }),
-        selectedItemColor: Theme.of(context).colorScheme.secondary,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            label: "Timings",
-            icon: Icon(Icons.timer_sharp),
-          ),
-          BottomNavigationBarItem(
-            label: "Qur'an",
-            icon: Icon(
-              customIcon.MyFlutterApp.quran_1,
-              size: 70.sp,
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (value) => setState(() {
+            tabController.jumpToPage(value);
+            currentIndex = value;
+          }),
+          selectedItemColor: Theme.of(context).colorScheme.secondary,
+          unselectedItemColor: Colors.grey,
+          items: [
+            BottomNavigationBarItem(
+              label: "Timings",
+              icon: Icon(Icons.timer_sharp),
             ),
-          ),
-          BottomNavigationBarItem(
-            label: "Hadith",
-            icon: Icon(
-              customIcon.MyFlutterApp.prophet,
-              size: 70.sp,
+            BottomNavigationBarItem(
+              label: "Qur'an",
+              icon: Icon(
+                customIcon.MyFlutterApp.quran_1,
+                size: 70.sp,
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            label: "Tasbeeh",
-            icon: Icon(
-              customIcon.MyFlutterApp.beads_1,
-              size: 70.sp,
+            BottomNavigationBarItem(
+              label: "Hadith",
+              icon: Icon(
+                customIcon.MyFlutterApp.prophet,
+                size: 70.sp,
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            label: "Asma Husna",
-            icon: Icon(
-              customIcon.MyFlutterApp.allah,
-              size: 70.sp,
+            BottomNavigationBarItem(
+              label: "Tasbeeh",
+              icon: Icon(
+                customIcon.MyFlutterApp.beads_1,
+                size: 70.sp,
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            label: "Settings",
-            icon: Icon(
-              Icons.settings_outlined,
-              size: 70.sp,
+            BottomNavigationBarItem(
+              label: "Asma Husna",
+              icon: Icon(
+                customIcon.MyFlutterApp.allah,
+                size: 70.sp,
+              ),
             ),
-          )
-        ],
+            BottomNavigationBarItem(
+              label: "Settings",
+              icon: Icon(
+                Icons.settings_outlined,
+                size: 70.sp,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -215,25 +405,27 @@ Future<void> initPlatformState() async {
   await Purchases.setDebugLogsEnabled(true);
   await Purchases.setup("goog_ZBoncTHoaOtuPxDhDsGEWjjQttq");
   PurchaserInfo purchaserInfo;
-  purchaserInfo = await Purchases.getPurchaserInfo();
+  try {
+    purchaserInfo = await Purchases.getPurchaserInfo();
 
-  print("Purchaser info : ${purchaserInfo.toString()}");
+    print("Purchaser info : ${purchaserInfo.toString()}");
 
-  if (purchaserInfo.entitlements.all['1mNoAds'] != null) if (purchaserInfo
-      .entitlements.all['1mNoAds']!.isActive) {
-    appData.isPro = true;
-    print("true 1");
-  }
-  if (purchaserInfo.entitlements.all['3mNoAds'] != null) if (purchaserInfo
-      .entitlements.all["3mNoAds"]!.isActive) {
-    appData.isPro = true;
-    print("true 2");
-  }
-  if (purchaserInfo.entitlements.all["12mNoAds"] != null) if (purchaserInfo
-      .entitlements.all["12mNoAds"]!.isActive) {
-    appData.isPro = true;
-    print("true 3");
-  }
+    if (purchaserInfo.entitlements.all['1mNoAds'] != null) if (purchaserInfo
+        .entitlements.all['1mNoAds']!.isActive) {
+      appData.isPro = true;
+      print("true 1");
+    }
+    if (purchaserInfo.entitlements.all['3mNoAds'] != null) if (purchaserInfo
+        .entitlements.all["3mNoAds"]!.isActive) {
+      appData.isPro = true;
+      print("true 2");
+    }
+    if (purchaserInfo.entitlements.all["12mNoAds"] != null) if (purchaserInfo
+        .entitlements.all["12mNoAds"]!.isActive) {
+      appData.isPro = true;
+      print("true 3");
+    }
+  } catch (err) {}
 
   print("User is pro: ${appData.isPro}");
 }

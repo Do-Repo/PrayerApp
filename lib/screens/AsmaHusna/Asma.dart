@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:application_1/models/asma.dart';
+import 'package:application_1/models/asmaModel.dart';
 import 'package:application_1/screens/QuranPage/QuranPage.dart';
 import 'package:application_1/src/apiCalls.dart';
 import 'package:application_1/src/widgetAnimator.dart';
