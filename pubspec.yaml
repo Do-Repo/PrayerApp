@@ -49,6 +49,7 @@ dependencies:
   purchases_flutter: ^3.9.2
   material_dialogs: ^1.1.1
   google_mobile_ads: ^1.0.1
+  permission_handler: ^8.3.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
