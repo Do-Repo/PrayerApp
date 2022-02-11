@@ -1185,6 +1185,65 @@ String getTimeLeft(String time1, String time2) {
           : "${diff.inSeconds} Seconds left";
 }
 
+class ErrorScreen extends StatelessWidget {
+  const ErrorScreen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: Icon(Icons.warning_amber_outlined),
+        title: Text("Permission required"),
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+              Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+              Theme.of(context).scaffoldBackgroundColor,
+            ])),
+        padding: EdgeInsets.all(20.sp),
+        child: Column(
+          children: [
+            Image.asset(
+              "assets/images/wrong-way.png",
+              height: 200.sp,
+              width: 200.sp,
+            ),
+            Text(
+              "Location required",
+              style: TextStyle(fontSize: 60.sp, fontWeight: FontWeight.w700),
+            ),
+            Text(
+              "Please check if you granted permission for the app to know your location. Location is required to show accurate prayertimes. If location is granted, make sure it's activated in your device settings. If you don't want to turn on the gps, you can set your location manually in location settings",
+              style: TextStyle(fontSize: 45.sp, fontWeight: FontWeight.w300),
+            ),
+            Divider(),
+            Image.asset(
+              "assets/images/world.png",
+              height: 200.sp,
+              width: 200.sp,
+            ),
+            Text(
+              "Internet access required",
+              style: TextStyle(fontSize: 60.sp, fontWeight: FontWeight.w700),
+            ),
+            Text(
+              "Make sure you're connected to the internet, especially for the first time. All the app data like Quran, Hadith and Asma are stored online to keep the size reasonable. After the first time this data will be cached and can be shown offline",
+              style: TextStyle(fontSize: 45.sp, fontWeight: FontWeight.w300),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 bool whotohighlight(
   bool isIsha,
   String timenow,

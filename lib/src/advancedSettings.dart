@@ -226,12 +226,70 @@ class SavedLocationProvider with ChangeNotifier {
   }
 }
 
-Future<Position> getLocation(int optionIndex, SavedLocationProvider pos) {
+Future<Position> getLocation(int optionIndex, SavedLocationProvider pos) async {
   if (optionIndex == 0) {
-    return getLiveLocation();
+    var s = await getSavedLocation();
+    if (s.latitude == 0 && s.longitude == 0) {
+      return getLiveLocation();
+    } else
+      return s;
   } else {
     return getChosenLocation(pos);
   }
+}
+
+// Get saved Location
+Future<Position> getSavedLocation() async {
+  print("Getting saved location");
+  // Test if location services are enabled.
+  var serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled don't continue
+    // accessing the position and request users of the
+    // App to enable the location services.
+    return Position(
+        longitude: 0,
+        latitude: 0,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        heading: 0,
+        speed: 0,
+        speedAccuracy: 0);
+  }
+
+  var permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permissions are denied, next time you could try
+      // requesting permissions again (this is also where
+      // Android's shouldShowRequestPermissionRationale
+      // returned true. According to Android guidelines
+      // your App should show an explanatory UI now.
+      return Position(
+          longitude: 0,
+          latitude: 0,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          heading: 0,
+          speed: 0,
+          speedAccuracy: 0);
+    }
+  }
+  Position location = await Geolocator.getLastKnownPosition(
+          forceAndroidLocationManager: true) ??
+      Position(
+          longitude: 0,
+          latitude: 0,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          heading: 0,
+          speed: 0,
+          speedAccuracy: 0);
+  return location;
 }
 
 Future<Position> getChosenLocation(SavedLocationProvider pos) async {

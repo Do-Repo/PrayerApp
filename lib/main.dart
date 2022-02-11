@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:application_1/screens/SettingsPage/AdsService.dart';
-import 'package:application_1/screens/SettingsPage/AdvancedSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:application_1/screens/AsmaHusna/Asma.dart';
 import 'package:application_1/screens/HadithPage/HadithList.dart';
 import 'package:application_1/screens/HomePage/HomePageLayout.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:application_1/screens/QuranPage/QuranList.dart';
 import 'package:application_1/screens/SettingsPage/Settingspage.dart';
 import 'package:application_1/screens/SibhahPage/Sibhah.dart';
@@ -173,159 +170,12 @@ class _MyAppState extends State<MyApp> {
                       themeChanger.darkTheme, context, themeChanger.color),
                   debugShowCheckedModeBanner: false,
                   home: (widget.payload.isEmpty)
-                      ? (widget.isfirsttime)
-                          ? Intro()
-                          : Skeleton()
+                      ? Skeleton()
                       : AccessedByNotifPage(
                           payload: widget.payload,
                         ),
                 ));
       }),
-    );
-  }
-}
-
-class Intro extends StatefulWidget {
-  const Intro({Key? key}) : super(key: key);
-
-  @override
-  _IntroState createState() => _IntroState();
-}
-
-class _IntroState extends State<Intro> {
-  @override
-  Widget build(BuildContext context) {
-    var option = Provider.of<AdvancedSettingsProvider>(context, listen: false);
-
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Center(
-            child: Text(
-              "Welcome to IslamApp",
-              style: TextStyle(
-                  fontSize: 80.sp,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white),
-            ),
-          ),
-          Center(
-            child: Text(
-              "Everything you need in one app",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          SizedBox(
-            height: 300.h,
-          ),
-          Icon(
-            Icons.location_on_outlined,
-            color: Colors.white,
-            size: 200.sp,
-          ),
-          Center(
-            child: Text(
-              "Set your location",
-              style: TextStyle(
-                  fontSize: 80.sp,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white),
-            ),
-          ),
-          ListTile(
-            title: Text(
-              "Allow automatic location",
-              style: TextStyle(color: Colors.white, fontSize: 40.sp),
-            ),
-            subtitle: Text(
-              "Look up location on startup automatically",
-              style: TextStyle(color: Colors.white),
-            ),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            ),
-            tileColor: Colors.white.withOpacity(0.4),
-            onTap: () async {
-              option.locationOption = 0;
-              Permission.locationWhenInUse.request();
-              await Permission.locationWhenInUse.status.then((status) async {
-                if (status.isGranted) {
-                  print("status granted");
-                  await setFirsttimeoff();
-                  Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (_) => Skeleton()));
-                }
-                if (status.isDenied) {
-                  Permission.locationWhenInUse.request();
-                }
-                if (status.isRestricted || status.isPermanentlyDenied) {
-                  Permission.locationWhenInUse.isRestricted;
-                  await openAppSettings();
-                }
-                await setFirsttimeoff();
-                Future.delayed(Duration(milliseconds: 200)).then((value) =>
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => Skeleton())));
-              });
-            },
-          ),
-          SizedBox(
-            height: 50.h,
-          ),
-          ListTile(
-            tileColor: Colors.white.withOpacity(0.4),
-            title: Text(
-              "Set location manually",
-              style: TextStyle(color: Colors.white, fontSize: 40.sp),
-            ),
-            subtitle: Text(
-              "Look up saved location on startup",
-              style: TextStyle(color: Colors.white),
-            ),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            ),
-            onTap: () async {
-              option.locationOption = 2;
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => MapInterface()));
-            },
-          ),
-          Spacer(),
-          InkWell(
-            onTap: () async {
-              await setFirsttimeoff();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => Skeleton()));
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Continue",
-                  style: TextStyle(color: Colors.white, fontSize: 60.sp),
-                ),
-                Center(
-                  child: RotatedBox(
-                      quarterTurns: 1,
-                      child: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
-                        size: 80.sp,
-                      )),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
     );
   }
 }
@@ -423,7 +273,9 @@ class _AccessedByNotifPageState extends State<AccessedByNotifPage> {
               )
             : Container(),
         Spacer(),
-        (banner != null && !appData.isPro)
+        (banner != null &&
+                !appData.isPro &&
+                widget.payload != "Test notification")
             ? Container(
                 child: AdWidget(
                   ad: banner!,

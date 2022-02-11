@@ -1,13 +1,13 @@
-import 'package:application_1/screens/SettingsPage/AdvancedSettings.dart';
 import 'package:flutter/material.dart';
-import 'package:application_1/models/prayerTimes.dart';
-import 'package:application_1/screens/HomePage/HomePageWidgets.dart';
-import 'package:application_1/src/advancedSettings.dart';
-import 'package:application_1/src/apiCalls.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+
+import 'package:application_1/models/prayerTimes.dart';
+import 'package:application_1/screens/HomePage/HomePageWidgets.dart';
+import 'package:application_1/src/advancedSettings.dart';
+import 'package:application_1/src/apiCalls.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -36,35 +36,7 @@ class _HomepageState extends State<Homepage>
             // Showing cached timings while loading
             // Needs error handling since this is calling fresh data
             if (snapshot.hasError) {
-              WidgetsBinding.instance!.addPostFrameCallback((_) {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Oops.. Something went wrong"),
-                        content: Text(
-                            "Make sure you're connected to the internet and allow the app to know your location. If you want you can set your location manually in the settings"),
-                        actions: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => AdvancedSettings()));
-                              },
-                              child: Text("Location settings")),
-                          TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  Navigator.of(context).pop();
-                                  getPrayerTimes(pos, method, optionIndex);
-                                });
-                              },
-                              child: Text("Retry"))
-                        ],
-                      );
-                    });
-              });
+              return ErrorScreen();
             }
             return FutureBuilder(
                 future: getCachedPrayertimes(),
